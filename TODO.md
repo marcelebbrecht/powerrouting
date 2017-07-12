@@ -8,11 +8,11 @@ Version: 0.3
 * make vizualizer usable
 
 * Readme
-** Installation instructions
+    * Installation instructions
 
 Finalize
 --------
 
 * Readme
-** Contribute
-** Version
+	* Contribute
+	* Version
