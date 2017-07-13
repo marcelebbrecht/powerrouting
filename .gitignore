@@ -1,0 +1,4 @@
+out/
+simulations/results/
+simulations/logs/
+.computed/

@@ -1,0 +1,3 @@
+package inetmanetpo;
+
+@license(LGPL);

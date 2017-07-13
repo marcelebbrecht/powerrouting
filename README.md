@@ -59,22 +59,102 @@ Big thank you to all authors, that made that stuff possible. For more informatio
 please look at the packages README.md, CREDITS and License. 
 
 
-OMNeT++
--------
+OMNeT++ on Windows
+------------------
 
-I use OMNeT++ 5.1, Build id: 170331-7c4e366 for this project:
+I use Windows Version of OMNeT++ 5.1, Build id: 170331-7c4e366 for this project:
 
 https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omnetpp-5-1-windows
 
+Linux wasn't tested, yet.
 
-Getting started
----------------
 
-Download and install OMNeT++ from above. Ensure, that you don't have the common INET
-stuff in your workspace. Now download inetmanet framework and import it, according to
-INSTALL inside.
+Installation
+------------
 
-Now, clone this project from GitHub and import it as 'powerrouting' into you workspace.
+Download and extract OMNeT++ from above. Inetmanet uses OSG for visualization, but it's broken
+in OMNeT++ 5.1 (if you build inetmanet, you get errors if vizualization feature is enabled). 
 
-To be continued... (import, features, vizualizer).
+Two ways to solve this issue:
+* Disable vizualization features in Inetmanet project settings and comment vizualization options in common.ini, then clean and rebuild Inetmanet 
+* Prior build of OMNeT++, edit configure.user:
+	* Set OSG_LIBS=no
+	* Set OSGEARTH_LIBS=no
+	* Set WITH_OSG=no
+	* Set WITH_OSGEARTH=no
+  Now Build OMNeT++ according to manual (make clean; ./configure; make)
+
+IMPORTANT: Sometimes simulations crashed with "IdealMac is down" errors. This only happens, if visualizers 
+are enabled. Disable them in common.ini, they're not important for the simulations and the results.
+
+Ensure, that you don't have the common INET stuff in your workspace. Now download inetmanet framework
+and import it, according to INSTALL inside. Default feature set is fine, now build project if not done before.
+
+Now, clone this project from GitHub and import it as 'powerrouting' into you workspace and build it.
+
+If you face compiler errors regarding missing links to inet, check the following on powerouting's project properties:
+* C/C++ General -> Paths and Symbols -> Library Paths -> add /inet/src
+* C/C++ General -> Paths and Symbols -> References -> check inet
+* Project References -> check inet
+* OMNeT++ -> Makemake -> src -> check Build: Makemake
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Target -> check shared library
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Compile -> check Export include paths for other projects
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Compile -> check Add include paths exported from referenced projects
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Link -> check Link with libraries exported from referenced projects
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Link -> check Add libraries and other linker options from enabled project features
+* OMNeT++ -> Makemake -> src -> Makemake Options -> Link -> Additional libraries to link with -> add libINET
+
+
+Batch processing
+----------------
+
+To quickly run all simulations, go into the simulation directory and execute "./run".
+You will find proper results in results and logs in simulations/logs.
+
+
+Simulations with AODV
+---------------------
+
+Mainly, the power-based version AODVPO does the following trick: Every time a packet is forwarded, the remaining
+battery storage is checked. If it drops a predefined ratio, the router adds a higher value to the nextHop information
+it transmitts to other routers for knows routes and send an RERR. After that, the router would look less attractive for 
+other hosts and so, if available, another router will be used. To ensure functionality on low capacity (and so, high
+hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024.
+
+Old: nextHopCount = oldHopCount + 1
+New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1 
+
+Please create a runconfig that uses aodv.ini. The different configs are described inside the ini file. We use different scenarios:
+* different number of senders and receivers
+* pure AODV and AODVPO simulations
+* mixed networks to show interoperability of AODVPO with normal AODV routers
+* for AODVPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
+* longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
+
+Feel free to experiment with the following parameters, set through aodv.ini:
+* aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 0.3)
+* aodvpo.powerTrigger - steps on relative charge for sending RERR. If set to 0.20, the router sends on 80%,60%,... an RERR, low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
+* aodvpo.powerBias - constant value to add to hopCount for battery-based routers (min: 0.0, default: 0.0)
+
+
+Statistics
+----------
+
+The mixed configurations are not included in stats or longterm, they're only for demonstation of interoperability.
+
+In the stats directory, you will find an analysis file for each routing protocoll. Here you can examine and visualize different things:
+* for each simulation you can examine power consumption of every router on battery as timeline (lower deviation is better)
+* for each simulation you can compare the battery status at the end of the simulation (lower deviation is better)
+* the sum of available power at the end of all simulations except mixed and longterm
+* the standard deviation of available power at the end of all simulations except mixed and longterm (lower is better)
+* the ping statistics (min/max/mean/stddev) for all simulations (lower is better)
+* the ping loss rate for all simulations (lower is better)
+* the count of transmitted packages for all simulations (higher is better)
+
+
+Longterm
+--------
+
+There are some longer simulation configs. These aren't stable, the simulation crashed for TriggerHappy and Sloppy. Unless
+Hosts doesn't suddenly dis- and reapper or we make something more intelligent, longterm tests are nearly useless.  
 

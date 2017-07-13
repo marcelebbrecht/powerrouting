@@ -1,0 +1,29 @@
+Bachelorthesis 2017 - energybased AODV routing, 2nd try
+Marcel Ebbrecht, marcel.ebbrecht@googlemail.com, TU Dortmund 2017
+Todo-Liste, version 0.2
+
+Todo:
+- Port OLSR to OLSRPO
+- Parameter in NED, H und CC einbauen
+- Runconfigs erzeugen
+- Willingness zur Laufzeit auf Basis der Parameter neu berechnen
+- Ping statistics in Auswertungen aufnehmen
+- Standardparameter OLSR konfigurieren
+- Routing nach Stromverbrauch ausrichten: OLSR/BATMAN
+- Longterm Tests -> 3600s, wer schafft mehr Pakete mit gegebener Strommenge 
+- README anpassen
+- Bug: Problem mit dem Visualizer, stürzt bei Benutzung ab ...
+
+Version 0.3:
+- B.A.T.M.A.N - ist einer L2 Verfahren, daher für Vergleich mit AODV ungeeignet. Vielleicht am Ende wenn Zeit
+
+Optionen:
+- Einschränkungen für Parameter bias, sensitivity, trigger irgendwie geiler?
+- realistisches Radio Model als Option -> vergleichen
+- realistischer Stromverbrauch -> vergleichen
+- Code in eigenen src Ordner übertragen
+- Vererbung ausprobieren
+
+Literatursuche:
+- Energy Comsumption
+- Zusammenhang mit WSNs

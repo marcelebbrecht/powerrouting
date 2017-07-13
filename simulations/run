@@ -1,4 +1,31 @@
 #!/bin/sh
 cd `dirname $0`
-../src/powerrouting -n .:../src $*
-# for shared lib, use: opp_run -l ../src/powerrouting -n .:../src $*
+
+echo
+echo "running AODV/AODVPO simulations, please wait ..."
+echo
+for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+  echo "  configuration: $i (log: logs/$i.log)"
+  opp_run.exe -r 0 -m -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/INET \
+    -c $i ../simulations/aodv.ini > logs/$i.log 2>&1
+done
+echo
+echo "AODV/AODVPO simulations done."
+echo
+
+echo
+echo "running OLSR/OLSRPO simulations, please wait ..."
+echo
+for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+  echo "  configuration: $i (log: logs/$i.log)"
+  opp_run.exe -r 0 -m -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/INET \
+    -c $i ../simulations/olsr.ini > logs/$i.log 2>&1
+done
+echo
+echo "OLSR/OLSRPO simulations done."
+echo
+
