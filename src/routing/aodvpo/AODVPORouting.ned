@@ -23,7 +23,7 @@ simple AODVPORouting
         double powerBiasMin = 0.0;
         double powerBiasDefault = 0.0;
         double powerBias = default(powerBiasDefault);
-        // power trigger, how much must the penalty rise for sending RERR in 0.05 .. 0.5
+        // power trigger, how much must the power be lower for sending routing error in 0.05 .. 0.5
         double powerTriggerMin = 0.05;
         double powerTriggerMax = 0.5;
         double powerTriggerDefault = 0.3;
