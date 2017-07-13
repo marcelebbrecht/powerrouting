@@ -1,6 +1,8 @@
 #!/bin/sh
 cd `dirname $0`
 
+mkdir ../simulations/logs > /dev/null 2>&1
+
 echo
 echo "running AODV/AODVPO simulations, please wait ..."
 echo
