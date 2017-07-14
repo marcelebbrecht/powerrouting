@@ -9,14 +9,17 @@ Version: 0.4 - in progress
 * Test OLSR Router, reduce runtime?
 * Create OLSR Router and test
 * Create OLSRPO Router and Routing and test
+* BatchRun
 * Create and check stats
 * Clean and remove attic
 * Readme / Changelog
+* Optimize parameters
+* Compare OLSR <-> AODV
+* Maybe Batman? -> version 0.5
 * Commit
 * Merge
 * Mail 
 * Install & Sync on Notebook
-* Optimize parameters
 
 
 Finalize
