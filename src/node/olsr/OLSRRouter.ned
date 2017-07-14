@@ -1,15 +1,15 @@
-// PowerRouting for OMNeT++ - OLSRPO router definition
+// PowerRouting for OMNeT++ - OLSR router definition
 // Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 // free software, see LICENSE.md for details
 // derived from inetmanet-3.5, AODVRouter.ned
 
-package powerrouting.node.olsrpo;
+package powerrouting.node.olsr;
 
 import inet.node.inet.WirelessHost;
-import powerrouting.routing.olsrpo.OLSRPO;
+import inet.routing.extras.OLSR;
 import inet.power.contract.IEnergyStorage;
 
-module OLSRPORouter extends WirelessHost
+module OLSRRouter extends WirelessHost
 {
     parameters:
         @display("i=device/cellphone");
@@ -17,11 +17,11 @@ module OLSRPORouter extends WirelessHost
         wlan[*].mgmtType = default("Ieee80211MgmtAdhoc");
     submodules:
         // start modification
-        olsrpo: OLSRPO {
+        olsr: OLSR {
             @display("p=558,307");
         }
         // end modification
     connections:
-        olsrpo.ipOut --> networkLayer.transportIn++;
-        olsrpo.ipIn <-- networkLayer.transportOut++;
+        olsr.ipOut --> networkLayer.transportIn++;
+        olsr.ipIn <-- networkLayer.transportOut++;
 }
