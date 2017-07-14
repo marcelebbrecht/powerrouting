@@ -16,9 +16,11 @@ module AODVPORouter extends WirelessHost
         forwarding = true;
         wlan[*].mgmtType = default("Ieee80211MgmtAdhoc");
     submodules:
+        // start modification
         aodvpo: AODVPORouting {
             @display("p=558,307");
         }
+        // end modification
     connections:
         aodvpo.ipOut --> networkLayer.transportIn++;
         aodvpo.ipIn <-- networkLayer.transportOut++;
