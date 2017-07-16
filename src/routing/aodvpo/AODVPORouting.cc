@@ -37,14 +37,29 @@
 #include "inet/common/lifecycle/NodeOperations.h"
 #include "inet/routing/aodv/AODVRouting.h"
 
+// typedefs for porting
+typedef inet::AODVRouting AODVRouting;
+typedef inet::INetfilter::IHook IHook;
+typedef inet::INetworkDatagram INetworkDatagram;
+typedef inet::InterfaceEntry InterfaceEntry;
+typedef inet::L3Address L3Address;
+typedef inet::AODVRREP AODVRREP;
+typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
+typedef inet::power::SimpleEpEnergyStorage SimpleEpEnergyStorage;
+typedef inet::IRoute IRoute;
+typedef inet::AODVRouteData AODVRouteData;
+typedef inet::AODVRREPACK AODVRREPACK;
+typedef inet::INetfilter INetfilter;
+typedef inet::INetworkDatagram INetworkDatagram;
+
 Define_Module(AODVPORouting);
 
 void AODVPORouting::initialize(int stage)
 {
-    inet::AODVRouting::initialize(stage);
+    AODVRouting::initialize(stage);
 
     // get energy storage and assign power based routing parameters
-    energyStorage = dynamic_cast<inet::power::IEpEnergyStorage *>(host->getSubmodule("energyStorage"));
+    energyStorage = dynamic_cast<IEpEnergyStorage *>(host->getSubmodule("energyStorage"));
     powerSensitivity = par("powerSensitivity");
     powerSensitivityMin = par("powerSensitivityMin");
     powerSensitivityMax = par("powerSensitivityMax");
@@ -78,7 +93,7 @@ void AODVPORouting::initialize(int stage)
 }
 
 int AODVPORouting::calculatePenalty() {
-    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
         EV_INFO << "Power Routing - StorageType is not SimpleEpEnergyStorage(" << host->getSubmodule("energyStorage")->getClassName() << ") returning one (normal behavior)" << endl;
         return 1;
     } else {
@@ -98,7 +113,7 @@ int AODVPORouting::calculatePenalty() {
 
 // function for calculating trigger
 int AODVPORouting::calculateTrigger() {
-    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
         EV_INFO << "Power Routing - StorageType is not SimpleEpEnergyStorage(" << host->getSubmodule("energyStorage")->getClassName() << ") returning one (normal behavior)" << endl;
         return 1;
     } else {
@@ -115,7 +130,7 @@ int AODVPORouting::calculateTrigger() {
     }
 }
 
-void AODVPORouting::handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sourceAddr)
+void AODVPORouting::handleRREP(AODVRREP *rrep, const L3Address& sourceAddr)
 {
     EV_INFO << "AODV Route Reply arrived with source addr: " << sourceAddr << " originator addr: " << rrep->getOriginatorAddr()
             << " destination addr: " << rrep->getDestAddr() << endl;
@@ -127,7 +142,7 @@ void AODVPORouting::handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sour
         return;
     }
 
-    inet::IRoute *previousHopRoute = routingTable->findBestMatchingRoute(sourceAddr);
+    IRoute *previousHopRoute = routingTable->findBestMatchingRoute(sourceAddr);
 
     if (!previousHopRoute || previousHopRoute->getSource() != this) {
         previousHopRoute = createRoute(sourceAddr, sourceAddr, 1, false, rrep->getOriginatorSeqNum(), true, simTime() + activeRouteTimeout);
@@ -139,13 +154,13 @@ void AODVPORouting::handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sour
     EV_INFO << "Power Routing - New Hop Count: " << rrep->getHopCount() + this->calculatePenalty() << endl;
     rrep->setHopCount(newHopCount);
 
-    inet::IRoute *destRoute = routingTable->findBestMatchingRoute(rrep->getDestAddr());
-    inet::AODVRouteData *destRouteData = nullptr;
+    IRoute *destRoute = routingTable->findBestMatchingRoute(rrep->getDestAddr());
+    AODVRouteData *destRouteData = nullptr;
     simtime_t lifeTime = rrep->getLifeTime();
     unsigned int destSeqNum = rrep->getDestSeqNum();
 
     if (destRoute && destRoute->getSource() == this) {    // already exists
-        destRouteData = check_and_cast<inet::AODVRouteData *>(destRoute->getProtocolData());
+        destRouteData = check_and_cast<AODVRouteData *>(destRoute->getProtocolData());
         if (!destRouteData->hasValidDestNum()) {
             updateRoutingTable(destRoute, sourceAddr, newHopCount, true, destSeqNum, true, simTime() + lifeTime);
         }
@@ -163,30 +178,30 @@ void AODVPORouting::handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sour
     }
     else {
         destRoute = createRoute(rrep->getDestAddr(), sourceAddr, newHopCount, true, destSeqNum, true, simTime() + lifeTime);
-        destRouteData = check_and_cast<inet::AODVRouteData *>(destRoute->getProtocolData());
+        destRouteData = check_and_cast<AODVRouteData *>(destRoute->getProtocolData());
     }
 
-    inet::IRoute *originatorRoute = routingTable->findBestMatchingRoute(rrep->getOriginatorAddr());
+    IRoute *originatorRoute = routingTable->findBestMatchingRoute(rrep->getOriginatorAddr());
     if (getSelfIPAddress() != rrep->getOriginatorAddr()) {
         if (originatorRoute && originatorRoute->getSource() == this) {
-            inet::AODVRouteData *originatorRouteData = check_and_cast<inet::AODVRouteData *>(originatorRoute->getProtocolData());
+            AODVRouteData *originatorRouteData = check_and_cast<AODVRouteData *>(originatorRoute->getProtocolData());
             simtime_t existingLifeTime = originatorRouteData->getLifeTime();
             originatorRouteData->setLifeTime(std::max(simTime() + activeRouteTimeout, existingLifeTime));
 
             if (simTime() > rebootTime + deletePeriod || rebootTime == 0) {
                 if (rrep->getAckRequiredFlag()) {
-                    inet::AODVRREPACK *rrepACK = createRREPACK();
+                    AODVRREPACK *rrepACK = createRREPACK();
                     sendRREPACK(rrepACK, sourceAddr);
                     rrep->setAckRequiredFlag(false);
                 }
                 destRouteData->addPrecursor(originatorRoute->getNextHopAsGeneric());
 
-                inet::IRoute *nextHopToDestRoute = routingTable->findBestMatchingRoute(destRoute->getNextHopAsGeneric());
+                IRoute *nextHopToDestRoute = routingTable->findBestMatchingRoute(destRoute->getNextHopAsGeneric());
                 if (nextHopToDestRoute && nextHopToDestRoute->getSource() == this) {
-                    inet::AODVRouteData *nextHopToDestRouteData = check_and_cast<inet::AODVRouteData *>(nextHopToDestRoute->getProtocolData());
+                    AODVRouteData *nextHopToDestRouteData = check_and_cast<AODVRouteData *>(nextHopToDestRoute->getProtocolData());
                     nextHopToDestRouteData->addPrecursor(originatorRoute->getNextHopAsGeneric());
                 }
-                inet::AODVRREP *outgoingRREP = rrep->dup();
+                AODVRREP *outgoingRREP = rrep->dup();
                 forwardRREP(outgoingRREP, originatorRoute->getNextHopAsGeneric(), 100);
             }
         }
@@ -204,12 +219,12 @@ void AODVPORouting::handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sour
     delete rrep;
 }
 
-inet::INetfilter::IHook::Result AODVPORouting::datagramForwardHook(inet::INetworkDatagram *datagram, const inet::InterfaceEntry *inputInterfaceEntry, const inet::InterfaceEntry *& outputInterfaceEntry, inet::L3Address& nextHopAddress)
+INetfilter::IHook::Result AODVPORouting::datagramForwardHook(INetworkDatagram *datagram, const InterfaceEntry *inputInterfaceEntry, const InterfaceEntry *& outputInterfaceEntry, L3Address& nextHopAddress)
 {
 
     Enter_Method("datagramForwardHook");
-    const inet::L3Address& destAddr = datagram->getDestinationAddress();
-    const inet::L3Address& sourceAddr = datagram->getSourceAddress();
+    const L3Address& destAddr = datagram->getDestinationAddress();
+    const L3Address& sourceAddr = datagram->getSourceAddress();
 
     // check if capacity changed significantly and send RERR to rebuild routes
     if ( powerTriggerLast > this->calculateTrigger() ) {
@@ -220,5 +235,5 @@ inet::INetfilter::IHook::Result AODVPORouting::datagramForwardHook(inet::INetwor
     EV_INFO << "Power Routing - Updating power trigger, old: " << powerTriggerLast << ", new: " << powerTrigger << endl;
     powerTriggerLast = this->calculateTrigger();
 
-    return inet::AODVRouting::datagramForwardHook(datagram, inputInterfaceEntry, outputInterfaceEntry, nextHopAddress);
+    return AODVRouting::datagramForwardHook(datagram, inputInterfaceEntry, outputInterfaceEntry, nextHopAddress);
 }

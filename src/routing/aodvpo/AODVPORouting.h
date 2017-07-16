@@ -19,11 +19,19 @@
 #include "inet/routing/aodv/AODVRouting.h"
 #include <map>
 
-class AODVPORouting : public inet::AODVRouting
+typedef inet::AODVRouting AODVRouting;
+typedef inet::INetfilter::IHook IHook;
+typedef inet::INetworkDatagram INetworkDatagram;
+typedef inet::InterfaceEntry InterfaceEntry;
+typedef inet::L3Address L3Address;
+typedef inet::AODVRREP AODVRREP;
+typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
+
+class AODVPORouting : public AODVRouting
 {
   protected:
     // parameters for energy-optimization
-    inet::power::IEpEnergyStorage *energyStorage = nullptr;
+    IEpEnergyStorage *energyStorage = nullptr;
     double relativeCharge = 0;
     double hopPenaltyDouble = 0;
     double hopPenaltyDoublePreroundup = 0;
@@ -46,8 +54,8 @@ class AODVPORouting : public inet::AODVRouting
   protected:
     // override initialization, RREP creation and forwarding
     void initialize(int stage) override;
-    void handleRREP(inet::AODVRREP *rrep, const inet::L3Address& sourceAddr);
-    inet::INetfilter::IHook::Result datagramForwardHook(inet::INetworkDatagram *datagram, const inet::InterfaceEntry *inputInterfaceEntry, const inet::InterfaceEntry *& outputInterfaceEntry, inet::L3Address& nextHopAddress) override;
+    void handleRREP(AODVRREP *rrep, const L3Address& sourceAddr);
+    IHook::Result datagramForwardHook(INetworkDatagram *datagram, const InterfaceEntry *inputInterfaceEntry, const InterfaceEntry *& outputInterfaceEntry, L3Address& nextHopAddress) override;
 
     // calculate the penalty and trigger
     int calculatePenalty();

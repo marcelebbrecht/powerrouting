@@ -23,10 +23,17 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/routing/aodvpo/AODVPORouting.o
+OBJS = \
+    $O/routing/aodvpo/AODVPORouting.o \
+    $O/routing/olsr/OLSR.o \
+    $O/routing/olsr/OLSR_rtable.o \
+    $O/routing/olsr/OLSR_state.o \
+    $O/routing/olsrpo/OLSRPO.o \
+    $O/routing/olsr/OLSRpkt_m.o
 
 # Message files
-MSGFILES =
+MSGFILES = \
+    routing/olsr/OLSRpkt.msg
 
 # SM files
 SMFILES =

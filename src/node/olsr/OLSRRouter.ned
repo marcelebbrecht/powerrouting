@@ -6,7 +6,7 @@
 package powerrouting.node.olsr;
 
 import inet.node.inet.WirelessHost;
-import inet.routing.extras.OLSR;
+import powerrouting.routing.olsr.OLSR;
 import inet.power.contract.IEnergyStorage;
 
 module OLSRRouter extends WirelessHost
