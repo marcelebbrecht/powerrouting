@@ -13,7 +13,7 @@ cplusplus {{
 
 cplusplus {{
 #ifndef nsaddr_t
-typedef L3Address nsaddr_t;
+typedef inet::L3Address nsaddr_t;
 #endif
 
 /********** Message types **********/
