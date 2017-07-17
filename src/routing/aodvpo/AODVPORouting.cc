@@ -38,17 +38,13 @@
 #include "../aodv/AODVRouting.h"
 
 // typedefs for porting
-typedef inet::AODVRouting AODVRouting;
 typedef inet::INetfilter::IHook IHook;
 typedef inet::INetworkDatagram INetworkDatagram;
 typedef inet::InterfaceEntry InterfaceEntry;
 typedef inet::L3Address L3Address;
-typedef inet::AODVRREP AODVRREP;
 typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
 typedef inet::power::SimpleEpEnergyStorage SimpleEpEnergyStorage;
 typedef inet::IRoute IRoute;
-typedef inet::AODVRouteData AODVRouteData;
-typedef inet::AODVRREPACK AODVRREPACK;
 typedef inet::INetfilter INetfilter;
 typedef inet::INetworkDatagram INetworkDatagram;
 

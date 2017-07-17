@@ -20,12 +20,10 @@
 #include <map>
 
 // typedefs for porting
-typedef inet::AODVRouting AODVRouting;
 typedef inet::INetfilter::IHook IHook;
 typedef inet::INetworkDatagram INetworkDatagram;
 typedef inet::InterfaceEntry InterfaceEntry;
 typedef inet::L3Address L3Address;
-typedef inet::AODVRREP AODVRREP;
 typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
 
 class AODVPORouting : public AODVRouting
