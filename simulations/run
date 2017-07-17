@@ -1,6 +1,12 @@
 #!/bin/sh
 cd `dirname $0`
 mkdir ../simulations/logs > /dev/null 2>&1
+
+
+case $1 in
+
+aodv)
+
 CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
 if [[ $2 =~ "verbose" ]]; then
   echo
@@ -10,10 +16,6 @@ else
   echo
   echo "running with $CPUCOUNT threads"
 fi
-
-case $1 in
-
-aodv)
 
 echo
 echo "running AODV/AODVPO simulations, please wait ..."
@@ -39,6 +41,16 @@ echo
 
 ;;
 olsr)
+
+CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+if [[ $2 =~ "verbose" ]]; then
+  echo
+  echo "switching to single thread mode (verbose)"
+  CPUCOUNT=1
+else
+  echo
+  echo "running with $CPUCOUNT threads"
+fi
 
 echo
 echo "running OLSR/OLSRPO simulations, please wait ..."
