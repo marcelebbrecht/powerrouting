@@ -47,4 +47,5 @@ Completed: 2017-07-13
 * Verbose mode for run
 * Port AODV
 * Create OLSR Router and test
+* Multithreaded runs on CMD
 

@@ -1,6 +1,15 @@
 #!/bin/sh
 cd `dirname $0`
 mkdir ../simulations/logs > /dev/null 2>&1
+CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+if [[ $2 =~ "verbose" ]]; then
+  echo
+  echo "switching to single thread mode (verbose)"
+  CPUCOUNT=1
+else
+  echo
+  echo "running with $CPUCOUNT threads"
+fi
 
 case $1 in
 
@@ -10,17 +19,18 @@ echo
 echo "running AODV/AODVPO simulations, please wait ..."
 echo
 for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
   echo "  configuration: $i (log: logs/$i.log)"
   if [[ $2 =~ "verbose" ]]; then
     opp_run.exe -r 0 -m -u Cmdenv \
       -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
       -l ../src/powerrouting -l ../../inet/src/INET \
-      -c $i ../simulations/aodv.ini 2>&1 | tee logs/$i.log
+      -c $i ../simulations/aodv.ini 2>&1 | tee logs/$i.log &
   else
     opp_run.exe -r 0 -m -u Cmdenv \
       -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
       -l ../src/powerrouting -l ../../inet/src/INET \
-      -c $i ../simulations/aodv.ini > logs/$i.log 2>&1
+      -c $i ../simulations/aodv.ini > logs/$i.log 2>&1 &
   fi
 done
 echo
@@ -34,17 +44,18 @@ echo
 echo "running OLSR/OLSRPO simulations, please wait ..."
 echo
 for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
   echo "  configuration: $i (log: logs/$i.log)"
   if [[ $2 =~ "verbose" ]]; then
     opp_run.exe -r 0 -m -u Cmdenv \
       -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
       -l ../src/powerrouting -l ../../inet/src/INET \
-      -c $i ../simulations/olsr.ini 2>&1 | tee logs/$i.log
+      -c $i ../simulations/olsr.ini 2>&1 | tee logs/$i.log &
   else
     opp_run.exe -r 0 -m -u Cmdenv \
       -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
       -l ../src/powerrouting -l ../../inet/src/INET \
-      -c $i ../simulations/olsr.ini > logs/$i.log 2>&1
+      -c $i ../simulations/olsr.ini > logs/$i.log 2>&1 &
    fi
 done
 echo
@@ -64,7 +75,8 @@ $0 olsr $2
 
 echo
 echo "usage: ./run [mode] (verbose)"
-echo "  runs designated tests and logs to files, for logging to screen and files, append 'verbose'"
+echo "  runs designated tests and logs to files (multihreaded),"
+echo "  for logging to screen and files, append 'verbose' (only singlethreaded)"
 echo
 echo "  modes:"
 echo "  all - run all simulations"
