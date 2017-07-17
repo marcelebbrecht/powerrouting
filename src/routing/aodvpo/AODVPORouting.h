@@ -19,6 +19,7 @@
 #include "inet/routing/aodv/AODVRouting.h"
 #include <map>
 
+// typedefs for porting
 typedef inet::AODVRouting AODVRouting;
 typedef inet::INetfilter::IHook IHook;
 typedef inet::INetworkDatagram INetworkDatagram;
