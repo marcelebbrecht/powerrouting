@@ -1,32 +1,78 @@
 #!/bin/sh
 cd `dirname $0`
-
 mkdir ../simulations/logs > /dev/null 2>&1
+
+case $1 in
+
+aodv)
+
 echo
 echo "running AODV/AODVPO simulations, please wait ..."
 echo
 for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
   echo "  configuration: $i (log: logs/$i.log)"
-  opp_run.exe -r 0 -m -u Cmdenv \
-    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-    -l ../src/powerrouting -l ../../inet/src/INET \
-    -c $i ../simulations/aodv.ini > logs/$i.log 2>&1
+  if [[ $2 =~ "verbose" ]]; then
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/aodv.ini 2>&1 | tee logs/$i.log
+  else
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/aodv.ini > logs/$i.log 2>&1
+  fi
 done
 echo
 echo "AODV/AODVPO simulations done."
 echo
 
-#echo
-#echo "running OLSR/OLSRPO simulations, please wait ..."
-#echo
-#for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
-#  echo "  configuration: $i (log: logs/$i.log)"
-#  opp_run.exe -r 0 -m -u Cmdenv \
-#    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-#    -l ../src/powerrouting -l ../../inet/src/INET \
-#    -c $i ../simulations/olsr.ini > logs/$i.log 2>&1
-#done
-#echo
-#echo "OLSR/OLSRPO simulations done."
-#echo
+;;
+olsr)
 
+echo
+echo "running OLSR/OLSRPO simulations, please wait ..."
+echo
+for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+  echo "  configuration: $i (log: logs/$i.log)"
+  if [[ $2 =~ "verbose" ]]; then
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/olsr.ini 2>&1 | tee logs/$i.log
+  else
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/olsr.ini > logs/$i.log 2>&1
+   fi
+done
+echo
+echo "OLSR/OLSRPO simulations done."
+echo
+
+;;
+
+all)
+
+$0 aodv
+$0 olsr
+
+;;
+
+*)
+
+echo
+echo "usage: ./run [mode] (verbose)"
+echo "  runs designated tests and logs to files, for logging to screen and files, append 'verbose'"
+echo
+echo "  modes:"
+echo "  all - run all simulations"
+echo "  olsr - run olsr simulations"
+echo "  aodv - run aodv simulations"
+echo "  help - print this help"
+echo
+
+;;
+
+esac
