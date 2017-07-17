@@ -55,8 +55,8 @@ echo
 
 all)
 
-$0 aodv
-$0 olsr
+$0 aodv $2
+$0 olsr $2
 
 ;;
 
