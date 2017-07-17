@@ -35,7 +35,7 @@
 #include "inet/transportlayer/contract/udp/UDPControlInfo.h"
 #include "inet/common/ModuleAccess.h"
 #include "inet/common/lifecycle/NodeOperations.h"
-#include "inet/routing/aodv/AODVRouting.h"
+#include "../aodv/AODVRouting.h"
 
 // typedefs for porting
 typedef inet::AODVRouting AODVRouting;

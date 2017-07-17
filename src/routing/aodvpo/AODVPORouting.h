@@ -11,12 +11,12 @@
 #include "inet/common/lifecycle/ILifecycle.h"
 #include "inet/common/lifecycle/NodeStatus.h"
 #include "inet/transportlayer/contract/udp/UDPSocket.h"
-#include "inet/routing/aodv/AODVRouteData.h"
 #include "inet/transportlayer/udp/UDPPacket.h"
-#include "inet/routing/aodv/AODVControlPackets_m.h"
 #include "inet/power/contract/IEnergyStorage.h"
 #include "inet/power/storage/SimpleEpEnergyStorage.h"
-#include "inet/routing/aodv/AODVRouting.h"
+#include "../aodv/AODVControlPackets_m.h"
+#include "../aodv/AODVRouteData.h"
+#include "../aodv/AODVRouting.h"
 #include <map>
 
 // typedefs for porting
