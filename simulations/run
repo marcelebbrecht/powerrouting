@@ -37,6 +37,9 @@ for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
 done
 echo
 while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+echo "Removing elog and rt files."
+rm ./results/*.elog > /dev/null 2>&1
+rm ./results/*.rt > /dev/null 2>&1
 echo "AODV/AODVPO simulations done."
 echo
 
@@ -73,6 +76,9 @@ for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
 done
 echo
 while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+echo "Removing elog and rt files."
+rm ./results/*.elog > /dev/null 2>&1
+rm ./results/*.rt > /dev/null 2>&1
 echo "OLSR/OLSRPO simulations done."
 echo
 
