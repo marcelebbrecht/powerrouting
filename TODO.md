@@ -4,17 +4,16 @@ PowerRouting for OMNeT++ - ToDo
 Version: 0.4 - in progress
 --------------------------
 
-* typedef for AODVPO - OK
-* OLSR - OK
-* Comments and clean OLSR
 * Test OLSR Router, reduce runtime?
-* Create OLSR Router and test
 * Create OLSRPO Router and Routing and test
+* Error with MAC Interface down?
 * BatchRun
 * Create and check stats
 * Clean and remove attic
+* Enable AODV and OLSR in INET for test
 * Readme / Changelog
   * OLSR exclude from compile in inetmanet
+  * AODV exclude from compile in inetmanet
 * Optimize parameters
 * Compare OLSR <-> AODV
 * Maybe Batman? -> version 0.5

@@ -38,3 +38,13 @@ Completed: 2017-07-13
 * Better parameters for Sloppy,Normal,Happy -> Readme, defaults
 * Longterm run and stats packets transmitted
 * Readme massive update
+* Typedef for AODVPO
+* Port OLSR
+* Comments and clean OLSR
+* Runtime for normal tests 3600
+* Adjust power consumption for all protocols
+* Separated modes on run for protocols
+* Verbose mode for run
+* Port AODV
+* Create OLSR Router and test
+
