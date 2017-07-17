@@ -8,7 +8,7 @@ import inet.common.lifecycle.LifecycleController;
 import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
-import inet.node.aodv.AODVRouter;
+import powerrouting.node.aodv.AODVRouter;
 import powerrouting.node.aodvpo.AODVPORouter;
 import inet.physicallayer.idealradio.IdealRadioMedium;
 import inet.visualizer.contract.IIntegratedVisualizer;
