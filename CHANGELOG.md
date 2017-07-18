@@ -47,5 +47,8 @@ Completed: 2017-07-13
 * Verbose mode for run
 * Port AODV
 * Create OLSR Router and test
-* Multithreaded runs on CMD
+* Runfile multithreaded runs on CMD
+* Disabled elog via common.ini
+* Runfile remote elog and rt files
+* Created Chart Sheets
 
