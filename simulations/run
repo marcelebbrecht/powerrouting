@@ -20,7 +20,7 @@ fi
 echo
 echo "running AODV/AODVPO simulations, please wait ..."
 echo
-for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1 | grep -vi Long ); do
   while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
   echo "  configuration: $i (log: logs/$i.log)"
   if [[ $2 =~ "verbose" ]]; then
@@ -44,6 +44,47 @@ echo "AODV/AODVPO simulations done."
 echo
 
 ;;
+
+aodvlong)
+
+CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+if [[ $2 =~ "verbose" ]]; then
+  echo
+  echo "switching to single thread mode (verbose)"
+  CPUCOUNT=1
+else
+  echo
+  echo "running with $CPUCOUNT threads"
+fi
+
+echo
+echo "running AODV/AODVPO simulations, please wait ..."
+echo
+for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1 | grep Long ); do
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+  echo "  configuration: $i (log: logs/$i.log)"
+  if [[ $2 =~ "verbose" ]]; then
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/aodv.ini 2>&1 | tee logs/$i.log &
+  else
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/aodv.ini > logs/$i.log 2>&1 &
+  fi
+done
+echo
+while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+echo "Removing elog and rt files."
+rm ./results/*.elog > /dev/null 2>&1
+rm ./results/*.rt > /dev/null 2>&1
+echo "AODV/AODVPO simulations done."
+echo
+
+;;
+
 olsr)
 
 CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
@@ -59,7 +100,7 @@ fi
 echo
 echo "running OLSR/OLSRPO simulations, please wait ..."
 echo
-for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
+for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1 | grep -vi Long ); do
   while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
   echo "  configuration: $i (log: logs/$i.log)"
   if [[ $2 =~ "verbose" ]]; then
@@ -84,10 +125,65 @@ echo
 
 ;;
 
+olsrlong)
+
+CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+if [[ $2 =~ "verbose" ]]; then
+  echo
+  echo "switching to single thread mode (verbose)"
+  CPUCOUNT=1
+else
+  echo
+  echo "running with $CPUCOUNT threads"
+fi
+
+echo
+echo "running OLSR/OLSRPO simulations, please wait ..."
+echo
+for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1 | grep Long ); do
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+  echo "  configuration: $i (log: logs/$i.log)"
+  if [[ $2 =~ "verbose" ]]; then
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/olsr.ini 2>&1 | tee logs/$i.log &
+  else
+    opp_run.exe -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/INET \
+      -c $i ../simulations/olsr.ini > logs/$i.log 2>&1 &
+   fi
+done
+echo
+while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+echo "Removing elog and rt files."
+rm ./results/*.elog > /dev/null 2>&1
+rm ./results/*.rt > /dev/null 2>&1
+echo "OLSR/OLSRPO simulations done."
+echo
+
+;;
+
+short)
+
+$0 aodv $2
+$0 olsr $2
+;;
+
+long)
+
+$0 aodvlong $2
+$0 olsrlong $2
+
+;;
+
 all)
 
 $0 aodv $2
 $0 olsr $2
+$0 aodvlong $2
+$0 olsrlong $2
 
 ;;
 
@@ -99,9 +195,13 @@ echo "  runs designated tests and logs to files (multihreaded),"
 echo "  for logging to screen and files, append 'verbose' (only singlethreaded)"
 echo
 echo "  modes:"
-echo "  all - run all simulations"
-echo "  olsr - run olsr simulations"
-echo "  aodv - run aodv simulations"
+echo "  all - runs all simulations"
+echo "  short - runs all simulations without longterm"
+echo "  long - runs all longterm simulations"
+echo "  olsr - runs olsr simulations without longterm"
+echo "  aodv - runs aodv simulations without longterm"
+echo "  olsrlong - runs olsr longterm simulations"
+echo "  aodvlong - runs aodv longterm simulations"
 echo "  help - print this help"
 echo
 
