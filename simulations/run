@@ -7,7 +7,8 @@ case $1 in
 
 aodv)
 
-CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+CPUCOUNT=$(($(cat /proc/cpuinfo  | grep processor | wc -l)-1))
+if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
 if [[ $2 =~ "verbose" ]]; then
   echo
   echo "switching to single thread mode (verbose)"
@@ -47,7 +48,8 @@ echo
 
 aodvlong)
 
-CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+CPUCOUNT=$(($(cat /proc/cpuinfo  | grep processor | wc -l)-1))
+if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
 if [[ $2 =~ "verbose" ]]; then
   echo
   echo "switching to single thread mode (verbose)"
@@ -87,7 +89,8 @@ echo
 
 olsr)
 
-CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+CPUCOUNT=$(($(cat /proc/cpuinfo  | grep processor | wc -l)-1))
+if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
 if [[ $2 =~ "verbose" ]]; then
   echo
   echo "switching to single thread mode (verbose)"
@@ -127,7 +130,8 @@ echo
 
 olsrlong)
 
-CPUCOUNT=$(cat /proc/cpuinfo  | grep processor | wc -l)
+CPUCOUNT=$(($(cat /proc/cpuinfo  | grep processor | wc -l)-1))
+if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
 if [[ $2 =~ "verbose" ]]; then
   echo
   echo "switching to single thread mode (verbose)"
