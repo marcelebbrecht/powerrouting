@@ -9,13 +9,12 @@ Version: 0.4 - in progress
 * Error with MAC Interface down / Optimize parameters
 
 * Create OLSRPO Router and Routing and test
-* Clean and remove attic
 * Readme / Changelog
   * OLSR exclude from compile in inetmanet
   * AODV exclude from compile in inetmanet
+  * First Sender 0s, 3 times, Main Sender 30s endless
 * Compare OLSR <-> AODV
 * Make not runnable Config not runnable
-* First Sender 0s, 3 times, Main Sender 30s endless -> Readme, Stats
 * Maybe Batman? -> version 0.5
 * Merge
 * Mail 

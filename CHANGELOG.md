@@ -37,6 +37,13 @@ Completed: 2017-07-13
 * Comments
 * Better parameters for Sloppy,Normal,Happy -> Readme, defaults
 * Longterm run and stats packets transmitted
+
+
+Version: 0.4
+------------
+
+Completed: Work in progress
+
 * Readme massive update
 * Typedef for AODVPO
 * Port OLSR
@@ -51,4 +58,5 @@ Completed: 2017-07-13
 * Disabled elog via common.ini
 * Runfile remote elog and rt files
 * Created Chart Sheets
+* First Sender 0s, 3 times, Main Sender 30s endless
 
