@@ -108,8 +108,8 @@ If you face compiler errors regarding missing links to inet, check the following
 Batch processing
 ----------------
 
-To quickly run all simulations, go into the simulation directory and execute "./run".
-You will find proper results in results and logs in simulations/logs.
+To quickly run all simulations, go into the simulation directory and execute "./run all" or "./run help" for more 
+infomation about the different modes. You will find proper results in results and logs in simulations/logs. 
 
 
 Simulations with AODV
@@ -122,7 +122,10 @@ other hosts and so, if available, another router will be used. To ensure functio
 hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024.
 
 Old: nextHopCount = oldHopCount + 1
-New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1 
+New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1
+
+When running the simulations, 3 initial pings will be sent to establish routes, after 30s, pinging starts until the end. 
+Initial pings don't count in statistics. 
 
 Please create a runconfig that uses aodv.ini. The different configs are described inside the ini file. We use different scenarios:
 * different number of senders and receivers
@@ -135,6 +138,31 @@ Feel free to experiment with the following parameters, set through aodv.ini:
 * aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 0.3)
 * aodvpo.powerTrigger - steps on relative charge for sending RERR. If set to 0.20, the router sends on 80%,60%,... an RERR, low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
 * aodvpo.powerBias - constant value to add to hopCount for battery-based routers (min: 0.0, default: 0.0)
+
+
+Simulations with OLSR
+---------------------
+
+Mainly, the power-based version OLSRPO does the following trick: Every time a packet is forwarded, the remaining
+battery storage is checked. If it drops a predefined ratio, the router lowers its willingness. After that, the 
+router would look less attractive for other hosts and so, if available, another router will be used.
+
+New willingness = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1 
+
+When running the simulations, 3 initial pings will be sent to establish routes, after 30s, pinging starts until the end. 
+Initial pings don't count in statistics. 
+
+Please create a runconfig that uses olsr.ini. The different configs are described inside the ini file. We use different scenarios:
+* different number of senders and receivers
+* pure OLSR and OLSRPO simulations
+* mixed networks to show interoperability of OLSRPO with normal OLSR routers
+* for OLSRPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
+* longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
+
+Feel free to experiment with the following parameters, set through olsr.ini:
+* olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 0.3)
+* olsrpo.powerTrigger - steps on relative charge for lowering willingness. If set to 0.20, the router set willingness on 80%,60%,..., low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
+* olsrpo.powerBias - constant value to substract for battery-based routers (min: 0.0, default: 0.0)
 
 
 Statistics
@@ -150,6 +178,8 @@ In the stats directory, you will find an analysis file for each routing protocol
 * the ping statistics (min/max/mean/stddev) for all simulations (lower is better)
 * the ping loss rate for all simulations (lower is better)
 * the count of transmitted packages for all simulations (higher is better)
+
+There are also some chart sheets for the main charts.
 
 
 Longterm

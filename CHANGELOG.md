@@ -57,6 +57,8 @@ Completed: Work in progress
 * Runfile multithreaded runs on CMD
 * Disabled elog via common.ini
 * Runfile remote elog and rt files
-* Created Chart Sheets
-* First Sender 0s, 3 times, Main Sender 30s endless
+* Created chart sheets
+* First sender 0s, 3 times, main sender 30s endless
+* Divide ini's
+* Readme updated
 
