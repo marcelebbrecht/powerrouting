@@ -90,7 +90,8 @@ void AODVPORouting::initialize(int stage)
 }
 
 int AODVPORouting::calculatePenalty() {
-    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    //if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
         EV_INFO << "Power Routing - StorageType is not SimpleEpEnergyStorage(" << host->getSubmodule("energyStorage")->getClassName() << ") returning one (normal behavior)" << endl;
         return 1;
     } else {
@@ -110,7 +111,8 @@ int AODVPORouting::calculatePenalty() {
 
 // function for calculating trigger
 int AODVPORouting::calculateTrigger() {
-    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    //if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "SimpleEpEnergyStorage") || strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
+    if ( strcmp(host->getSubmodule("energyStorage")->getClassName(), "inet::power::SimpleEpEnergyStorage") ) {
         EV_INFO << "Power Routing - StorageType is not SimpleEpEnergyStorage(" << host->getSubmodule("energyStorage")->getClassName() << ") returning one (normal behavior)" << endl;
         return 1;
     } else {
