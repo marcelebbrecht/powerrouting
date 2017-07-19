@@ -124,7 +124,7 @@ hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024.
 Old: nextHopCount = oldHopCount + 1
 New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1
 
-When running the simulations, 3 initial pings will be sent to establish routes, after 30s, pinging starts until the end. 
+When running the simulations, 3 initial pings will be sent to establish routes, after 60s, pinging starts until the end. 
 Initial pings don't count in statistics. 
 
 Please create a runconfig that uses aodv.ini. The different configs are described inside the ini file. We use different scenarios:

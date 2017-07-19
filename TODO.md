@@ -4,6 +4,7 @@ PowerRouting for OMNeT++ - ToDo
 Version: 0.4 - in progress
 --------------------------
 
+* switch to udp, adapt stats
 * lower time, raise power consumption for shorter simulations
 * Test OLSR Router, raise timelimits and set routing options
 * Error with MAC Interface down / Optimize parameters
