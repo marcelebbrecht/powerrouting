@@ -9,7 +9,7 @@ COREBIAS=0
 
 # delete per job log file (yes,no)
 # 1: CONFIGNAME
-DELETELOG="no"
+DELETELOG="yes"
 
 # delete elog files (yes,no)
 DELETEELOGS="yes"
