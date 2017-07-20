@@ -35,7 +35,7 @@ function cleanLogs {
   if [[ "$DELETELOGS" =~ "yes" ]]; then
     echo "Removing elog files."
     rm ./results/*.elog > /dev/null 2>&1
-    rm ./logs/* > /dev/null 2>&1
+    rm ./logs/*.log > /dev/null 2>&1
   fi
   if [[ "$DELETERTS" =~ "yes" ]]; then
     echo "Removing rt files."
