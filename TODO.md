@@ -4,10 +4,7 @@ PowerRouting for OMNeT++ - ToDo
 Version: 0.4 - in progress
 --------------------------
 
-* switch to udp, adapt stats
-* lower time, raise power consumption for shorter simulations
 * Test OLSR Router, raise timelimits and set routing options
-* Error with MAC Interface down / Optimize parameters
 * Create OLSRPO Router and Routing and test
   * Use Energy to lower willingness
   * contraints min/max for parameters
@@ -20,6 +17,7 @@ Version: 0.4 - in progress
 * Mail and ask
   * Make not runnable Config not runnable
   * Maybe Batman? -> version 0.5
+  * Error with MAC Interface down / Optimize parameters
 
 
 Finalize

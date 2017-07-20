@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.1 from routing/olsr/OLSRpkt.msg.
+// Generated file, do not edit! Created by nedtool 5.1 from powerrouting/routing/olsr/OLSRpkt.msg.
 //
 
 // Disable warnings about unused variables, empty switch stmts, etc:

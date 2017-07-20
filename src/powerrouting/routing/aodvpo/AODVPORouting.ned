@@ -17,7 +17,7 @@ simple AODVPORouting
         // sensitivity must be in 0.1 ... 10
         double powerSensitivityMin = 0.1;
         double powerSensitivityMax = 10.0;
-        double powerSensitivityDefault = 0.3;
+        double powerSensitivityDefault = 2.0;
         double powerSensitivity = default(powerSensitivityDefault);
         // power bias must be greater 0
         double powerBiasMin = 0.0;

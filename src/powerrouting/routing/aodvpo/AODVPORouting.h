@@ -48,8 +48,8 @@ class AODVPORouting : public AODVRouting
     double powerTriggerMax = 0;
     double powerTriggerDefault = 0;
     double powerTriggerDouble = 0;
-    int powerTriggerCalculated = 0;
-    int powerTriggerLast = 0;
+    int powerTriggerCalculated = 999999999;
+    int powerTriggerLast = 999999999;
 
   protected:
     // override initialization, RREP creation and forwarding

@@ -1,5 +1,5 @@
 //
-// Generated file, do not edit! Created by nedtool 5.1 from routing/olsr/OLSRpkt.msg.
+// Generated file, do not edit! Created by nedtool 5.1 from powerrouting/routing/olsr/OLSRpkt.msg.
 //
 
 #if defined(__clang__)
@@ -384,7 +384,7 @@ typedef struct OLSR_msg {
 // }}
 
 /**
- * Class generated from <tt>routing/olsr/OLSRpkt.msg:391</tt> by nedtool.
+ * Class generated from <tt>powerrouting/routing/olsr/OLSRpkt.msg:391</tt> by nedtool.
  * <pre>
  * //
  * // Represents an OLSR packet

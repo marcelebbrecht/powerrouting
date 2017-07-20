@@ -56,9 +56,11 @@ Completed: Work in progress
 * Create OLSR Router and test
 * Runfile multithreaded runs on CMD
 * Disabled elog via common.ini
-* Runfile remote elog and rt files
+* Runfile improved, more modes, better code
 * Created chart sheets
 * First sender 0s, 3 times, main sender 30s endless
 * Divide ini's
 * Readme updated
+* Switched to udp, adapt stats
+* lower time, raise power consumption for shorter simulations
 

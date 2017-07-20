@@ -1300,8 +1300,8 @@ void AODVRouting::clearState()
         cancelAndDelete(elem.second);
 
     // FIXME: Drop the queued datagrams.
-    //for (auto it = targetAddressToDelayedPackets.begin(); it != targetAddressToDelayedPackets.end(); it++)
-    //    networkProtocol->dropQueuedDatagram(const_cast<const INetworkDatagram *>(it->second));
+//    for (auto it = targetAddressToDelayedPackets.begin(); it != targetAddressToDelayedPackets.end(); it++)
+//        networkProtocol->dropQueuedDatagram(const_cast<const INetworkDatagram *>(it->second));
 
     targetAddressToDelayedPackets.clear();
 

@@ -118,7 +118,7 @@ int AODVPORouting::calculateTrigger() {
     } else {
         EV_INFO << "Power Routing - StorageType is SimpleEpEnergyStorage, calculating trigger according to energy-capacity" << endl;
         relativeCharge = energyStorage->getResidualEnergyCapacity().get() / energyStorage->getNominalEnergyCapacity().get();
-        powerTriggerDouble = relativeCharge / powerTrigger;
+        powerTriggerDouble = ( 1 - relativeCharge ) / powerTrigger;
         powerTriggerCalculated = (int)(powerTriggerDouble);
         EV_INFO << "Power Routing - Capacities: " << energyStorage->getResidualEnergyCapacity() << " (actual) of " << energyStorage->getNominalEnergyCapacity() << " (nominal) " << endl;
         EV_INFO << "Power Routing - Relative charge: " << relativeCharge << " percent" << endl;
@@ -224,15 +224,17 @@ INetfilter::IHook::Result AODVPORouting::datagramForwardHook(INetworkDatagram *d
     Enter_Method("datagramForwardHook");
     const L3Address& destAddr = datagram->getDestinationAddress();
     const L3Address& sourceAddr = datagram->getSourceAddress();
+    double newTrigger = this->calculateTrigger();
 
     // check if capacity changed significantly and send RERR to rebuild routes
-    if ( powerTriggerLast > this->calculateTrigger() ) {
+    EV_INFO << "Power Routing - Trigger, old: " << powerTriggerLast << ", act: " << newTrigger << endl;
+    if ( powerTriggerLast < newTrigger ) {
         EV_INFO << "Power Routing - Capacity changed significantly, sending RERR to rebuild routes" << endl;
         sendRERRWhenNoRouteToForward(sourceAddr);
         sendRERRWhenNoRouteToForward(destAddr);
     }
-    EV_INFO << "Power Routing - Updating power trigger, old: " << powerTriggerLast << ", new: " << powerTrigger << endl;
-    powerTriggerLast = this->calculateTrigger();
+    EV_INFO << "Power Routing - Updating power trigger, old: " << powerTriggerLast << ", new: " << newTrigger << endl;
+    powerTriggerLast = newTrigger;
 
     return AODVRouting::datagramForwardHook(datagram, inputInterfaceEntry, outputInterfaceEntry, nextHopAddress);
 }

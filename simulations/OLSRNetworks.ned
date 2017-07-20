@@ -445,7 +445,7 @@ network OLSRPOCoreNetworkMixed
     connections allowunconnected:
 }
 
-network OLSR1S1R extends OLSRCoreNetwork
+network OLSR extends OLSRCoreNetwork
 {
     submodules:
         sender1: OLSRRouter {
@@ -467,7 +467,7 @@ network OLSR1S1R extends OLSRCoreNetwork
     connections allowunconnected:
 }
 
-network OLSRPO1S1R extends OLSRPOCoreNetwork
+network OLSRPO extends OLSRPOCoreNetwork
 {
     submodules:
         sender1: OLSRPORouter {
@@ -489,51 +489,7 @@ network OLSRPO1S1R extends OLSRPOCoreNetwork
     connections allowunconnected:
 }
 
-network OLSR2S2R extends OLSRCoreNetwork
-{
-    submodules:
-        sender1: OLSRRouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: OLSRRouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: OLSRRouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: OLSRRouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network OLSRPO2S2R extends OLSRPOCoreNetwork
-{
-    submodules:
-        sender1: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network OLSRPO1S1RMixed extends OLSRPOCoreNetworkMixed
+network OLSRPOMixed extends OLSRPOCoreNetworkMixed
 {
     submodules:
         sender1: OLSRPORouter {
@@ -551,28 +507,6 @@ network OLSRPO1S1RMixed extends OLSRPOCoreNetworkMixed
         router35: OLSRPORouter {
             parameters:
                 @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network OLSRPO2S2RMixed extends OLSRPOCoreNetworkMixed
-{
-    submodules:
-        sender1: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
         }
     connections allowunconnected:
 }

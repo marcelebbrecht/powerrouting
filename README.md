@@ -75,6 +75,10 @@ Installation
 Download and extract OMNeT++ from above. Inetmanet uses OSG for visualization, but it's broken
 in OMNeT++ 5.1 (if you build inetmanet, you get errors if vizualization feature is enabled). 
 
+First of all, disable the following features and dependencies in inetmanet:
+* AODV
+* OLSR
+
 Two ways to solve this issue:
 * Disable vizualization features in Inetmanet project settings and comment vizualization options in common.ini, then clean and rebuild Inetmanet 
 * Prior build of OMNeT++, edit configure.user:
@@ -124,8 +128,8 @@ hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024.
 Old: nextHopCount = oldHopCount + 1
 New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1
 
-When running the simulations, 3 initial pings will be sent to establish routes, after 60s, pinging starts until the end. 
-Initial pings don't count in statistics. 
+When the simulations starts, initial packets will be sent for one second to establish routes, after 20s, packets starts 
+until the end. Initial packets don't count in statistics. 
 
 Please create a runconfig that uses aodv.ini. The different configs are described inside the ini file. We use different scenarios:
 * different number of senders and receivers
@@ -135,7 +139,7 @@ Please create a runconfig that uses aodv.ini. The different configs are describe
 * longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
 
 Feel free to experiment with the following parameters, set through aodv.ini:
-* aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 0.3)
+* aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 2.0)
 * aodvpo.powerTrigger - steps on relative charge for sending RERR. If set to 0.20, the router sends on 80%,60%,... an RERR, low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
 * aodvpo.powerBias - constant value to add to hopCount for battery-based routers (min: 0.0, default: 0.0)
 
@@ -149,8 +153,7 @@ router would look less attractive for other hosts and so, if available, another 
 
 New willingness = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1 
 
-When running the simulations, 3 initial pings will be sent to establish routes, after 30s, pinging starts until the end. 
-Initial pings don't count in statistics. 
+When the simulations starts sending packets after 5s. 
 
 Please create a runconfig that uses olsr.ini. The different configs are described inside the ini file. We use different scenarios:
 * different number of senders and receivers
@@ -160,7 +163,7 @@ Please create a runconfig that uses olsr.ini. The different configs are describe
 * longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
 
 Feel free to experiment with the following parameters, set through olsr.ini:
-* olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 0.3)
+* olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 2.0)
 * olsrpo.powerTrigger - steps on relative charge for lowering willingness. If set to 0.20, the router set willingness on 80%,60%,..., low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
 * olsrpo.powerBias - constant value to substract for battery-based routers (min: 0.0, default: 0.0)
 
@@ -175,9 +178,8 @@ In the stats directory, you will find an analysis file for each routing protocol
 * for each simulation you can compare the battery status at the end of the simulation (lower deviation is better)
 * the sum of available power at the end of all simulations except mixed and longterm
 * the standard deviation of available power at the end of all simulations except mixed and longterm (lower is better)
-* the ping statistics (min/max/mean/stddev) for all simulations (lower is better)
-* the ping loss rate for all simulations (lower is better)
-* the count of transmitted packages for all simulations (higher is better)
+* the udp loss rate for all simulations (lower is better)
+* the count of transmitted packets for all simulations (higher is better)
 
 There are also some chart sheets for the main charts.
 
