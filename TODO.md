@@ -1,17 +1,10 @@
 PowerRouting for OMNeT++ - ToDo
 ===============================
 
-Version: 0.4 - in progress
+Version: 0.4 - 
 --------------------------
 
-* Test OLSR Router, raise timelimits and set routing options
-* Create OLSRPO Router and Routing and test
-  * Use Energy to lower willingness
-  * contraints min/max for parameters
-  * maybe send RERR-like message -> Readme
-* Compare OLSR <-> AODV
 * Merge, Switch to master and delete branch
-* Test, test, test
 * Install & Sync on Notebook
 
 * Mail and ask
@@ -19,6 +12,12 @@ Version: 0.4 - in progress
   * Maybe Batman? -> version 0.5
   * Error with MAC Interface down / Optimize parameters
 
+Version: 0.5
+------------
+
+* Bug with Packet received when MAC is down
+  "Error: Self message 'AckTimeout' received when CsmaCaMac is down -- in module (inet::CsmaCaMac) AODVPO.router44.wlan[0].mac (id=611), at t=159.707271742315s, event #1925440"
+* Make not runnable Config not runnable
 
 Finalize
 --------
