@@ -7,12 +7,8 @@
 # substract from available cores (number >= 0)
 COREBIAS=0
 
-# delete per job log file (yes,no)
-# 1: CONFIGNAME
-DELETELOG="yes"
-
 # delete elog files (yes,no)
-DELETEELOGS="yes"
+DELETELOGS="yes"
 
 # delete rt files (yes,no)
 DELETERTS="yes"
@@ -36,20 +32,14 @@ function estimateThreads {
 # remove logfiles: elog and rt
 function cleanLogs {
   echo
-  if [[ "$DELETEELOGS" =~ "yes" ]]; then
+  if [[ "$DELETELOGS" =~ "yes" ]]; then
     echo "Removing elog files."
     rm ./results/*.elog > /dev/null 2>&1
+    rm ./logs/* > /dev/null 2>&1
   fi
   if [[ "$DELETERTS" =~ "yes" ]]; then
     echo "Removing rt files."
     rm ./results/*.rt > /dev/null 2>&1
-  fi
-}
-
-# remove logfiles: log
-function cleanLog {
-  if [[ "$DELETELOG" =~ "yes" ]]; then
-    rm ./logs/$1*log > /dev/null 2>&1
   fi
 }
 
