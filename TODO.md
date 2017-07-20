@@ -1,23 +1,13 @@
 PowerRouting for OMNeT++ - ToDo
 ===============================
 
-Version: 0.4 - 
---------------------------
-
-* Merge, Switch to master and delete branch
-* Install & Sync on Notebook
-
-* Mail and ask
-  * Make not runnable Config not runnable
-  * Maybe Batman? -> version 0.5
-  * Error with MAC Interface down / Optimize parameters
-
 Version: 0.5
 ------------
 
-* Bug with Packet received when MAC is down
+* Bug with Packet received when Node is down
   "Error: Self message 'AckTimeout' received when CsmaCaMac is down -- in module (inet::CsmaCaMac) AODVPO.router44.wlan[0].mac (id=611), at t=159.707271742315s, event #1925440"
 * Make not runnable Config not runnable
+
 
 Finalize
 --------

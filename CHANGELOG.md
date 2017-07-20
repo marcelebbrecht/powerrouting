@@ -42,7 +42,7 @@ Completed: 2017-07-13
 Version: 0.4
 ------------
 
-Completed: Work in progress
+Completed: 2017-07-20
 
 * Readme massive update
 * Typedef for AODVPO
@@ -58,9 +58,12 @@ Completed: Work in progress
 * Disabled elog via common.ini
 * Runfile improved, more modes, better code
 * Created chart sheets
-* First sender 0s, 3 times, main sender 30s endless
 * Divide ini's
-* Readme updated
-* Switched to udp, adapt stats
-* lower time, raise power consumption for shorter simulations
-
+* Switched from pingApp to udpApp, adapt stats
+* Lower time, raise power consumption for shorter simulations
+* Remove multiple senders, only one sender and one receiver in project
+* Comments and headers completed
+* Tested OLSR router
+* Higher Bitrate and other power consumption rated
+* Created OLSRPO router and routingA
+* Fixed Bug with power trigger

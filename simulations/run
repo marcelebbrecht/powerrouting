@@ -48,7 +48,6 @@ function cleanLogs {
 
 # remove logfiles: log
 function cleanLog {
-  echo
   if [[ "$DELETELOG" =~ "yes" ]]; then
     rm ./logs/$1*log > /dev/null 2>&1
   fi

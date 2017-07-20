@@ -189,6 +189,14 @@ In the stats directory, you will find an analysis file for each routing protocol
 There are also some chart sheets for the main charts.
 
 
+Bugs
+----
+
+Simulations crashing, when hosts shutdown and receive packets:
+"Error: Self message 'AckTimeout' received when CsmaCaMac is down -- in module (inet::CsmaCaMac) AODVPO.router44.wlan[0].mac (id=611), at t=159.707271742315s, event #1925440"
+Dont know ....
+
+
 Longterm
 --------
 
