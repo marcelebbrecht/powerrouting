@@ -8,7 +8,7 @@ import inet.common.lifecycle.LifecycleController;
 import inet.common.scenario.ScenarioManager;
 import inet.networklayer.configurator.ipv4.IPv4NetworkConfigurator;
 import inet.networklayer.ipv4.RoutingTableRecorder;
-import inet.node.aodv.AODVRouter;
+import powerrouting.node.aodv.AODVRouter;
 import powerrouting.node.aodvpo.AODVPORouter;
 import inet.physicallayer.idealradio.IdealRadioMedium;
 import inet.visualizer.contract.IIntegratedVisualizer;
@@ -42,11 +42,11 @@ network AODVCoreNetwork
             parameters:
                 @display("p=900,575");
         }
-        scenarioManager: ScenarioManager {
-            parameters:
-                script = default(xml("<scenario/>"));
-                @display("p=900,700");
-        }
+//        scenarioManager: ScenarioManager {
+//            parameters:
+//                script = default(xml("<scenario/>"));
+//                @display("p=900,700");
+//        }
         
         router11: AODVRouter {
             parameters:
@@ -445,7 +445,7 @@ network AODVPOCoreNetworkMixed
     connections allowunconnected:
 }
 
-network AODV1S1R extends AODVCoreNetwork
+network AODV extends AODVCoreNetwork
 {
     submodules:
         sender1: AODVRouter {
@@ -467,7 +467,7 @@ network AODV1S1R extends AODVCoreNetwork
     connections allowunconnected:
 }
 
-network AODVPO1S1R extends AODVPOCoreNetwork
+network AODVPO extends AODVPOCoreNetwork
 {
     submodules:
         sender1: AODVPORouter {
@@ -489,51 +489,7 @@ network AODVPO1S1R extends AODVPOCoreNetwork
     connections allowunconnected:
 }
 
-network AODV2S2R extends AODVCoreNetwork
-{
-    submodules:
-        sender1: AODVRouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: AODVRouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: AODVRouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: AODVRouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network AODVPO2S2R extends AODVPOCoreNetwork
-{
-    submodules:
-        sender1: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network AODVPO1S1RMixed extends AODVPOCoreNetworkMixed
+network AODVPOMixed extends AODVPOCoreNetworkMixed
 {
     submodules:
         sender1: AODVPORouter {
@@ -551,28 +507,6 @@ network AODVPO1S1RMixed extends AODVPOCoreNetworkMixed
         router35: AODVPORouter {
             parameters:
                 @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network AODVPO2S2RMixed extends AODVPOCoreNetworkMixed
-{
-    submodules:
-        sender1: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=700,400");
-        }
-        sender2: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,100");
-        }
-        receiver2: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=400,700");
         }
     connections allowunconnected:
 }

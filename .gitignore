@@ -2,3 +2,4 @@ out/
 simulations/results/
 simulations/logs/
 .computed/
+omnet.key

@@ -37,4 +37,33 @@ Completed: 2017-07-13
 * Comments
 * Better parameters for Sloppy,Normal,Happy -> Readme, defaults
 * Longterm run and stats packets transmitted
+
+
+Version: 0.4
+------------
+
+Completed: 2017-07-20
+
 * Readme massive update
+* Typedef for AODVPO
+* Port OLSR
+* Comments and clean OLSR
+* Runtime for normal tests 3600
+* Adjust power consumption for all protocols
+* Separated modes on run for protocols
+* Verbose mode for run
+* Port AODV
+* Create OLSR Router and test
+* Runfile multithreaded runs on CMD
+* Disabled elog via common.ini
+* Runfile improved, more modes, better code
+* Created chart sheets
+* Divide ini's
+* Switched from pingApp to udpApp, adapt stats
+* Lower time, raise power consumption for shorter simulations
+* Remove multiple senders, only one sender and one receiver in project
+* Comments and headers completed
+* Tested OLSR router
+* Higher Bitrate and other power consumption rated
+* Created OLSRPO router and routingA
+* Fixed Bug with power trigger

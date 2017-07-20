@@ -1,5 +1,0 @@
-#!/bin/sh
-cd `dirname $0`
-#../src/inetmanetpo -n .:../src $*
-# for shared lib, use: 
-opp_run -l ../src/inetmanetpo -n .:../src $*

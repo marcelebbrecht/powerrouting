@@ -1,32 +1,298 @@
-#!/bin/sh
-cd `dirname $0`
+#!/bin/bash
+# PowerRouting for OMNeT++ - runfile
+# Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
+# free software, see LICENSE.md for details
 
+### settings ###
+# substract from available cores (number >= 0)
+COREBIAS=0
+
+# delete per job log file (yes,no)
+# 1: CONFIGNAME
+DELETELOG="yes"
+
+# delete elog files (yes,no)
+DELETEELOGS="yes"
+
+# delete rt files (yes,no)
+DELETERTS="yes"
+
+### functions ###
+# estimating thread-count
+# 1: verbose (if wanted)
+function estimateThreads {
+  CPUCOUNT=$(($(cat /proc/cpuinfo | grep processor | wc -l)-$COREBIAS))
+  if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
+    if [[ $1 =~ "verbose" ]]; then
+    echo
+    echo "switching to single thread mode (verbose)"
+    CPUCOUNT=1
+  else
+    echo
+    echo "running with $CPUCOUNT threads"
+  fi
+}
+
+# remove logfiles: elog and rt
+function cleanLogs {
+  echo
+  if [[ "$DELETEELOGS" =~ "yes" ]]; then
+    echo "Removing elog files."
+    rm ./results/*.elog > /dev/null 2>&1
+  fi
+  if [[ "$DELETERTS" =~ "yes" ]]; then
+    echo "Removing rt files."
+    rm ./results/*.rt > /dev/null 2>&1
+  fi
+}
+
+# remove logfiles: log
+function cleanLog {
+  if [[ "$DELETELOG" =~ "yes" ]]; then
+    rm ./logs/$1*log > /dev/null 2>&1
+  fi
+}
+
+# wait until last opp_run is finished
+function waitForFinish {
+  sleep 1
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlot {
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+}
+
+# run single simulation
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (filename)
+# 3: verbose (if wanted)
+function runSimulation {
+  waitForFreeSlot
+  echo "  configuration: $2 (log: logs/$2.log)"
+  if [[ $3 =~ "verbose" ]]; then
+    opp_run -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/inet \
+      -c $2 ../simulations/$1 2>&1 | tee logs/$2.log &
+  else
+    opp_run -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/inet \
+      -c $2 ../simulations/$1 > logs/$2.log 2>&1 &
+  fi
+  cleanLog $2 > /dev/null 2>&1
+}
+
+# output before run
+function runPreamble { 
+  echo
+  echo "running $1 simulations, please wait ..."
+}
+
+# output after run
+function runPostamble { 
+  echo
+  echo "$1 simulations done."
+  echo
+}
+
+# kill running opp_run processes
+function killOppRun {
+  echo
+  echo "killing all running opp_run processes, please wait..."
+  while [[ $(ps aux | grep opp_run | grep -v grep | awk {'print $1'} | wc -l ) -ge 1 ]]; do
+    for i in ../simulations/logs/opprun-*.pid; do
+	  kill $(cat $i) > /dev/null 2>&1
+	done
+    for i in $(ps aux | grep opp_run | grep -v grep | awk {'print $1'}); do 
+	  kill $i > /dev/null 2>&1
+    done
+  done
+  rm ../simulations/logs/opprun-*.pid > /dev/null 2>&1
+  echo "done!"
+  echo
+}
+
+# write PID to file
+function writePid {
+  echo $1 > ../simulations/logs/opprun-$1.pid
+}
+
+# delete PID file
+function deletePid {
+  rm ../simulations/logs/opprun-$1.pid
+}
+
+### execution ###
+# create directory for logs
 mkdir ../simulations/logs > /dev/null 2>&1
-echo
-echo "running AODV/AODVPO simulations, please wait ..."
-echo
-for i in $(grep "\[Config " aodv.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
-  echo "  configuration: $i (log: logs/$i.log)"
-  opp_run.exe -r 0 -m -u Cmdenv \
-    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-    -l ../src/powerrouting -l ../../inet/src/INET \
-    -c $i ../simulations/aodv.ini > logs/$i.log 2>&1
-done
-echo
-echo "AODV/AODVPO simulations done."
-echo
 
-echo
-echo "running OLSR/OLSRPO simulations, please wait ..."
-echo
-for i in $(grep "\[Config " olsr.ini | cut -d " " -f 2 | cut -d "]" -f 1); do
-  echo "  configuration: $i (log: logs/$i.log)"
-  opp_run.exe -r 0 -m -u Cmdenv \
-    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-    -l ../src/powerrouting -l ../../inet/src/INET \
-    -c $i ../simulations/olsr.ini > logs/$i.log 2>&1
-done
-echo
-echo "OLSR/OLSRPO simulations done."
-echo
+# mode switch
+case $1 in
 
+  # full set of simulations, except longterm
+  aodv)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODV" $2
+    runSimulation "aodv.ini" "AODVPO" $2
+    runSimulation "aodv.ini" "AODVPOTriggerHappy" $2
+    runSimulation "aodv.ini" "AODVPOTriggerSloppy" $2
+    runSimulation "aodv.ini" "AODVPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  aodvshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODV" $2
+    runSimulation "aodv.ini" "AODVPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  aodvlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODVLong" $2
+    runSimulation "aodv.ini" "AODVPOLong" $2
+    runSimulation "aodv.ini" "AODVPOLongTriggerHappy" $2
+    runSimulation "aodv.ini" "AODVPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # full set of simulations, except longterm
+  olsr)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSR" $2
+    runSimulation "olsr.ini" "OLSRPO" $2
+    runSimulation "olsr.ini" "OLSRPOTriggerHappy" $2
+    runSimulation "olsr.ini" "OLSRPOTriggerSloppy" $2
+    runSimulation "olsr.ini" "OLSRPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  olsrshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSR" $2
+    runSimulation "olsr.ini" "OLSRPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  olsrlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSRLong" $2
+    runSimulation "olsr.ini" "OLSRPOLong" $2
+    runSimulation "olsr.ini" "OLSRPOLongTriggerHappy" $2
+    runSimulation "olsr.ini" "OLSRPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # run all short simulations
+  short)
+    writePid $$
+    $0 aodvshort $2
+    $0 olsrshort $2
+	deletePid $$
+  ;;
+
+  # run all simulations, except longterm
+  normal)
+    writePid $$
+    $0 aodv $2
+    $0 olsr $2
+	deletePid $$
+  ;;
+
+  # run longterm simulations
+  long)
+    writePid $$
+    $0 aodvlong $2
+    $0 olsrlong $2
+	deletePid $$
+  ;;
+
+  # run all simulations
+  all)
+    writePid $$
+    $0 aodv $2
+    $0 olsr $2
+    $0 aodvlong $2
+    $0 olsrlong $2
+	deletePid $$
+  ;;
+  
+  # run single simulation
+  config)
+    writePid $$
+    runPreamble $1
+	estimateThreads $4
+    runSimulation "$2" "$3" $4
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # kill running simulations
+  killopp)
+    killOppRun
+  ;;
+  
+  *)
+    echo
+    echo "usage: ./run [mode] (verbose)"
+    echo "  runs designated tests and logs to files (multihreaded),"
+    echo "  for logging to screen and files, append 'verbose' (only singlethreaded)"
+	echo "  script must be started in directory simulations, you have been warned!"
+    echo
+    echo "  modes:"
+    echo "  all - runs all simulations"
+    echo "  short - runs all simulations without longterm, mixed and trigger variants"
+    echo "  normal - runs all simulations without longterm"
+    echo "  long - runs all longterm simulations"
+    echo "  olsr - runs olsr simulations without longterm"
+    echo "  aodv - runs aodv simulations without longterm"
+    echo "  olsrshort - runs olsr simulations without longterm, mixed and trigger variants"
+    echo "  aodvshort - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  olsrlong - runs olsr longterm simulations"
+    echo "  aodvlong - runs aodv longterm simulations"
+    echo "  killopp - kills all running opp_run processes"
+    echo "  config CONFIGFILE CONFIGNAME - runs single simulation CONFIGNAME from CONFIGFILE"
+    echo "  help - print this help"
+    echo
+  ;;
+
+esac
