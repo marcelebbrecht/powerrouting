@@ -79,6 +79,8 @@ First of all, disable the following features and dependencies in inetmanet:
 * AODV
 * OLSR
 
+Now apply patch for ACK message bug as mentioned under Bugs (see at the end of this document).
+
 Two ways to solve this issue:
 * Disable vizualization features in Inetmanet project settings and comment vizualization options in common.ini, then clean and rebuild Inetmanet 
 * Prior build of OMNeT++, edit configure.user:
@@ -87,9 +89,6 @@ Two ways to solve this issue:
 	* Set WITH_OSG=no
 	* Set WITH_OSGEARTH=no
   Now Build OMNeT++ according to manual (make clean; ./configure; make)
-
-IMPORTANT: Sometimes simulations crashed with "IdealMac is down" errors. This only happens, if visualizers 
-are enabled. Disable them in common.ini, they're not important for the simulations and the results.
 
 Ensure, that you don't have the common INET stuff in your workspace. Now download inetmanet framework
 and import it, according to INSTALL inside. Default feature set is fine, now build project if not done before.
@@ -196,10 +195,25 @@ Simulations crashing, when hosts shutdown and receive packets:
 "Error: Self message 'AckTimeout' received when CsmaCaMac is down -- in module (inet::CsmaCaMac) AODVPO.router44.wlan[0].mac (id=611), at t=159.707271742315s, event #1925440"
 Dont know ....
 
+Solution: I patched a file in inetmanet-3.5 (src/inet/common/lifecycle/OperationalBase.cc), just exchange the method handleMessageWhenDown:
+
+void OperationalBase::handleMessageWhenDown(cMessage *message)
+{
+    if (message->isSelfMessage())
+        // following line is commented through errors when running out of power and mac use ack
+        // now we send a message instead of throwing a runtime error, dunno if it's a dump hack ;)
+        //throw cRuntimeError("Self message '%s' received when %s is down", message->getName(), getComponentType()->getName());
+        EV_WARN << "Self message " << message->getName() << " received when " << getComponentType()->getName() << " is down" << endl;
+    else if (simTime() == lastChange)
+        EV_WARN << getComponentType()->getName() << " is down, dropping '" << message->getName() << "' message\n";
+    else
+        throw cRuntimeError("Message '%s' received when %s is down", message->getName(), getComponentType()->getName());
+    delete message;
+}
+
 
 Longterm
 --------
 
-There are some longer simulation configs. These aren't stable, the simulation crashed for TriggerHappy and Sloppy. Unless
-Hosts doesn't suddenly dis- and reapper or we make something more intelligent, longterm tests are nearly useless.
+There are some longer simulation configs. Unless hosts doesn't suddenly dis- and reapper or we make something more intelligent, longterm tests are nearly useless.
 
