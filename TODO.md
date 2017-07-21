@@ -4,6 +4,7 @@ PowerRouting for OMNeT++ - ToDo
 Version: 0.5
 ------------
 
+* replace ACKTimeout hack with sane solution (inheritance?) 
 * Make not runnable Config not runnable
 * Maybe Batman
 
