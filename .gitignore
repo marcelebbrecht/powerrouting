@@ -3,6 +3,6 @@ simulations/results/
 simulations/logs/
 .computed/
 omnet.key
-libpowerrouting.dll
+src/libpowerrouting.dll
 language.settings
 org.eclipse.ltk.core.refactoring.prefs
