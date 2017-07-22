@@ -30,13 +30,12 @@
 #endif
 
 #define BATMAN_HNA_MSG_SIZE 5
+
+typedef inet::L3Address L3Address;
 // }}
 
-// typedefs for porting
-typedef inet::L3Address L3Address;
-
 /**
- * Struct generated from powerrouting/routing/batman/BatmanMsg.msg:40 by nedtool.
+ * Struct generated from powerrouting/routing/batman/BatmanMsg.msg:27 by nedtool.
  */
 struct vis_data
 {
@@ -54,7 +53,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const vis_data& obj) { __do
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, vis_data& obj) { __doUnpacking(b, obj); }
 
 /**
- * Struct generated from powerrouting/routing/batman/BatmanMsg.msg:47 by nedtool.
+ * Struct generated from powerrouting/routing/batman/BatmanMsg.msg:34 by nedtool.
  */
 struct HnaElement
 {
@@ -71,7 +70,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const HnaElement& obj) { __
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, HnaElement& obj) { __doUnpacking(b, obj); }
 
 /**
- * Class generated from <tt>powerrouting/routing/batman/BatmanMsg.msg:53</tt> by nedtool.
+ * Class generated from <tt>powerrouting/routing/batman/BatmanMsg.msg:40</tt> by nedtool.
  * <pre>
  * packet BatmanPacket
  * {
@@ -156,7 +155,7 @@ inline void doParsimPacking(omnetpp::cCommBuffer *b, const BatmanPacket& obj) {o
 inline void doParsimUnpacking(omnetpp::cCommBuffer *b, BatmanPacket& obj) {obj.parsimUnpack(b);}
 
 /**
- * Class generated from <tt>powerrouting/routing/batman/BatmanMsg.msg:69</tt> by nedtool.
+ * Class generated from <tt>powerrouting/routing/batman/BatmanMsg.msg:56</tt> by nedtool.
  * <pre>
  * packet visPacket
  * {

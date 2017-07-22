@@ -17,6 +17,7 @@ cplusplus {{
 
 #define BATMAN_HNA_MSG_SIZE 5
 
+typedef inet::L3Address L3Address;
 }}
 
 class noncobject inet::IPv4Address;
