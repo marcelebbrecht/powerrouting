@@ -230,7 +230,7 @@
     </datasets>
     <datasets name="AODVLong-Comparision-UDP">
       <items xsi:type="scave:Group" name="AODVLong-Comparision-UDP-Packets">
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count) AND attr:configname(*AODV*)"/>
         <items xsi:type="scave:ComputeScalar" scalarName="packets" valueExpr="sum('rcvdPk:count')" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
         <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
         <items xsi:type="scave:BarChart" name="AODVLong-Comparision-UDP-Packets">
@@ -240,8 +240,8 @@
         </items>
       </items>
       <items xsi:type="scave:Group" name="AODVLong-Comparision-UDP-LossRate">
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count)"/>
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(sentPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count) AND attr:configname(*AODV*)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(sentPk:count) AND attr:configname(*AODV*)"/>
         <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
         <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
         <items xsi:type="scave:BarChart" name="AODVLong-Comparision-UDP-LossRate">
