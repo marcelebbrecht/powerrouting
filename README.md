@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.4
+Current version: 0.5
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -77,7 +77,10 @@ in OMNeT++ 5.1 (if you build inetmanet, you get errors if vizualization feature 
 
 First of all, disable the following features and dependencies in inetmanet:
 * AODV
-* OLSR
+
+Also please exclude the following path from build:
+* inet/routing/extras/olsr
+* inet/routing/extras/batman
 
 Now apply patch for ACK message bug as mentioned under Bugs (see at the end of this document).
 
@@ -170,6 +173,22 @@ Feel free to experiment with the following parameters, set through olsr.ini:
 * olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.0, max: 0.999999, default: 0.0)
 * olsrpo.powerTrigger - steps on relative charge for lowering willingness. If set to 0.20, the router set willingness on 80%,60%,..., low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
 * olsrpo.powerBias - constant value to substract for battery-based routers (min: 0.0, default: 0.0)
+
+
+Simulations with Batman
+-----------------------
+
+BatmanPO is included, but still with same functionality as Batman. It seems, that this protocol do a quite good balancing so 
+power optimization seems useless. I will do further investigation in next versions.
+
+The simulations starts sending packets after 10s. 
+
+Please create a runconfig that uses batman.ini. The different configs are described inside the ini file, but they're, as
+mentioned before, nearly useless:
+* pure Batman and BatmanPO simulations
+* mixed networks to show interoperability of BatmanPO with normal Batman routers
+* for BatmanPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
+* longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
 
 
 Statistics

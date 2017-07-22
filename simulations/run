@@ -167,6 +167,50 @@ case $1 in
   ;;
 
   # full set of simulations, except longterm
+  batman)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    runSimulation "batman.ini" "BatmanPOTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOTriggerSloppy" $2
+    runSimulation "batman.ini" "BatmanPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  batmanshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  batmanlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "BatmanLong" $2
+    runSimulation "batman.ini" "BatmanPOLong" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # full set of simulations, except longterm
   olsr)
     writePid $$
     runPreamble $1
@@ -214,6 +258,7 @@ case $1 in
   short)
     writePid $$
     $0 aodvshort $2
+    $0 batmanshort $2
     $0 olsrshort $2
 	deletePid $$
   ;;
@@ -222,6 +267,7 @@ case $1 in
   normal)
     writePid $$
     $0 aodv $2
+    $0 batman $2
     $0 olsr $2
 	deletePid $$
   ;;
@@ -230,6 +276,7 @@ case $1 in
   long)
     writePid $$
     $0 aodvlong $2
+    $0 batmanlong $2
     $0 olsrlong $2
 	deletePid $$
   ;;
@@ -238,8 +285,10 @@ case $1 in
   all)
     writePid $$
     $0 aodv $2
+    $0 batman $2
     $0 olsr $2
     $0 aodvlong $2
+    $0 batmanlong $2
     $0 olsrlong $2
 	deletePid $$
   ;;
@@ -275,10 +324,13 @@ case $1 in
     echo "  long - runs all longterm simulations"
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
+    echo "  batman - runs batman simulations without longterm"
     echo "  olsrshort - runs olsr simulations without longterm, mixed and trigger variants"
     echo "  aodvshort - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  batmanshort - runs batman simulations without longterm, mixed and trigger variants"
     echo "  olsrlong - runs olsr longterm simulations"
     echo "  aodvlong - runs aodv longterm simulations"
+    echo "  batmanlong - runs batman longterm simulations"
     echo "  killopp - kills all running opp_run processes"
     echo "  config CONFIGFILE CONFIGNAME - runs single simulation CONFIGNAME from CONFIGFILE"
     echo "  help - print this help"

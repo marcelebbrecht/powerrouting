@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="../results/*.vec"/>
+    <inputs name="../results/*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Batman-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(Batman)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="Batman.${router}.energyStorage" groupByExpr="(module =~ Batman.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="Batman-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="Batman-Capacity"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="Batman-Capacity-AtEnd">
+        <properties name="Graph.Title" value="Batman-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPO-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPO)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPO-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPO-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPO-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPO-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPOTriggerHappy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPOTriggerHappy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPOTriggerHappy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPOTriggerHappy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPOTriggerHappy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPOTriggerHappy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPOTriggerSloppy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPOTriggerSloppy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPOTriggerSloppy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPOTriggerSloppy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPOTriggerSloppy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPOTriggerSloppy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanLong-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanLong)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="Batman.${router}.energyStorage" groupByExpr="(module =~ Batman.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanLong-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanLong-Capacity"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanLong-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanLong-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPOLong-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPOLong)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPOLong-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPOLong-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPOLong-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPOLong-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPOLongTriggerHappy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPOLongTriggerHappy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPOLongTriggerHappy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPOLongTriggerHappy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPOLongTriggerHappy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPOLongTriggerHappy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="BatmanPOLongTriggerSloppy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(BatmanPOLongTriggerSloppy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="BatmanPO.${router}.energyStorage" groupByExpr="(module =~ BatmanPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:LineChart" name="BatmanPOLongTriggerSloppy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="BatmanPOLongTriggerSloppy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:BarChart" name="BatmanPOLongTriggerSloppy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="BatmanPOLongTriggerSloppy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="Batman-Comparision-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND ( attr:configname(BatmanPOTriggerHappy) OR attr:configname(BatmanPOTriggerSloppy) OR attr:configname(BatmanPO) OR attr:configname(Batman) )" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:Group" name="Batman-Comparision-Capacity-Sum">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum" valueExpr="sum(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Batman-Comparision-Capacity-Sum">
+          <properties name="Graph.Title" value="Batman-Comparision-Capacity-Sum"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Batman-Comparision-Capacity-Stddev">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Batman-Comparision-Capacity-Stddev">
+          <properties name="Graph.Title" value="Batman-Comparision-Capacity-Stddev"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="stddev"/>
+        </items>
+      </items>
+    </datasets>
+    <datasets name="BatmanLong-Comparision-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND ( attr:configname(*Long*) )" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:Group" name="BatmanLong-Comparision-Capacity-Sum">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum" valueExpr="sum(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="BatmanLong-Comparision-Capacity-Sum">
+          <properties name="Graph.Title" value="BatmanLong-Comparision-Capacity-Sum"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="BatmanLong-Comparision-Capacity-Stddev">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="BatmanLong-Comparision-Capacity-Stddev">
+          <properties name="Graph.Title" value="BatmanLong-Comparision-Capacity-Stddev"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="stddev"/>
+        </items>
+      </items>
+    </datasets>
+    <datasets name="Batman-Comparision-UDP">
+      <items xsi:type="scave:Group" name="Batman-Comparision-UDP-Packets">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(BatmanPOTriggerHappy) OR attr:configname(BatmanPOTriggerSloppy) OR attr:configname(BatmanPO) OR attr:configname(Batman) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:BarChart" name="Batman-Comparision-UDP-Packets">
+          <properties name="Graph.Title" value="Batman-Comparision-UDP-Packets"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Batman-Comparision-UDP-LossRate">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(BatmanPOTriggerHappy) OR attr:configname(BatmanPOTriggerSloppy) OR attr:configname(BatmanPO) OR attr:configname(Batman) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)  AND ( attr:configname(BatmanPOTriggerHappy) OR attr:configname(BatmanPOTriggerSloppy) OR attr:configname(BatmanPO) OR attr:configname(Batman) ) AND name(sentPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:BarChart" name="Batman-Comparision-UDP-LossRate">
+          <properties name="Graph.Title" value="Batman-Comparision-UDP-LossRate"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+        </items>
+      </items>
+    </datasets>
+    <datasets name="BatmanLong-Comparision-UDP">
+      <items xsi:type="scave:Group" name="BatmanLong-Comparision-UDP-Packets">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packets" valueExpr="sum('rcvdPk:count')" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:BarChart" name="BatmanLong-Comparision-UDP-Packets">
+          <properties name="Graph.Title" value="BatmanLong-Comparision-UDP-Packets"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="BatmanLong-Comparision-UDP-LossRate">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;) AND attr:configname(*Long*) AND name(sentPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:BarChart" name="BatmanLong-Comparision-UDP-LossRate">
+          <properties name="Graph.Title" value="BatmanLong-Comparision-UDP-LossRate"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+        </items>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="Capacity Over-Time" charts="//@datasets/@datasets.0/@items.4 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.2/@items.4 //@datasets/@datasets.3/@items.4"/>
+    <chartSheets name="Capacity Over-Time Long" charts="//@datasets/@datasets.4/@items.4 //@datasets/@datasets.5/@items.4 //@datasets/@datasets.6/@items.4 //@datasets/@datasets.7/@items.4"/>
+    <chartSheets name="Capacity At-End" charts="//@datasets/@datasets.1/@items.5 //@datasets/@datasets.2/@items.5 //@datasets/@datasets.3/@items.5 //@datasets/@datasets.0/@items.5"/>
+    <chartSheets name="Capacity At-End Long" charts="//@datasets/@datasets.4/@items.5 //@datasets/@datasets.5/@items.5 //@datasets/@datasets.6/@items.5 //@datasets/@datasets.7/@items.5"/>
+    <chartSheets name="UDP Comparision" charts="//@datasets/@datasets.10/@items.1/@items.4 //@datasets/@datasets.10/@items.0/@items.1"/>
+    <chartSheets name="UDP Comparision Long" charts="//@datasets/@datasets.11/@items.1/@items.4 //@datasets/@datasets.11/@items.0/@items.3"/>
+    <chartSheets name="Capacity Deviation" charts="//@datasets/@datasets.8/@items.4/@items.3"/>
+  </chartSheets>
+</scave:Analysis>

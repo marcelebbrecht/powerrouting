@@ -27,16 +27,28 @@ OBJS = \
     $O/powerrouting/routing/aodv/AODVRouteData.o \
     $O/powerrouting/routing/aodv/AODVRouting.o \
     $O/powerrouting/routing/aodvpo/AODVPORouting.o \
+    $O/powerrouting/routing/batman/BatmanMain.o \
+    $O/powerrouting/routing/batman/ManetAddress.o \
+    $O/powerrouting/routing/batman/batmand/batman.o \
+    $O/powerrouting/routing/batman/batmand/bitarray.o \
+    $O/powerrouting/routing/batman/batmand/hna.o \
+    $O/powerrouting/routing/batman/batmand/originator.o \
+    $O/powerrouting/routing/batman/batmand/os.o \
+    $O/powerrouting/routing/batman/batmand/ring_buffer.o \
+    $O/powerrouting/routing/batman/batmand/schedule.o \
+    $O/powerrouting/routing/batmanpo/BatmanPO.o \
     $O/powerrouting/routing/olsr/OLSR.o \
     $O/powerrouting/routing/olsr/OLSR_rtable.o \
     $O/powerrouting/routing/olsr/OLSR_state.o \
     $O/powerrouting/routing/olsrpo/OLSRPO.o \
     $O/powerrouting/routing/aodv/AODVControlPackets_m.o \
+    $O/powerrouting/routing/batman/BatmanMsg_m.o \
     $O/powerrouting/routing/olsr/OLSRpkt_m.o
 
 # Message files
 MSGFILES = \
     powerrouting/routing/aodv/AODVControlPackets.msg \
+    powerrouting/routing/batman/BatmanMsg.msg \
     powerrouting/routing/olsr/OLSRpkt.msg
 
 # SM files

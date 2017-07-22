@@ -67,3 +67,14 @@ Completed: 2017-07-20
 * Higher Bitrate and other power consumption rated
 * Created OLSRPO router and routingA
 * Fixed Bug with power trigger
+
+
+Version: 0.5
+------------
+
+Completed: 2017-07-27
+
+* Ported batman to project
+* added batmanpo, but with same functionality as batman
+* minor bugfixes on runscript
+* fixed readme installation instructions
