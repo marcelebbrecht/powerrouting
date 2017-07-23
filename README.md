@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.5
+Current version: 0.6
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -235,4 +235,10 @@ Longterm
 --------
 
 There are some longer simulation configs. Unless hosts doesn't suddenly dis- and reapper or we make something more intelligent, longterm tests are nearly useless.
+
+
+Parameter Studies
+-----------------
+
+There are some parameter iteration configs (*ParameterStudy). The run-script run them multithreaded an creates charts for them.
 

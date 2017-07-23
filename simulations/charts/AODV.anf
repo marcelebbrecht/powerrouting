@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/*.vec"/>
-    <inputs name="../results/*.sca"/>
+    <inputs name="../results/AODV*.vec"/>
+    <inputs name="../results/AODV*.sca"/>
   </inputs>
   <datasets>
     <datasets name="AODV-Capacity">
@@ -253,6 +253,7 @@
     </datasets>
   </datasets>
   <chartSheets>
+    <chartSheets name="default"/>
     <chartSheets name="Capacity Over-Time" charts="//@datasets/@datasets.0/@items.4 //@datasets/@datasets.1/@items.4 //@datasets/@datasets.2/@items.4 //@datasets/@datasets.3/@items.4"/>
     <chartSheets name="Capacity Over-Time Long" charts="//@datasets/@datasets.4/@items.4 //@datasets/@datasets.5/@items.4 //@datasets/@datasets.6/@items.4 //@datasets/@datasets.7/@items.4"/>
     <chartSheets name="Capacity At-End" charts="//@datasets/@datasets.1/@items.5 //@datasets/@datasets.2/@items.5 //@datasets/@datasets.3/@items.5 //@datasets/@datasets.0/@items.5"/>

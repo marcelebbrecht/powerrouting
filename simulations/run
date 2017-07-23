@@ -3,6 +3,11 @@
 # Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 # free software, see LICENSE.md for details
 
+# Warning, written by a dont care bash hacker with
+# a bad attitude - dirty but worky, sorry guys!
+# So dont study the following code, it will harm
+# your coding skills. You habe been warned ;)
+
 ### settings ###
 # substract from available cores (number >= 0)
 COREBIAS=2
@@ -142,6 +147,40 @@ function numberOfRuns {
     -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
     -l ../src/powerrouting -l ../../inet/src/inet -c $2 ../simulations/$1 -q numruns | grep "Number of runs" | cut -d ":" -f 2 | sed 's/ //g')-1))
   echo $RUNNUMS  
+}
+
+# create study charts
+# 1: TYPENAME (name)
+function createCharts {
+  echo
+  printf "Creating charts for $1, please wait ..."
+  cat ./charts/templates/$1Study.pre > ./charts/$1Study.anf  
+  for i in results/$1*Study*; do 
+    OPT=$(echo $i | cut -d "-" -f 2)
+    echo "      <items xsi:type=\"scave:Group\" name=\"$OPT\">" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Add\" filterPattern=\"name(*Capacity*) AND attr:configname(*Parameter*) AND file(*$OPT*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*sender*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*receiver*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:LineChart\" name=\"$OPT\" lineNameFormat=\"\">" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Graph.Title\" value=\"$OPT\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"X.Axis.Title\" value=\"host\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Y.Axis.Title\" value=\"capacity\"/>" >> ./charts/$1Study.anf
+    echo "        </items>" >> ./charts/$1Study.anf
+    echo "      </items>" >> ./charts/$1Study.anf
+  done
+  echo "    </datasets>" >> ./charts/$1Study.anf
+  echo "  </datasets>" >> ./charts/$1Study.anf
+  echo "  <chartSheets>" >> ./charts/$1Study.anf
+  printf "<chartSheets name=\"Study\" charts=\"" >> ./charts/$1Study.anf   
+  N=0
+  for i in results/$1*Study*; do
+    printf "//@datasets/@datasets.0/@items.$N/@items.3 " >> ./charts/$1Study.anf 
+    N=$(($N+1))
+  done
+  printf "\"/>" >> ./charts/$1Study.anf 
+  echo "  </chartSheets>" >> ./charts/$1Study.anf
+  cat ./charts/templates/$1Study.post >> ./charts/$1Study.anf  
+  echo " done!"
 }
 
 ### execution ###
@@ -354,12 +393,14 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)  
     N=0
+    rm ./results/AODV* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
     done
     waitForFinish    
     cleanLogs
+    createCharts AODV
     runPostamble $1
 	deletePid $$ 
   ;;
@@ -370,12 +411,14 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns olsr.ini OLSRPOParameterStudy)  
     N=0
+    rm ./results/OLSR* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
     done
-    waitForFinish    
+    waitForFinish       
     cleanLogs
+    createCharts OLSR
     runPostamble $1
 	deletePid $$ 
   ;;
@@ -386,12 +429,14 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns batman.ini BatmanPOParameterStudy)  
     N=0
+    rm ./results/Batman* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "batman.ini" BatmanPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
     done
-    waitForFinish    
+    waitForFinish      
     cleanLogs
+    createCharts Batman  
     runPostamble $1
 	deletePid $$ 
   ;;
