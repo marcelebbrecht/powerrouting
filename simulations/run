@@ -10,7 +10,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=2
+COREBIAS=1
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -393,7 +393,7 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)  
     N=0
-    rm ./results/AODV* > /dev/null 2>&1
+    rm ./results/AODVPOP* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
@@ -411,7 +411,7 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns olsr.ini OLSRPOParameterStudy)  
     N=0
-    rm ./results/OLSR* > /dev/null 2>&1
+    rm ./results/OLSRPOP* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
@@ -429,7 +429,7 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns batman.ini BatmanPOParameterStudy)  
     N=0
-    rm ./results/Batman* > /dev/null 2>&1
+    rm ./results/BatmanPOP* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "batman.ini" BatmanPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
