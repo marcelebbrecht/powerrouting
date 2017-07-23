@@ -10,7 +10,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=1
+COREBIAS=4
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -87,7 +87,7 @@ function runSimulation {
 # 4: NUMBEROFALLRUNS (number) 
 function runStudySimulation {
   waitForFreeSlot
-  echo "  configuration: $2 ($3 of $4, log: logs/$2-$3.log)"
+  echo "  configuration: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
   opp_run -r $3 -m -u Cmdenv \
     -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
     -l ../src/powerrouting -l ../../inet/src/inet \
@@ -172,10 +172,10 @@ function createCharts {
   echo "  </datasets>" >> ./charts/$1Study.anf
   echo "  <chartSheets>" >> ./charts/$1Study.anf
   printf "<chartSheets name=\"Study\" charts=\"" >> ./charts/$1Study.anf   
-  N=0
-  for i in results/$1*Study*; do
-    printf "//@datasets/@datasets.0/@items.$N/@items.3 " >> ./charts/$1Study.anf 
-    N=$(($N+1))
+  I=0
+  for i in results/$1*Study*.vec; do 
+    printf "//@datasets/@datasets.0/@items.$I/@items.3 " >> ./charts/$1Study.anf 
+    I=$(($I+1))
   done
   printf "\"/>" >> ./charts/$1Study.anf 
   echo "  </chartSheets>" >> ./charts/$1Study.anf
