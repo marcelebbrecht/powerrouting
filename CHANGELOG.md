@@ -72,9 +72,17 @@ Completed: 2017-07-20
 Version: 0.5
 ------------
 
-Completed: 2017-07-27
+Completed: 2017-07-22
 
 * Ported batman to project
 * added batmanpo, but with same functionality as batman
 * minor bugfixes on runscript
-* fixed readme installation instructions
+* fixed readme installation instruction
+
+
+Version: 0.6
+------------
+
+Completed: 2017-07-23
+
+* More runs with different parameter values and statistics
