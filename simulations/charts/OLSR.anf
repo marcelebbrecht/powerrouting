@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/OLSR*.vec"/>
-    <inputs name="../results/OLSR*.sca"/>
+    <inputs name="../results/OLSR-*.vec"/>
+    <inputs name="../results/OLSR-*.sca"/>
+    <inputs name="../results/OLSRPO-*.vec"/>
+    <inputs name="../results/OLSRPO-*.sca"/>
+    <inputs name="../results/OLSRPOT*.vec"/>
+    <inputs name="../results/OLSRPOT*.sca"/>
+    <inputs name="../results/OLSRPOM*.vec"/>
+    <inputs name="../results/OLSRPOM*.sca"/>
+    <inputs name="../results/OLSRPOL*.vec"/>
+    <inputs name="../results/OLSRPOL*.sca"/>
   </inputs>
   <datasets>
     <datasets name="OLSR-Capacity">

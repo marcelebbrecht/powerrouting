@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/Batman*.vec"/>
-    <inputs name="../results/Batman*.sca"/>
+    <inputs name="../results/Batman-*.vec"/>
+    <inputs name="../results/Batman-*.sca"/>
+    <inputs name="../results/BatmanPO-*.vec"/>
+    <inputs name="../results/BatmanPO-*.sca"/>
+    <inputs name="../results/BatmanPOT*.vec"/>
+    <inputs name="../results/BatmanPOT*.sca"/>
+    <inputs name="../results/BatmanPOM*.vec"/>
+    <inputs name="../results/BatmanPOM*.sca"/>
+    <inputs name="../results/BatmanPOL*.vec"/>
+    <inputs name="../results/BatmanPOL*.sca"/>
   </inputs>
   <datasets>
     <datasets name="Batman-Capacity">

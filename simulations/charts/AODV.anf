@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/AODV*.vec"/>
-    <inputs name="../results/AODV*.sca"/>
+    <inputs name="../results/AODV-*.vec"/>
+    <inputs name="../results/AODV-*.sca"/>
+    <inputs name="../results/AODVPO-*.vec"/>
+    <inputs name="../results/AODVPO-*.sca"/>
+    <inputs name="../results/AODVPOT*.vec"/>
+    <inputs name="../results/AODVPOT*.sca"/>
+    <inputs name="../results/AODVPOM*.vec"/>
+    <inputs name="../results/AODVPOM*.sca"/>
+    <inputs name="../results/AODVPOL*.vec"/>
+    <inputs name="../results/AODVPOL*.sca"/>
   </inputs>
   <datasets>
     <datasets name="AODV-Capacity">
