@@ -10,7 +10,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=4
+COREBIAS=1
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
