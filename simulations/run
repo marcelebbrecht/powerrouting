@@ -5,7 +5,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=0
+COREBIAS=2
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -56,7 +56,7 @@ function waitForFreeSlot {
 
 # run single simulation
 # 1: CONFIGFILE (filename)
-# 2: CONFIGNAME (filename)
+# 2: CONFIGNAME (name)
 # 3: verbose (if wanted)
 function runSimulation {
   waitForFreeSlot
@@ -75,13 +75,30 @@ function runSimulation {
   cleanLog $2 > /dev/null 2>&1
 }
 
+# run simulation part of study
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+# 3: NUMBEROFRUN (number)
+# 4: NUMBEROFALLRUNS (number) 
+function runStudySimulation {
+  waitForFreeSlot
+  echo "  configuration: $2 ($3 of $4, log: logs/$2-$3.log)"
+  opp_run -r $3 -m -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/inet \
+    -c $2 ../simulations/$1 > logs/$2-$3.log 2>&1 &
+  cleanLog $2 > /dev/null 2>&1
+}
+
 # output before run
+# 1: SIMULATIONNAME (string)
 function runPreamble { 
   echo
   echo "running $1 simulations, please wait ..."
 }
 
 # output after run
+# 1: SIMULATIONNAME (string)
 function runPostamble { 
   echo
   echo "$1 simulations done."
@@ -106,13 +123,25 @@ function killOppRun {
 }
 
 # write PID to file
+# 1: PID (number)
 function writePid {
   echo $1 > ../simulations/logs/opprun-$1.pid
 }
 
 # delete PID file
+# 1: PID (number)
 function deletePid {
   rm ../simulations/logs/opprun-$1.pid
+}
+
+# estimate number of runs for parameter study
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+function numberOfRuns {
+  RUNNUMS=$(($(opp_run -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/inet -c $2 ../simulations/$1 -q numruns | grep "Number of runs" | cut -d ":" -f 2 | sed 's/ //g')-1))
+  echo $RUNNUMS  
 }
 
 ### execution ###
@@ -281,6 +310,15 @@ case $1 in
 	deletePid $$
   ;;
 
+  # run study simulations
+  study)
+    writePid $$
+    $0 aodvstudy $2
+    $0 batmanstudy $2
+    $0 olsrstudy $2
+	deletePid $$
+  ;;
+
   # run all simulations
   all)
     writePid $$
@@ -310,6 +348,54 @@ case $1 in
     killOppRun
   ;;
   
+  aodvstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)  
+    N=0
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish    
+    cleanLogs
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  olsrstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns olsr.ini OLSRPOParameterStudy)  
+    N=0
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish    
+    cleanLogs
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  batmanstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns batman.ini BatmanPOParameterStudy)  
+    N=0
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "batman.ini" BatmanPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish    
+    cleanLogs
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
   *)
     echo
     echo "usage: ./run [mode] (verbose)"
@@ -322,6 +408,7 @@ case $1 in
     echo "  short - runs all simulations without longterm, mixed and trigger variants"
     echo "  normal - runs all simulations without longterm"
     echo "  long - runs all longterm simulations"
+    echo "  study - runs all simulations with varying parameter"
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
     echo "  batman - runs batman simulations without longterm"
@@ -331,6 +418,9 @@ case $1 in
     echo "  olsrlong - runs olsr longterm simulations"
     echo "  aodvlong - runs aodv longterm simulations"
     echo "  batmanlong - runs batman longterm simulations"
+    echo "  olsrstudy - runs olsr simulations with varying parameter"
+    echo "  aodvstudy - runs aodv simulations with varying parameter"
+    echo "  batmanstudy - runs batman simulations with varying parameter"
     echo "  killopp - kills all running opp_run processes"
     echo "  config CONFIGFILE CONFIGNAME - runs single simulation CONFIGNAME from CONFIGFILE"
     echo "  help - print this help"
