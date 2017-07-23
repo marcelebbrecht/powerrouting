@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/AODV*.vec"/>
-    <inputs name="../results/AODV*.sca"/>
+    <inputs name="../results/BatmanPOP*.vec"/>
+    <inputs name="../results/BatmanPOP*.sca"/>
   </inputs>
   <datasets>
     <datasets name="AODV-Parameter-Study">
