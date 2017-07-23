@@ -155,7 +155,7 @@ function createCharts {
   echo
   printf "Creating charts for $1, please wait ..."
   cat ./charts/templates/$1Study.pre > ./charts/$1Study.anf  
-  for i in results/$1*Study*; do 
+  for i in results/$1*Study*.vec; do 
     OPT=$(echo $i | cut -d "-" -f 2)
     echo "      <items xsi:type=\"scave:Group\" name=\"$OPT\">" >> ./charts/$1Study.anf
     echo "        <items xsi:type=\"scave:Add\" filterPattern=\"name(*Capacity*) AND attr:configname(*Parameter*) AND file(*$OPT*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
