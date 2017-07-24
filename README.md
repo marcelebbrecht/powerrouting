@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.6
+Current version: 0.7
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -110,6 +110,7 @@ If you face compiler errors regarding missing links to inet, check the following
 * OMNeT++ -> Makemake -> src -> Makemake Options -> Link -> check Add libraries and other linker options from enabled project features
 * OMNeT++ -> Makemake -> src -> Makemake Options -> Link -> Additional libraries to link with -> add libINET
 
+If you want to export the runscript nice gnuplot graphs, please install GnuPlot and set the path in 'run'-file.
 
 Batch processing
 ----------------
@@ -240,5 +241,6 @@ There are some longer simulation configs. Unless hosts doesn't suddenly dis- and
 Parameter Studies
 -----------------
 
-There are some parameter iteration configs (*ParameterStudy). The run-script run them multithreaded an creates charts for them.
+There are some parameter iteration configs (*ParameterStudy). The run-script run them multithreaded an creates charts for them. Data will be exported
+to csv and, if you set it up, graphs will be exported by GnuPlot.
 

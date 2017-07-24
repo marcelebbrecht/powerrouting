@@ -1,6 +1,8 @@
 out/
 simulations/results/
 simulations/logs/
+simulations/csv
+simulations/export
 .computed/
 omnet.key
 src/libpowerrouting.dll

@@ -86,3 +86,11 @@ Version: 0.6
 Completed: 2017-07-23
 
 * More runs with different parameter values and statistics
+
+
+Version: 0.7
+------------
+
+Completed: 2017-07-24
+
+* CSV and PNG export for study cases added
