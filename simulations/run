@@ -329,7 +329,7 @@ case $1 in
     runPostamble $1
 	deletePid $$
   ;;
-
+  
   # full set of simulations, except longterm
   batman)
     writePid $$
