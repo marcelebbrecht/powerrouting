@@ -1,0 +1,655 @@
+#!/bin/bash
+# PowerRouting for OMNeT++ - runfile
+# Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
+# free software, see LICENSE.md for details
+
+# Warning, written by a dont care bash hacker with
+# a bad attitude - dirty but worky, sorry guys!
+# So dont study the following code, it will harm
+# your coding skills. You habe been warned ;)
+
+### settings ###
+# substract from available cores (number >= 0)
+COREBIAS=1
+
+# delete elog files (yes,no)
+DELETELOGS="yes"
+
+# delete rt files (yes,no)
+DELETERTS="yes"
+
+# gnuplot pathWe use exporting graphs to png files
+GNUPLOT="/c/omnetpp/gnuplot/bin/gnuplot.exe"
+
+### functions ###
+# estimating thread-count
+# 1: verbose (if wanted)
+function estimateThreads {
+  CPUCOUNT=$(($(cat /proc/cpuinfo | grep processor | wc -l)-$COREBIAS))
+  if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
+    if [[ $1 =~ "verbose" ]]; then
+    echo
+    echo "switching to single thread mode (verbose)"
+    CPUCOUNT=1
+  else
+    echo
+    echo "running with $CPUCOUNT threads"
+  fi
+}
+
+# remove logfiles: elog and rt
+function cleanLogs {
+  echo
+  if [[ "$DELETELOGS" =~ "yes" ]]; then
+    echo "Removing elog files."
+    rm ./results/*.elog > /dev/null 2>&1
+    rm ./logs/*.log > /dev/null 2>&1
+  fi
+  if [[ "$DELETERTS" =~ "yes" ]]; then
+    echo "Removing rt files."
+    rm ./results/*.rt > /dev/null 2>&1
+  fi
+}
+
+# wait until last opp_run is finished
+function waitForFinish {
+  sleep 1
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+}
+
+# wait until last opp_run is finished
+function waitForFinishScave {
+  sleep 1
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+}
+
+# wait until last opp_run is finished
+function waitForFinishGnuplot {
+  sleep 1
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlot {
+  while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlotScave {
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlotGnuplot {
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+}
+
+# run single simulation
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+# 3: verbose (if wanted)
+function runSimulation {
+  waitForFreeSlot
+  echo "  configuration: $2 (log: logs/$2.log)"
+  if [[ $3 =~ "verbose" ]]; then
+    opp_run -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/inet \
+      -c $2 ../simulations/$1 2>&1 | tee logs/$2.log &
+  else
+    opp_run -r 0 -m -u Cmdenv \
+      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+      -l ../src/powerrouting -l ../../inet/src/inet \
+      -c $2 ../simulations/$1 > logs/$2.log 2>&1 &
+  fi
+  cleanLog $2 > /dev/null 2>&1
+}
+
+# run simulation part of study
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+# 3: NUMBEROFRUN (number)
+# 4: NUMBEROFALLRUNS (number) 
+function runStudySimulation {
+  waitForFreeSlot
+  echo "  configuration: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
+  opp_run -r $3 -m -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/inet \
+    -c $2 ../simulations/$1 > logs/$2-$3.log 2>&1 &
+  cleanLog $2 > /dev/null 2>&1
+}
+
+# output before run
+# 1: SIMULATIONNAME (string)
+function runPreamble { 
+  echo
+  echo "running $1 simulations, please wait ..."
+}
+
+# output after run
+# 1: SIMULATIONNAME (string)
+function runPostamble { 
+  echo
+  echo "$1 simulations done."
+  echo
+}
+
+# kill running opp_run processes
+function killOppRun {
+  echo
+  echo "killing all running opp_run processes, please wait..."
+  while [[ $(ps aux | grep opp_run | grep -v grep | awk {'print $1'} | wc -l ) -ge 1 ]]; do
+    for i in ../simulations/logs/opprun-*.pid; do
+	  kill $(cat $i) > /dev/null 2>&1
+	done
+    for i in $(ps aux | grep opp_run | grep -v grep | awk {'print $1'}); do 
+	  kill $i > /dev/null 2>&1
+    done
+  done
+  rm ../simulations/logs/opprun-*.pid > /dev/null 2>&1
+  echo "done!"
+  echo
+}
+
+# write PID to file
+# 1: PID (number)
+function writePid {
+  echo $1 > ../simulations/logs/opprun-$1.pid
+}
+
+# delete PID file
+# 1: PID (number)
+function deletePid {
+  rm ../simulations/logs/opprun-$1.pid
+}
+
+# estimate number of runs for parameter study
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+function numberOfRuns {
+  RUNNUMS=$(($(opp_run -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/inet -c $2 ../simulations/$1 -q numruns | grep "Number of runs" | cut -d ":" -f 2 | sed 's/ //g')-1))
+  echo $RUNNUMS  
+}
+
+# create study charts
+# 1: TYPENAME (name)
+function createCharts {
+  echo
+  printf "Creating charts for $1, please wait ..."
+  cat ./charts/templates/$1Study.pre > ./charts/$1Study.anf  
+  for i in results/$1*Study*.vec; do 
+    OPT=$(echo $i | cut -d "-" -f 2)
+    echo "      <items xsi:type=\"scave:Group\" name=\"$OPT\">" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Add\" filterPattern=\"name(*Capacity*) AND attr:configname(*Parameter*) AND file(*$OPT*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*sender*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*receiver*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:LineChart\" name=\"$OPT\" lineNameFormat=\"\">" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Graph.Title\" value=\"$OPT\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"X.Axis.Title\" value=\"host\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Y.Axis.Title\" value=\"capacity\"/>" >> ./charts/$1Study.anf
+    echo "        </items>" >> ./charts/$1Study.anf
+    echo "      </items>" >> ./charts/$1Study.anf
+  done
+  echo "    </datasets>" >> ./charts/$1Study.anf
+  echo "  </datasets>" >> ./charts/$1Study.anf
+  echo "  <chartSheets>" >> ./charts/$1Study.anf
+  printf "<chartSheets name=\"Study\" charts=\"" >> ./charts/$1Study.anf   
+  I=0
+  for i in results/$1*Study*.vec; do 
+    printf "//@datasets/@datasets.0/@items.$I/@items.3 " >> ./charts/$1Study.anf 
+    I=$(($I+1))
+  done
+  printf "\"/>" >> ./charts/$1Study.anf 
+  echo "  </chartSheets>" >> ./charts/$1Study.anf
+  cat ./charts/templates/$1Study.post >> ./charts/$1Study.anf  
+  echo " done!"
+}
+
+# export capacity csv data for given result
+# 1: EXPERIMENTNAME (name)
+function exportCapacityCsv {
+  echo
+  echo "Exporting CSV capacity data for $1"
+  mkdir -p ./csv/ > /dev/null 2>&1
+  rm csv/$1*.csv > /dev/null 2>&1
+  for i in results/$1*Study*.vec; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 2- | sed 's/\.vec//g')
+    echo "  exporting $RESULTNAME"
+    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O csv/$RESULTNAME.csv -F csv results/$RESULTNAME.vec > /dev/null 2>&1 &
+    waitForFreeSlotScave
+  done
+  waitForFinishScave
+}
+
+# plot capacity csv data for given result as png
+# 1: EXPERIMENTNAME (name)
+function plotCapacityCsv {
+  echo
+  echo "Plotting CSV capacity data for $1"
+  mkdir -p ./export/ > /dev/null 2>&1
+  rm export/$1*.png > /dev/null 2>&1
+  A=1;
+  for i in csv/$1*Study*.csv; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 2- | sed 's/\.csv//g')
+    NUMHOSTS=$(($(head -1 csv/$RESULTNAME.csv | sed 's/[^,]//g' | wc -m)-1))
+    CSVHEAD=$(head -1 csv/$RESULTNAME.csv)
+    MAXVALUE=$(head -2 csv/$RESULTNAME.csv  | tail -1 | cut -d "," -f 2)
+    PLOTSTRING="set title \"$RESULTNAME\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$RESULTNAME.png\"; set datafile separator ','; plot " 
+    J=0
+    echo "  plotting $RESULTNAME"
+    while [[ $J -lt $NUMHOSTS ]]; do
+      PLOTSTRING="$PLOTSTRING \"csv/$RESULTNAME.csv\" using 1:$(($J+2)) with lines lw 3 smooth acsplines title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
+      J=$(($J+1))
+    done
+    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 && cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png &
+    waitForFreeSlotGnuplot
+    A=$(($A+1))
+  done
+  waitForFinishGnuplot
+}
+
+# create html overview for given result
+# 1: EXPERIMENTNAME (name)
+function createCapacityHtmlReport {
+  echo
+  echo "Creating HTML capacity overview for $1"
+  mkdir -p ./export/ > /dev/null 2>&1
+  rm export/$1*.html > /dev/null 2>&1
+  echo "<HTML>" > export/$1CapacityReport.html
+  echo "  <HEAD>" >> export/$1CapacityReport.html
+  echo "    <TITLE>$1CapacityReport</TITLE>" >> export/$1CapacityReport.html
+  echo "  </HEAD>" >> export/$1CapacityReport.html
+  echo "  <BODY>" >> export/$1CapacityReport.html
+  echo "    <H1>$1CapacityReport</H1>" >> export/$1CapacityReport.html
+  EVEN=0
+  for i in ./export/$1CapacityStudy-*.png; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 3-)
+    echo "    <img src=\"$RESULTNAME\">" >> export/$1CapacityReport.html
+    if [ $EVEN -ge 1 ]; then
+      echo "    <br>" >> export/$1CapacityReport.html
+      EVEN=0
+    else
+      EVEN=$(($EVEN+1))
+    fi 
+  done
+  echo "  </BODY>" >> export/$1CapacityReport.html
+  echo "</HTML>" >> export/$1CapacityReport.html
+}
+
+### execution ###
+# create directory for logs
+mkdir ../simulations/logs > /dev/null 2>&1
+
+# mode switch
+case $1 in
+
+  # full set of simulations, except longterm
+  aodv)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODV" $2
+    runSimulation "aodv.ini" "AODVPO" $2
+    runSimulation "aodv.ini" "AODVPOTriggerHappy" $2
+    runSimulation "aodv.ini" "AODVPOTriggerSloppy" $2
+    runSimulation "aodv.ini" "AODVPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  aodvshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODV" $2
+    runSimulation "aodv.ini" "AODVPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  aodvlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODVLong" $2
+    runSimulation "aodv.ini" "AODVPOLong" $2
+    runSimulation "aodv.ini" "AODVPOLongTriggerHappy" $2
+    runSimulation "aodv.ini" "AODVPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # full set of simulations, except longterm
+  dymo)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "dymo.ini" "DYMO" $2
+    runSimulation "dymo.ini" "DYMOPO" $2
+    runSimulation "dymo.ini" "DYMOPOTriggerHappy" $2
+    runSimulation "dymo.ini" "DYMOPOTriggerSloppy" $2
+    runSimulation "dymo.ini" "DYMOPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  dymoshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "dymo.ini" "DYMO" $2
+    runSimulation "dymo.ini" "DYMOPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  dymolong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "dymo.ini" "DYMOLong" $2
+    runSimulation "dymo.ini" "DYMOPOLong" $2
+    runSimulation "dymo.ini" "DYMOPOLongTriggerHappy" $2
+    runSimulation "dymo.ini" "DYMOPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # full set of simulations, except longterm
+  batman)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    runSimulation "batman.ini" "BatmanPOTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOTriggerSloppy" $2
+    runSimulation "batman.ini" "BatmanPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  batmanshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  batmanlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "BatmanLong" $2
+    runSimulation "batman.ini" "BatmanPOLong" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # full set of simulations, except longterm
+  olsr)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSR" $2
+    runSimulation "olsr.ini" "OLSRPO" $2
+    runSimulation "olsr.ini" "OLSRPOTriggerHappy" $2
+    runSimulation "olsr.ini" "OLSRPOTriggerSloppy" $2
+    runSimulation "olsr.ini" "OLSRPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # short set of simulations, no mixed or trigger modified runs
+  olsrshort)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSR" $2
+    runSimulation "olsr.ini" "OLSRPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  olsrlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSRLong" $2
+    runSimulation "olsr.ini" "OLSRPOLong" $2
+    runSimulation "olsr.ini" "OLSRPOLongTriggerHappy" $2
+    runSimulation "olsr.ini" "OLSRPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # run all short simulations
+  short)
+    writePid $$
+    $0 aodvshort $2
+    $0 dymoshort $2
+    $0 batmanshort $2
+    $0 olsrshort $2
+	deletePid $$
+  ;;
+
+  # run all simulations, except longterm
+  normal)
+    writePid $$
+    $0 aodv $2
+    $0 dymo $2
+    $0 batman $2
+    $0 olsr $2
+	deletePid $$
+  ;;
+
+  # run longterm simulations
+  long)
+    writePid $$
+    $0 aodvlong $2
+    $0 dymolong $2
+    $0 batmanlong $2
+    $0 olsrlong $2
+	deletePid $$
+  ;;
+
+  # run study simulations
+  study)
+    writePid $$
+    $0 aodvstudy $2
+    $0 dymostudy $2
+    $0 batmanstudy $2
+    $0 olsrstudy $2
+	deletePid $$
+  ;;
+
+  # run all simulations
+  all)
+    writePid $$
+    $0 aodv $2
+    $0 dymo $2
+    $0 batman $2
+    $0 olsr $2
+    $0 aodvlong $2
+    $0 dymolong $2
+    $0 batmanlong $2
+    $0 olsrlong $2
+	deletePid $$
+  ;;
+  
+  # run single simulation
+  config)
+    writePid $$
+    runPreamble $1
+	estimateThreads $4
+    runSimulation "$2" "$3" $4
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # kill running simulations
+  killopp)
+    killOppRun
+  ;;
+  
+  aodvstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)  
+    N=0
+    r  ./results/AODVPOP* > /dev/null 2>&1
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish    
+    cleanLogs
+    createCharts AODV
+    exportCapacityCsv AODV
+    plotCapacityCsv AODV
+    createCapacityHtmlReport AODV
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  dymostudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns dymo.ini DYMOPOParameterStudy)  
+    N=0
+    r  ./results/DYMOPOP* > /dev/null 2>&1
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "dymo.ini" DYMOPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish    
+    cleanLogs
+    createCharts DYMO
+    exportCapacityCsv DYMO
+    plotCapacityCsv DYMO
+    createCapacityHtmlReport DYMO
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  olsrstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns olsr.ini OLSRPOParameterStudy)  
+    N=0
+    rm ./results/OLSRPOP* > /dev/null 2>&1
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish       
+    cleanLogs
+    createCharts OLSR
+    exportCapacityCsv OLSR
+    plotCapacityCsv OLSR
+    createCapacityHtmlReport OLSR
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  batmanstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns batman.ini BatmanPOParameterStudy)  
+    N=0
+    rm ./results/BatmanPOP* > /dev/null 2>&1
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "batman.ini" BatmanPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish      
+    cleanLogs
+    createCharts Batman  
+    exportCapacityCsv Batman
+    plotCapacityCsv Batman
+    createCapacityHtmlReport Batman
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
+  *)
+    echo
+    echo "usage: ./run [mode] (verbose)"
+    echo "  runs designated tests and logs to files (multihreaded),"
+    echo "  for logging to screen and files, append 'verbose' (only singlethreaded)"
+	echo "  script must be started in directory simulations, you have been warned!"
+    echo
+    echo "  modes:"
+    echo "  all - runs all simulations"
+    echo "  short - runs all simulations without longterm, mixed and trigger variants"
+    echo "  normal - runs all simulations without longterm"
+    echo "  long - runs all longterm simulations"
+    echo "  study - runs all simulations with varying parameter"
+    echo "  olsr - runs olsr simulations without longterm"
+    echo "  aodv - runs aodv simulations without longterm"
+    echo "  dymo - runs dymo simulations without longterm"
+    echo "  batman - runs batman simulations without longterm"
+    echo "  olsrshort - runs olsr simulations without longterm, mixed and trigger variants"
+    echo "  aodvshort - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  dymoshort - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  batmanshort - runs batman simulations without longterm, mixed and trigger variants"
+    echo "  olsrlong - runs olsr longterm simulations"
+    echo "  aodvlong - runs aodv longterm simulations"
+    echo "  dymolong - runs aodv longterm simulations"
+    echo "  batmanlong - runs batman longterm simulations"
+    echo "  olsrstudy - runs olsr simulations with varying parameter"
+    echo "  aodvstudy - runs aodv simulations with varying parameter"
+    echo "  dymostudy - runs aodv simulations with varying parameter"
+    echo "  batmanstudy - runs batman simulations with varying parameter"
+    echo "  killopp - kills all running opp_run processes"
+    echo "  config CONFIGFILE CONFIGNAME - runs single simulation CONFIGNAME from CONFIGFILE"
+    echo "  help - print this help"
+    echo
+  ;;
+
+esac
