@@ -197,7 +197,7 @@ function createCharts {
   echo "  </datasets>" >> ./charts/$1Study.anf
   echo "  <chartSheets>" >> ./charts/$1Study.anf
   printf "<chartSheets name=\"Study\" charts=\"" >> ./charts/$1Study.anf   
-  I=0
+  I=2
   for i in results/$1*Study*.vec; do 
     printf "//@datasets/@datasets.0/@items.$I/@items.3 " >> ./charts/$1Study.anf 
     I=$(($I+1))
@@ -489,7 +489,7 @@ case $1 in
 	estimateThreads $2
     RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)  
     N=0
-    r  ./results/AODVPOP* > /dev/null 2>&1
+    rm ./results/AODVPOP* > /dev/null 2>&1
     while [ $N -le $RUNNUMS ]; do
       runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
       N=$(($N+1))
