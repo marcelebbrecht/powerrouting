@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.7
+Current version: 0.8
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -192,6 +192,13 @@ mentioned before, nearly useless:
 * longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
 
 
+Simulations with DYMO
+---------------------
+
+I tried to port DYMO, but it seems, that it doesn't work with CSMA/CA, so there is no sensefull comparision 
+possible. I moved all to the attic, maybe I give this a second shot later.
+
+
 Statistics
 ----------
 
@@ -244,3 +251,13 @@ Parameter Studies
 There are some parameter iteration configs (*ParameterStudy). The run-script run them multithreaded an creates charts for them. Data will be exported
 to csv and, if you set it up, graphs will be exported by GnuPlot.
 
+
+Performance of Protocols
+------------------------
+
+To get a simple value from studytests, I created a simple perfomance function:
+
+Performance = ( 1 / min(0.0000000000000001,CapacityStdDev) ) / ( 1 - ( packetLoss +  0.0000000000000001 ) )
+
+The constant is added to avoid division with zero. The higher the performance, the better 
+is the deviation in relation with loss rate.

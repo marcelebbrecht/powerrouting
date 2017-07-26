@@ -94,3 +94,12 @@ Version: 0.7
 Completed: 2017-07-24
 
 * CSV and PNG export for study cases added
+
+
+Version: 0.8
+------------
+
+Completed: 2017-07-26
+
+* Performance charts added to study cases
+* Tests with dymo (look at attic)
