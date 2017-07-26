@@ -5,10 +5,11 @@
     <inputs name="../results/BatmanPOP*.sca"/>
   </inputs>
   <datasets>
-    <items xsi:type="scave:Group" name="Performance">
+    <datasets name="Batman-Parameter-Study">
+      <items xsi:type="scave:Group" name="Performance">
         <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)"/>
         <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)"/>
-        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') )" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
         <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*)" type="VECTOR"/>
         <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
         <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
   <inputs>
-    <inputs name="../results/OLSRPO*.vec"/>
-    <inputs name="../results/OLSRPO*.sca"/>
+    <inputs name="../results/OLSRPOP*.vec"/>
+    <inputs name="../results/OLSRPOP*.sca"/>
   </inputs>
   <datasets>
-    <datasets name="AODV-Parameter-Study">
+    <datasets name="OLSR-Parameter-Study">
       <items xsi:type="scave:Group" name="Performance">
         <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)"/>
         <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)"/>
-        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') )" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
         <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*)" type="VECTOR"/>
         <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
         <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
