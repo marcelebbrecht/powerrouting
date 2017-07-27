@@ -510,3 +510,25 @@ network AODVPOMixed extends AODVPOCoreNetworkMixed
         }
     connections allowunconnected:
 }
+
+network AODVPOCompare extends AODVPOCoreNetwork
+{
+    submodules:
+        sender1: AODVPORouter {
+            parameters:
+                @display("i=device/accesspoint;p=100,400");
+        }
+        router53: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
+        }
+        router31: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
+        }
+        router35: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
+        }
+    connections allowunconnected:
+}

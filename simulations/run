@@ -315,6 +315,19 @@ case $1 in
 	deletePid $$
   ;;
 
+  # compare set of simulations, no mixed or trigger modified runs
+  aodvcompare)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "aodv.ini" "AODVPOCompare" $2
+    runSimulation "aodv.ini" "AODVPOCompareMulti" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
   # longterm simulations
   aodvlong)
     writePid $$
@@ -359,6 +372,19 @@ case $1 in
 	deletePid $$
   ;;
 
+  # compare set of simulations, no mixed or trigger modified runs
+  batmancompare)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "BatmanPOCompare" $2
+    runSimulation "batman.ini" "BatmanPOCompareMulti" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
   # longterm simulations
   batmanlong)
     writePid $$
@@ -397,6 +423,19 @@ case $1 in
 	estimateThreads $2
     runSimulation "olsr.ini" "OLSR" $2
     runSimulation "olsr.ini" "OLSRPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # compare set of simulations, no mixed or trigger modified runs
+  olsrcompare)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "olsr.ini" "OLSRPOCompare" $2
+    runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
     waitForFinish
     cleanLogs
     runPostamble $1
@@ -453,6 +492,15 @@ case $1 in
     $0 olsrstudy $2
 	deletePid $$
   ;;
+  
+  # run compare simulations
+  compare)
+    writePid $$
+    $0 aodvcompare $2
+    $0 batmancompare $2
+    $0 olsrcompare $2
+	deletePid $$
+  ;;
 
   # run all simulations
   all)
@@ -463,6 +511,9 @@ case $1 in
     $0 aodvlong $2
     $0 batmanlong $2
     $0 olsrlong $2
+    $0 aodvcompare $2
+    $0 batmancompare $2
+    $0 olsrcompare $2
 	deletePid $$
   ;;
   
@@ -559,6 +610,7 @@ case $1 in
     echo "  normal - runs all simulations without longterm"
     echo "  long - runs all longterm simulations"
     echo "  study - runs all simulations with varying parameter"
+    echo "  compare - runs all simulations for comparision"
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
     echo "  batman - runs batman simulations without longterm"
@@ -568,6 +620,9 @@ case $1 in
     echo "  olsrlong - runs olsr longterm simulations"
     echo "  aodvlong - runs aodv longterm simulations"
     echo "  batmanlong - runs batman longterm simulations"
+    echo "  olsrcompare - runs olsr simulations for comparision"
+    echo "  aodvcompare - runs aodv simulations for comparision"
+    echo "  batmancompare - runs batman simulations for comparision"
     echo "  olsrstudy - runs olsr simulations with varying parameter"
     echo "  aodvstudy - runs aodv simulations with varying parameter"
     echo "  batmanstudy - runs batman simulations with varying parameter"

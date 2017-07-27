@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="../results/AODVPOC*.vec"/>
+    <inputs name="../results/AODVPOC*.sca"/>
+    <inputs name="../results/OLSRPOC*.vec"/>
+    <inputs name="../results/OLSRPOC*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Comparision-UDP">
+      <items xsi:type="scave:Group" name="Comparision-UDP-Packets">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
+        <items xsi:type="scave:BarChart" name="Comparision-UDP-Packets">
+          <properties name="Graph.Title" value="Comparision-UDP-Packets"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-LossRate">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender1*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(sentPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Packets*)"/>
+        <items xsi:type="scave:BarChart" name="Comparision-UDP-LossRate">
+          <properties name="Graph.Title" value="Comparision-UDP-LossRate"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+        </items>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets/>
+</scave:Analysis>

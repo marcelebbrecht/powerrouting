@@ -510,3 +510,25 @@ network OLSRPOMixed extends OLSRPOCoreNetworkMixed
         }
     connections allowunconnected:
 }
+
+network OLSRPOCompare extends OLSRPOCoreNetwork
+{
+    submodules:
+        sender1: OLSRPORouter {
+            parameters:
+                @display("i=device/accesspoint;p=100,400");
+        }
+        router53: OLSRPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
+        }
+        router31: OLSRPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
+        }
+        router35: OLSRPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
+        }
+    connections allowunconnected:
+}
