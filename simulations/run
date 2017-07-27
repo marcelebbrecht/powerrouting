@@ -320,6 +320,8 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
+    runSimulation "aodv.ini" "AODVCompare" $2
+    runSimulation "aodv.ini" "AODVCompareMulti" $2
     runSimulation "aodv.ini" "AODVPOCompare" $2
     runSimulation "aodv.ini" "AODVPOCompareMulti" $2
     waitForFinish
@@ -377,6 +379,8 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
+    runSimulation "batman.ini" "BatmanCompare" $2
+    runSimulation "batman.ini" "BatmanCompareMulti" $2
     runSimulation "batman.ini" "BatmanPOCompare" $2
     runSimulation "batman.ini" "BatmanPOCompareMulti" $2
     waitForFinish
@@ -434,6 +438,8 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
+    runSimulation "olsr.ini" "OLSRCompare" $2
+    runSimulation "olsr.ini" "OLSRCompareMulti" $2
     runSimulation "olsr.ini" "OLSRPOCompare" $2
     runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
     waitForFinish

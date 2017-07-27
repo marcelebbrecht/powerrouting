@@ -5,11 +5,51 @@
     <inputs name="../results/AODVPOC*.sca"/>
     <inputs name="../results/OLSRPOC*.vec"/>
     <inputs name="../results/OLSRPOC*.sca"/>
+    <inputs name="../results/AODVC*.vec"/>
+    <inputs name="../results/AODVC*.sca"/>
+    <inputs name="../results/OLSRC*.vec"/>
+    <inputs name="../results/OLSRC*.sca"/>
   </inputs>
   <datasets>
     <datasets name="Comparision-UDP">
+      <items xsi:type="scave:Group" name="Performance">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') )" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="Performance" valueExpr="(1 / ( mean(0.0000000000000001 + mean('remainingCapacityStddev')))) / ( 1 / ( 1 - (mean('packetLoss')+0.0000000000000001)))" moduleExpr="${experiment}.Overall.Performance" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Capacity*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*packetLoss*)"/>
+        <items xsi:type="scave:BarChart" name="Performance">
+          <properties name="Graph.Title" value="Performance"/>
+          <properties name="X.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Title" value="Performance"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Stddev">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Stddev">
+          <properties name="Graph.Title" value="Stddev"/>
+          <properties name="X.Axis.Title" value="Stddev"/>
+          <properties name="Y.Axis.Title" value="Configuration"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
       <items xsi:type="scave:Group" name="Comparision-UDP-Packets">
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)"/>
         <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
         <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
         <items xsi:type="scave:BarChart" name="Comparision-UDP-Packets">
@@ -19,8 +59,8 @@
         </items>
       </items>
       <items xsi:type="scave:Group" name="Comparision-UDP-LossRate">
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(rcvdPk:count)"/>
-        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender1*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) ) AND name(sentPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="( module(&quot;*router*udpApp[0]*&quot;) OR module(&quot;*receiver*udpApp[0]*&quot;) ) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender1*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(sentPk:count)"/>
         <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
         <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr=""/>
         <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
@@ -34,5 +74,7 @@
       </items>
     </datasets>
   </datasets>
-  <chartSheets/>
+  <chartSheets>
+    <chartSheets name="Comparision" charts="//@datasets/@datasets.0/@items.3/@items.7 //@datasets/@datasets.0/@items.2/@items.3 //@datasets/@datasets.0/@items.0/@items.12 //@datasets/@datasets.0/@items.1/@items.6"/>
+  </chartSheets>
 </scave:Analysis>
