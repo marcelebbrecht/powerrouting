@@ -459,7 +459,7 @@ case $1 in
     runPreamble $1
 	estimateThreads $2
     runSimulation "olsr.ini" "OLSRCompare" $2
-    runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
+    runSimulation "olsr.ini" "OLSRCompareMulti" $2
     runSimulation "olsr.ini" "OLSRPOCompare" $2
     runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
     waitForFinish
