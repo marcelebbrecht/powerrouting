@@ -10,7 +10,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=1
+COREBIAS=0
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -22,6 +22,15 @@ DELETERTS="yes"
 GNUPLOT="/c/omnetpp/gnuplot/bin/gnuplot.exe"
 
 ### functions ###
+# get repeat
+function getRepeat {
+  if [ $(grep "repeat" ./common.ini | grep "=" | cut -d "=" -f 2 | wc -l) -eq 1 ]; then
+    grep "repeat" ./common.ini | grep "=" | cut -d "=" -f 2 | sed 's/ //g'
+  else
+    echo 1
+  fi
+}
+
 # estimating thread-count
 # 1: verbose (if wanted)
 function estimateThreads {
@@ -89,18 +98,28 @@ function waitForFreeSlotGnuplot {
 # 2: CONFIGNAME (name)
 # 3: verbose (if wanted)
 function runSimulation {
-  waitForFreeSlot
-  echo "  configuration: $2 (log: logs/$2.log)"
   if [[ $3 =~ "verbose" ]]; then
-    opp_run -r 0 -m -u Cmdenv \
-      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-      -l ../src/powerrouting -l ../../inet/src/inet \
-      -c $2 ../simulations/$1 2>&1 | tee logs/$2.log &
+    N=0
+    while [ $N -lt $(getRepeat) ]; do
+      waitForFreeSlot
+      echo "  configuration: $2, run $(($N+1)) of $(getRepeat)"
+      opp_run -r $N -m -u Cmdenv \
+        -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+        -l ../src/powerrouting -l ../../inet/src/inet \
+        -c $2 ../simulations/$1 2>&1 | tee logs/$2-$N.log &
+      N=$(($N+1))
+    done
   else
-    opp_run -r 0 -m -u Cmdenv \
-      -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
-      -l ../src/powerrouting -l ../../inet/src/inet \
-      -c $2 ../simulations/$1 > logs/$2.log 2>&1 &
+    N=0
+    while [ $N -lt $(getRepeat) ]; do
+      waitForFreeSlot
+      echo "  configuration: $2, run $(($N+1)) of $(getRepeat)"
+      opp_run -r $N -m -u Cmdenv \
+        -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+        -l ../src/powerrouting -l ../../inet/src/inet \
+        -c $2 ../simulations/$1 > logs/$2-$N.log 2>&1 &
+      N=$(($N+1))
+    done
   fi
   cleanLog $2 > /dev/null 2>&1
 }
@@ -245,6 +264,7 @@ function plotCapacityCsv {
       J=$(($J+1))
     done
     $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 && cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png &
+    if [[ "$i" =~ "#0" ]]; then cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png; fi &
     waitForFreeSlotGnuplot
     A=$(($A+1))
   done
@@ -439,7 +459,7 @@ case $1 in
     runPreamble $1
 	estimateThreads $2
     runSimulation "olsr.ini" "OLSRCompare" $2
-    runSimulation "olsr.ini" "OLSRCompareMulti" $2
+    runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
     runSimulation "olsr.ini" "OLSRPOCompare" $2
     runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
     waitForFinish

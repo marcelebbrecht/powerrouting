@@ -103,3 +103,12 @@ Completed: 2017-07-26
 
 * Performance charts added to study cases
 * Tests with dymo (look at attic)
+
+
+Version: 0.9
+------------
+
+Completed: 2017-07-28
+
+* Multiple runs: run, stats, plots, readme, seed
+* Comparision: stats, readme

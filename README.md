@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.8
+Current version: 0.9
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -67,6 +67,12 @@ I use Windows Version of OMNeT++ 5.1, Build id: 170331-7c4e366 for this project:
 https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omnetpp-5-1-windows
 
 Linux wasn't tested, yet.
+
+
+Space requirements
+------------------
+
+Results and exports need about 40G space.
 
 
 Installation
@@ -126,6 +132,11 @@ As I am working on that stuff for my bachelor thesis, I copied and ported the co
 to my project. After completion of that thesis, I will do it with inheritance - for AODV. OLSR won't work without patching
 inetmanet-3.5 (OLSRPO must be friend!).
 
+
+Repetitions
+-----------
+
+Currently all simulations will be run 5 times. Line Charts and HTML Reports will be only created for runnumber 0.
 
 Simulations with AODV
 ---------------------
@@ -249,7 +260,7 @@ Parameter Studies
 -----------------
 
 There are some parameter iteration configs (*ParameterStudy). The run-script run them multithreaded an creates charts for them. Data will be exported
-to csv and, if you set it up, graphs will be exported by GnuPlot.
+to csv and, if you set it up, graphs will be exported by GnuPlot. A HTML report with all plots from runnumber 0 will be created.
 
 
 Performance of Protocols
@@ -261,3 +272,11 @@ Performance = ( 1 / min(0.0000000000000001,CapacityStdDev) ) / ( 1 - ( packetLos
 
 The constant is added to avoid division with zero. The higher the performance, the better 
 is the deviation in relation with loss rate.
+
+
+Protocol comparision
+--------------------
+
+To show the effect of specific festures of these protocols, reactiv AODV againt proactive OLSR, I created specific comparision
+simulations and charts. There are two modes: One host sends to another host, one host sends to all hosts. You will see, that 
+OLSR got a lesser LossRate on second scenario. 

@@ -52,8 +52,48 @@
           <properties name="Y.Axis.Title" value="capacity"/>
         </items>
       </items>
+      <items xsi:type="scave:Group" name="C=0.075">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*) AND file(*C=0.075*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="C=0.075" lineNameFormat="">
+          <properties name="Graph.Title" value="C=0.075"/>
+          <properties name="X.Axis.Title" value="host"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="C=0.075">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*) AND file(*C=0.075*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="C=0.075" lineNameFormat="">
+          <properties name="Graph.Title" value="C=0.075"/>
+          <properties name="X.Axis.Title" value="host"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="C=0.075">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*) AND file(*C=0.075*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="C=0.075" lineNameFormat="">
+          <properties name="Graph.Title" value="C=0.075"/>
+          <properties name="X.Axis.Title" value="host"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="C=0.075">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Parameter*) AND file(*C=0.075*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:LineChart" name="C=0.075" lineNameFormat="">
+          <properties name="Graph.Title" value="C=0.075"/>
+          <properties name="X.Axis.Title" value="host"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+        </items>
+      </items>
     </datasets>
   </datasets>
   <chartSheets>
-<chartSheets name="Study" charts="//@datasets/@datasets.0/@items.2/@items.3 "/>  </chartSheets>
+<chartSheets name="Study" charts="//@datasets/@datasets.0/@items.2/@items.3 //@datasets/@datasets.0/@items.3/@items.3 //@datasets/@datasets.0/@items.4/@items.3 //@datasets/@datasets.0/@items.5/@items.3 //@datasets/@datasets.0/@items.6/@items.3 "/>  </chartSheets>
 </scave:Analysis>

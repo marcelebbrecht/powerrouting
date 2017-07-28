@@ -1,8 +1,9 @@
 PowerRouting for OMNeT++ - ToDo
 ===============================
 
-Version: 0.9
-------------
+
+Future versions
+---------------
 
 * examine batman, make po usefull
 * replace ACKTimeout hack with sane solution (inheritance?)
