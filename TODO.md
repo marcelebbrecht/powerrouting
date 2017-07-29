@@ -5,6 +5,7 @@ PowerRouting for OMNeT++ - ToDo
 Future versions
 ---------------
 
+* collect needed stats only
 * examine batman, make po usefull
 * replace ACKTimeout hack with sane solution (inheritance?)
 * getting DYMO to work 
