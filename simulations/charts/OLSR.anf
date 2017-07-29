@@ -3,6 +3,8 @@
   <inputs>
     <inputs name="../results/OLSR-*.vec"/>
     <inputs name="../results/OLSR-*.sca"/>
+    <inputs name="../results/OLSRL*.vec"/>
+    <inputs name="../results/OLSRL*.sca"/>
     <inputs name="../results/OLSRPO-*.vec"/>
     <inputs name="../results/OLSRPO-*.sca"/>
     <inputs name="../results/OLSRPOT*.vec"/>
@@ -11,8 +13,6 @@
     <inputs name="../results/OLSRPOM*.sca"/>
     <inputs name="../results/OLSRPOL*.vec"/>
     <inputs name="../results/OLSRPOL*.sca"/>
-    <inputs name="../results/OLSRL*.vec"/>
-    <inputs name="../results/OLSRL*.sca"/>
   </inputs>
   <datasets>
     <datasets name="OLSR-Capacity">
@@ -24,6 +24,7 @@
         <properties name="Graph.Title" value="OLSR-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -32,6 +33,7 @@
         <properties name="Graph.Title" value="OLSR-Capacity"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -45,6 +47,7 @@
         <properties name="Graph.Title" value="OLSRPO-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -53,6 +56,7 @@
         <properties name="Graph.Title" value="OLSRPO-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -66,6 +70,7 @@
         <properties name="Graph.Title" value="OLSRPOTriggerHappy-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -74,6 +79,7 @@
         <properties name="Graph.Title" value="OLSRPOTriggerHappy-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -87,6 +93,7 @@
         <properties name="Graph.Title" value="OLSRPOTriggerSloppy-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -95,6 +102,7 @@
         <properties name="Graph.Title" value="OLSRPOTriggerSloppy-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -108,6 +116,7 @@
         <properties name="Graph.Title" value="OLSRLong-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -116,6 +125,7 @@
         <properties name="Graph.Title" value="OLSRLong-Capacity"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -129,6 +139,7 @@
         <properties name="Graph.Title" value="OLSRPOLong-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -137,6 +148,7 @@
         <properties name="Graph.Title" value="OLSRPOLong-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -150,6 +162,7 @@
         <properties name="Graph.Title" value="OLSRPOLongTriggerHappy-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -158,6 +171,7 @@
         <properties name="Graph.Title" value="OLSRPOLongTriggerHappy-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -171,6 +185,7 @@
         <properties name="Graph.Title" value="OLSRPOLongTriggerSloppy-Capacity-AtEnd"/>
         <properties name="X.Axis.Title" value="storage"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
       <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
@@ -179,6 +194,7 @@
         <properties name="Graph.Title" value="OLSRPOLongTriggerSloppy-Capacity-OverTime"/>
         <properties name="X.Axis.Title" value="time"/>
         <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
         <properties name="Legend.Display" value="true"/>
         <properties name="Legend.Position" value="Right"/>
       </items>
@@ -195,6 +211,7 @@
           <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Sum"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="capacity"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="OLSR-Comparision-Capacity-Stddev">
@@ -205,6 +222,7 @@
           <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Stddev"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="stddev"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
     </datasets>
@@ -220,6 +238,7 @@
           <properties name="Graph.Title" value="OLSRLong-Comparision-Capacity-Sum"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="capacity"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="OLSRLong-Comparision-Capacity-Stddev">
@@ -230,6 +249,7 @@
           <properties name="Graph.Title" value="OLSRLong-Comparision-Capacity-Stddev"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="stddev"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
     </datasets>
@@ -240,6 +260,7 @@
           <properties name="Graph.Title" value="OLSR-Comparision-UDP-Packets"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="OLSR-Comparision-UDP-LossRate">
@@ -251,6 +272,7 @@
           <properties name="Graph.Title" value="OLSR-Comparision-UDP-LossRate"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
     </datasets>
@@ -263,6 +285,7 @@
           <properties name="Graph.Title" value="OLSRLong-Comparision-UDP-Packets"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
       <items xsi:type="scave:Group" name="OLSRLong-Comparision-UDP-LossRate">
@@ -274,6 +297,7 @@
           <properties name="Graph.Title" value="OLSRLong-Comparision-UDP-LossRate"/>
           <properties name="X.Axis.Title" value="configuration"/>
           <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
         </items>
       </items>
     </datasets>

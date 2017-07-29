@@ -3,10 +3,11 @@
 # Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 # free software, see LICENSE.md for details
 
-# Warning, written by a dont care bash hacker with
-# a bad attitude - dirty but worky, sorry guys!
-# So dont study the following code, it will harm
-# your coding skills. You habe been warned ;)
+# Warning, written by a "dont-care" bash-hacker with
+# a bad attitude - dirty but worky, sorry guys, I
+# don't like bash - I love it! So dont study the 
+# following code, it will harm your coding skills.
+# You habe been warned ;)
 
 ### settings ###
 # substract from available cores (number >= 0)
@@ -15,10 +16,13 @@ COREBIAS=1
 # delete elog files (yes,no)
 DELETELOGS="yes"
 
+# delete run log files (yes,no)
+DELETERUNLOGS="no"
+
 # delete rt files (yes,no)
 DELETERTS="yes"
 
-# gnuplot pathWe use exporting graphs to png files
+# gnuplot path for exporting graphs to png files
 GNUPLOT="/c/omnetpp/gnuplot/bin/gnuplot.exe"
 
 ### functions ###
@@ -52,6 +56,9 @@ function cleanLogs {
   if [[ "$DELETELOGS" =~ "yes" ]]; then
     echo "Removing elog files."
     rm ./results/*.elog > /dev/null 2>&1
+  fi
+  if [[ "$DELETERUNLOGS" =~ "yes" ]]; then
+    echo "Removing elog files."
     rm ./logs/*.log > /dev/null 2>&1
   fi
   if [[ "$DELETERTS" =~ "yes" ]]; then
@@ -68,14 +75,14 @@ function waitForFinish {
 
 # wait until last opp_run is finished
 function waitForFinishScave {
-  sleep 1
-  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+  sleep 0.1
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
 }
 
 # wait until last opp_run is finished
 function waitForFinishGnuplot {
-  sleep 1
-  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+  sleep 0.1
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
 }
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
@@ -85,12 +92,12 @@ function waitForFreeSlot {
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlotScave {
-  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 0.1; done  
 }
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlotGnuplot {
-  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 0.1; done  
 }
 
 # run single simulation
@@ -209,6 +216,7 @@ function createCharts {
     echo "          <properties name=\"Graph.Title\" value=\"$OPT\"/>" >> ./charts/$1Study.anf
     echo "          <properties name=\"X.Axis.Title\" value=\"host\"/>" >> ./charts/$1Study.anf
     echo "          <properties name=\"Y.Axis.Title\" value=\"capacity\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Y.Axis.Min\" value=\"0.0\"/>" >> ./charts/$1Study.anf
     echo "        </items>" >> ./charts/$1Study.anf
     echo "      </items>" >> ./charts/$1Study.anf
   done
@@ -256,15 +264,15 @@ function plotCapacityCsv {
     NUMHOSTS=$(($(head -1 csv/$RESULTNAME.csv | sed 's/[^,]//g' | wc -m)-1))
     CSVHEAD=$(head -1 csv/$RESULTNAME.csv)
     MAXVALUE=$(head -2 csv/$RESULTNAME.csv  | tail -1 | cut -d "," -f 2)
-    PLOTSTRING="set title \"$RESULTNAME\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$RESULTNAME.png\"; set datafile separator ','; plot " 
+    TITLE="$RESULTNAME - $(ls --full-time csv/$RESULTNAME.csv | awk {'print $6'}) $(ls --full-time csv/$RESULTNAME.csv | awk {'print $7'} | cut -d "." -f 1)" 
+    PLOTSTRING="set title \"$TITLE\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$RESULTNAME.png\"; set datafile separator ','; plot " 
     J=0
     echo "  plotting $RESULTNAME"
     while [[ $J -lt $NUMHOSTS ]]; do
       PLOTSTRING="$PLOTSTRING \"csv/$RESULTNAME.csv\" using 1:$(($J+2)) with lines lw 3 smooth acsplines title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
       J=$(($J+1))
     done
-    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 && cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png &
-    if [[ "$i" =~ "#0" ]]; then cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png; fi &
+    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 && if [[ "$RESULTNAME" =~ "#0" ]]; then cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png; fi & 
     waitForFreeSlotGnuplot
     A=$(($A+1))
   done
@@ -340,10 +348,14 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
-    runSimulation "aodv.ini" "AODVCompare" $2
-    runSimulation "aodv.ini" "AODVCompareMulti" $2
-    runSimulation "aodv.ini" "AODVPOCompare" $2
-    runSimulation "aodv.ini" "AODVPOCompareMulti" $2
+    runSimulation "aodv.ini" "AODVCompareOneToOne" $2
+    runSimulation "aodv.ini" "AODVCompareOneToMany" $2
+    runSimulation "aodv.ini" "AODVCompareManyToOne" $2
+    runSimulation "aodv.ini" "AODVCompareManyToMany" $2
+    runSimulation "aodv.ini" "AODVPOCompareOneToOne" $2
+    runSimulation "aodv.ini" "AODVPOCompareOneToMany" $2
+    runSimulation "aodv.ini" "AODVPOCompareManyToOne" $2
+    runSimulation "aodv.ini" "AODVPOCompareManyToMany" $2
     waitForFinish
     cleanLogs
     runPostamble $1
@@ -399,10 +411,14 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
-    runSimulation "batman.ini" "BatmanCompare" $2
-    runSimulation "batman.ini" "BatmanCompareMulti" $2
-    runSimulation "batman.ini" "BatmanPOCompare" $2
-    runSimulation "batman.ini" "BatmanPOCompareMulti" $2
+    runSimulation "batman.ini" "BatmanCompareOneToOne" $2
+    runSimulation "batman.ini" "BatmanCompareOneToMany" $2
+    runSimulation "batman.ini" "BatmanCompareManyToOne" $2
+    runSimulation "batman.ini" "BatmanCompareManyToMany" $2
+    runSimulation "batman.ini" "BatmanPOCompareOneToOne" $2
+    runSimulation "batman.ini" "BatmanPOCompareOneToMany" $2
+    runSimulation "batman.ini" "BatmanPOCompareManyToOne" $2
+    runSimulation "batman.ini" "BatmanPOCompareManyToMany" $2
     waitForFinish
     cleanLogs
     runPostamble $1
@@ -458,10 +474,14 @@ case $1 in
     writePid $$
     runPreamble $1
 	estimateThreads $2
-    runSimulation "olsr.ini" "OLSRCompare" $2
-    runSimulation "olsr.ini" "OLSRCompareMulti" $2
-    runSimulation "olsr.ini" "OLSRPOCompare" $2
-    runSimulation "olsr.ini" "OLSRPOCompareMulti" $2
+    runSimulation "olsr.ini" "OLSRCompareOneToOne" $2
+    runSimulation "olsr.ini" "OLSRCompareOneToMany" $2
+    runSimulation "olsr.ini" "OLSRCompareManyToOne" $2
+    runSimulation "olsr.ini" "OLSRCompareManyToMany" $2
+    runSimulation "olsr.ini" "OLSRPOCompareOneToOne" $2
+    runSimulation "olsr.ini" "OLSRPOCompareOneToMany" $2
+    runSimulation "olsr.ini" "OLSRPOCompareManyToOne" $2
+    runSimulation "olsr.ini" "OLSRPOCompareManyToMany" $2
     waitForFinish
     cleanLogs
     runPostamble $1
@@ -487,7 +507,6 @@ case $1 in
   short)
     writePid $$
     $0 aodvshort $2
-    $0 batmanshort $2
     $0 olsrshort $2
 	deletePid $$
   ;;
@@ -496,7 +515,6 @@ case $1 in
   normal)
     writePid $$
     $0 aodv $2
-    $0 batman $2
     $0 olsr $2
 	deletePid $$
   ;;
@@ -505,7 +523,6 @@ case $1 in
   long)
     writePid $$
     $0 aodvlong $2
-    $0 batmanlong $2
     $0 olsrlong $2
 	deletePid $$
   ;;
@@ -514,7 +531,6 @@ case $1 in
   study)
     writePid $$
     $0 aodvstudy $2
-    $0 batmanstudy $2
     $0 olsrstudy $2
 	deletePid $$
   ;;
@@ -523,7 +539,6 @@ case $1 in
   compare)
     writePid $$
     $0 aodvcompare $2
-    $0 batmancompare $2
     $0 olsrcompare $2
 	deletePid $$
   ;;
@@ -532,14 +547,13 @@ case $1 in
   all)
     writePid $$
     $0 aodv $2
-    $0 batman $2
     $0 olsr $2
     $0 aodvlong $2
-    $0 batmanlong $2
     $0 olsrlong $2
     $0 aodvcompare $2
-    $0 batmancompare $2
     $0 olsrcompare $2
+    $0 aodvstudy $2
+    $0 olsrstudy $2
 	deletePid $$
   ;;
   
@@ -631,12 +645,12 @@ case $1 in
 	echo "  script must be started in directory simulations, you have been warned!"
     echo
     echo "  modes:"
-    echo "  all - runs all simulations"
-    echo "  short - runs all simulations without longterm, mixed and trigger variants"
-    echo "  normal - runs all simulations without longterm"
-    echo "  long - runs all longterm simulations"
-    echo "  study - runs all simulations with varying parameter"
-    echo "  compare - runs all simulations for comparision"
+    echo "  all - runs all aodv and olsr simulations"
+    echo "  short - runs all aodv and olsr simulations without longterm, mixed and trigger variants"
+    echo "  normal - runs all aodv and olsr simulations without longterm"
+    echo "  long - runs all aodv and olsr longterm simulations"
+    echo "  study - runs all aodv and olsr simulations with varying parameter"
+    echo "  compare - runs all aodv and olsr simulations for comparision"
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
     echo "  batman - runs batman simulations without longterm"

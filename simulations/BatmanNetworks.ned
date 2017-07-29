@@ -514,31 +514,9 @@ network BatmanPOMixed extends BatmanPOCoreNetworkMixed
 network BatmanPOCompare extends BatmanPOCoreNetwork
 {
     submodules:
-        sender1: BatmanPORouter {
+        router13: BatmanPORouter {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: BatmanPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: BatmanPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: BatmanPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network BatmanPOCompareMulti extends BatmanPOCoreNetwork
-{
-    submodules:
-        sender1: BatmanPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
         router53: BatmanPORouter {
             parameters:
@@ -558,31 +536,9 @@ network BatmanPOCompareMulti extends BatmanPOCoreNetwork
 network BatmanCompare extends BatmanCoreNetwork
 {
     submodules:
-        sender1: BatmanRouter {
+        router13: BatmanRouter {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: BatmanRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: BatmanRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: BatmanRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network BatmanCompareMulti extends BatmanCoreNetwork
-{
-    submodules:
-        sender1: BatmanRouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
         router53: BatmanRouter {
             parameters:

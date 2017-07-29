@@ -514,31 +514,9 @@ network OLSRPOMixed extends OLSRPOCoreNetworkMixed
 network OLSRPOCompare extends OLSRPOCoreNetwork
 {
     submodules:
-        sender1: OLSRPORouter {
+        router13: OLSRPORouter {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network OLSRPOCompareMulti extends OLSRPOCoreNetwork
-{
-    submodules:
-        sender1: OLSRPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
         router53: OLSRPORouter {
             parameters:
@@ -558,31 +536,9 @@ network OLSRPOCompareMulti extends OLSRPOCoreNetwork
 network OLSRCompare extends OLSRCoreNetwork
 {
     submodules:
-        sender1: OLSRRouter {
+        router13: OLSRRouter {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network OLSRCompareMulti extends OLSRCoreNetwork
-{
-    submodules:
-        sender1: OLSRRouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
         router53: OLSRRouter {
             parameters:

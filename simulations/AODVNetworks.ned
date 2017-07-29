@@ -514,29 +514,7 @@ network AODVPOMixed extends AODVPOCoreNetworkMixed
 network AODVPOCompare extends AODVPOCoreNetwork
 {
     submodules:
-        sender1: AODVPORouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network AODVPOCompareMulti extends AODVPOCoreNetwork
-{
-    submodules:
-        sender1: AODVPORouter {
+        router13: AODVPORouter {
             parameters:
                 @display("i=device/accesspoint;p=100,400");
         }
@@ -558,31 +536,9 @@ network AODVPOCompareMulti extends AODVPOCoreNetwork
 network AODVCompare extends AODVCoreNetwork
 {
     submodules:
-        sender1: AODVRouter {
+        router13: AODVRouter {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
-        }
-        receiver1: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
-        }
-        router31: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
-        }
-        router35: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
-        }
-    connections allowunconnected:
-}
-
-network AODVCompareMulti extends AODVCoreNetwork
-{
-    submodules:
-        sender1: AODVRouter {
-            parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
         router53: AODVRouter {
             parameters:
