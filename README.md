@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.91
+Current version: 0.92
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -72,7 +72,8 @@ Linux wasn't tested, yet.
 Space requirements
 ------------------
 
-Results and exports need about 40G space.
+Results and exports need about 40-50G space. For a full run, my I7 3770 with 7 active threads 
+needs abount 2 hours.
 
 
 Installation
@@ -280,3 +281,9 @@ Protocol comparision
 To show the effect of specific festures of these protocols, reactiv AODV againt proactive OLSR, I created specific comparision
 simulations and charts. There are two modes: One host sends to another host, one host sends to all hosts. You will see, that 
 OLSR got a lesser LossRate on second scenario. 
+
+
+Result filtering
+----------------
+
+To lower space usage, results will be filtered after each run. We only keep capacity and received/sent upd packets.

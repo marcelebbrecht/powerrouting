@@ -112,3 +112,21 @@ Completed: 2017-07-28
 
 * Multiple runs: run, stats, plots, readme, seed
 * Comparision: stats, readme
+
+
+Version: 0.91
+-------------
+
+Completed: 2017-07-29
+
+* Bugfixes on stats creation
+
+
+Version: 0.92
+-------------
+
+Completed: 2017-07-30
+
+* Filtering on results
+* More Test cases
+* Fixes on Charts

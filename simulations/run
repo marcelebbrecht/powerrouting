@@ -22,11 +22,21 @@ DELETERUNLOGS="no"
 # delete rt files (yes,no)
 DELETERTS="yes"
 
+# how many times CPUCOUNT should scave processes be started (number)
+SCAVEFACTOR="4"
+
+# how many times CPUCOUNT should gnuplot processes be started (number)
+PLOTFACTOR="4"
+
+# filter results (yes,no)
+FILTERRESULTS="yes"
+
 # gnuplot path for exporting graphs to png files
 GNUPLOT="/c/omnetpp/gnuplot/bin/gnuplot.exe"
 
 ### functions ###
 # get repeat
+# R: NUMBEROFREPETITIONS (number)
 function getRepeat {
   if [ $(grep "repeat" ./common.ini | grep "=" | cut -d "=" -f 2 | wc -l) -eq 1 ]; then
     grep "repeat" ./common.ini | grep "=" | cut -d "=" -f 2 | sed 's/ //g'
@@ -37,6 +47,7 @@ function getRepeat {
 
 # estimating thread-count
 # 1: verbose (if wanted)
+# R: NUMBEROFTHREADS (number)
 function estimateThreads {
   CPUCOUNT=$(($(cat /proc/cpuinfo | grep processor | wc -l)-$COREBIAS))
   if [ $CPUCOUNT -le 0 ]; then CPUCOUNT = 1; fi
@@ -92,12 +103,12 @@ function waitForFreeSlot {
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlotScave {
-  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 0.1; done  
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $(($CPUCOUNT*$SCAVEFACTOR)) ]; do sleep 0.1; done  
 }
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlotGnuplot {
-  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 0.1; done  
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $(($CPUCOUNT*$PLOTFACTOR)) ]; do sleep 0.1; done  
 }
 
 # run single simulation
@@ -113,7 +124,7 @@ function runSimulation {
       opp_run -r $N -m -u Cmdenv \
         -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
         -l ../src/powerrouting -l ../../inet/src/inet \
-        -c $2 ../simulations/$1 2>&1 | tee logs/$2-$N.log &
+        -c $2 ../simulations/$1 2>&1 | tee logs/$2-$N.log && filterResultsVector "results/$2-#$N.vec" && filterResultsScalar "results/$2-#$N.sca" &
       N=$(($N+1))
     done
   else
@@ -124,7 +135,7 @@ function runSimulation {
       opp_run -r $N -m -u Cmdenv \
         -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
         -l ../src/powerrouting -l ../../inet/src/inet \
-        -c $2 ../simulations/$1 > logs/$2-$N.log 2>&1 &
+        -c $2 ../simulations/$1 > logs/$2-$N.log 2>&1 && filterResultsVector "results/$2-#$N.vec" && filterResultsScalar "results/$2-#$N.sca" &
       N=$(($N+1))
     done
   fi
@@ -142,12 +153,13 @@ function runStudySimulation {
   opp_run -r $3 -m -u Cmdenv \
     -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
     -l ../src/powerrouting -l ../../inet/src/inet \
-    -c $2 ../simulations/$1 > logs/$2-$3.log 2>&1 &
+    -c $2 ../simulations/$1 > logs/$2-$3.log 2>&1 && filterResultsVector "$(getStudyResultName $1 $2 $3).vec" && filterResultsScalar "$(getStudyResultName $1 $2 $3).sca" &
   cleanLog $2 > /dev/null 2>&1
 }
 
 # output before run
 # 1: SIMULATIONNAME (string)
+# R: ECHO TEXT (output)
 function runPreamble { 
   echo
   echo "running $1 simulations, please wait ..."
@@ -193,11 +205,24 @@ function deletePid {
 # estimate number of runs for parameter study
 # 1: CONFIGFILE (filename)
 # 2: CONFIGNAME (name)
+# R: NUMBEROFRUNS (number)
 function numberOfRuns {
   RUNNUMS=$(($(opp_run -u Cmdenv \
     -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
     -l ../src/powerrouting -l ../../inet/src/inet -c $2 ../simulations/$1 -q numruns | grep "Number of runs" | cut -d ":" -f 2 | sed 's/ //g')-1))
   echo $RUNNUMS  
+}
+
+# get result name for study case
+# 1: CONFIGFILE (filename)
+# 2: CONFIGNAME (name)
+# 3: NUMBEROFRUN (number)
+# R: NAMEOFRESULT (name)
+function getStudyResultName {
+  SUFFIX=$(opp_run -r $3 -u Cmdenv \
+    -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
+    -l ../src/powerrouting -l ../../inet/src/inet -c $2 ../simulations/$1 -q runs | grep "Run " | sed 's/\$//g' | cut -d ":" -f 2 | sed 's/ //g' | sed 's/,repetition=/-#/g')
+  echo "results/$2-$SUFFIX"
 }
 
 # create study charts
@@ -305,6 +330,32 @@ function createCapacityHtmlReport {
   done
   echo "  </BODY>" >> export/$1CapacityReport.html
   echo "</HTML>" >> export/$1CapacityReport.html
+}
+
+# filter results vector
+# 1: FILENAME (file)
+function filterResultsVector {
+  if [[ "$FILTERRESULTS" =~ "yes" ]]; then
+    scavetool x -f "name(*Capacity*)" -o tmp/$1 $1 > /dev/null 2>&1
+    cp -a tmp/$1 $1
+    cleanTemp
+  fi
+}
+
+# filter results scalar
+# 1: FILENAME (file)
+function filterResultsScalar {
+  if [[ "$FILTERRESULTS" =~ "yes" ]]; then
+    scavetool x -f "( name("rcvdPk:count") OR name("sentPk:count") )" -o tmp/$1 $1 > /dev/null 2>&1
+    cp -a tmp/$1 $1
+    cleanTemp
+  fi
+}
+
+# clean tmp directory
+function cleanTemp {
+  rm ./tmp/* > /dev/null 2>&1
+  rm ./tmp/results/* > /dev/null 2>&1
 }
 
 ### execution ###
