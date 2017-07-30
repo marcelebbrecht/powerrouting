@@ -335,6 +335,7 @@ function createCapacityHtmlReport {
 # filter results vector
 # 1: FILENAME (file)
 function filterResultsVector {
+  mkdir -p ./tmp/results > /dev/null 2>&1
   if [[ "$FILTERRESULTS" =~ "yes" ]]; then
     scavetool x -f "name(*Capacity*)" -o tmp/$1 $1 > /dev/null 2>&1
     cp -a tmp/$1 $1
@@ -345,6 +346,7 @@ function filterResultsVector {
 # filter results scalar
 # 1: FILENAME (file)
 function filterResultsScalar {
+  mkdir -p ./tmp/results > /dev/null 2>&1
   if [[ "$FILTERRESULTS" =~ "yes" ]]; then
     scavetool x -f "( name("rcvdPk:count") OR name("sentPk:count") )" -o tmp/$1 $1 > /dev/null 2>&1
     cp -a tmp/$1 $1
