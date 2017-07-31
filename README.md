@@ -72,8 +72,8 @@ Linux wasn't tested, yet.
 Space requirements
 ------------------
 
-Results and exports need about 40-50G space. For a full run, my I7 3770 with 7 active threads 
-needs abount 2 hours.
+Results and exports need about 15-20G space. A full run, an I7 3770 with 7 active threads 
+needs about 2 hours.
 
 
 Installation
@@ -89,7 +89,7 @@ Also please exclude the following path from build:
 * inet/routing/extras/olsr
 * inet/routing/extras/batman
 
-Now apply patch for ACK message bug as mentioned under Bugs (see at the end of this document).
+Now apply patch for ACK message bug as mentioned under bugs (see at the end of this document).
 
 Two ways to solve this issue:
 * Disable vizualization features in Inetmanet project settings and comment vizualization options in common.ini, then clean and rebuild Inetmanet 
@@ -137,7 +137,8 @@ inetmanet-3.5 (OLSRPO must be friend!).
 Repetitions
 -----------
 
-Currently all simulations will be run 5 times. Line Charts and HTML Reports will be only created for runnumber 0.
+Currently all simulations will be run 5 times. Line Charts and HTML reports will be only created for runnumber 0.
+
 
 Simulations with AODV
 ---------------------
@@ -214,7 +215,7 @@ possible. I moved all to the attic, maybe I give this a second shot later.
 Statistics
 ----------
 
-The mixed configurations are not included in stats or longterm, they're only for demonstation of interoperability.
+Mixed configurations are not included in stats or longterm, they're only for demonstation of interoperability.
 
 In the stats directory, you will find an analysis file for each routing protocoll. Here you can examine and visualize different things:
 * for each simulation you can examine power consumption of every router on battery as timeline (lower deviation is better)
@@ -269,7 +270,7 @@ Performance of Protocols
 
 To get a simple value from studytests, I created a simple perfomance function:
 
-Performance = ( 1 / min(0.0000000000000001,CapacityStdDev) ) / ( 1 - ( packetLoss +  0.0000000000000001 ) )
+Performance = ( 1 - ( packetLoss + 0.0000000000000001 ) ) / ( CapacityStdDev + 0.0000000000000001 )
 
 The constant is added to avoid division with zero. The higher the performance, the better 
 is the deviation in relation with loss rate.
