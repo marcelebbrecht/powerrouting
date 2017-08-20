@@ -384,8 +384,8 @@ case $1 in
 	deletePid $$
   ;;
 
-  # short set of simulations, no mixed or trigger modified runs
-  aodvshort)
+  # fast set of simulations, no mixed or trigger modified runs
+  aodvfast)
     writePid $$
     runPreamble $1
 	estimateThreads $2
@@ -447,8 +447,8 @@ case $1 in
 	deletePid $$
   ;;
 
-  # short set of simulations, no mixed or trigger modified runs
-  batmanshort)
+  # fast set of simulations, no mixed or trigger modified runs
+  batmanfast)
     writePid $$
     runPreamble $1
 	estimateThreads $2
@@ -510,8 +510,8 @@ case $1 in
 	deletePid $$
   ;;
 
-  # short set of simulations, no mixed or trigger modified runs
-  olsrshort)
+  # fast set of simulations, no mixed or trigger modified runs
+  olsrfast)
     writePid $$
     runPreamble $1
 	estimateThreads $2
@@ -557,11 +557,11 @@ case $1 in
 	deletePid $$
   ;;
 
-  # run all short simulations
-  short)
+  # run all fast simulations
+  fast)
     writePid $$
-    $0 aodvshort $2
-    $0 olsrshort $2
+    $0 aodvfast $2
+    $0 olsrfast $2
 	deletePid $$
   ;;
 
@@ -700,7 +700,7 @@ case $1 in
     echo
     echo "  modes:"
     echo "  all - runs all aodv and olsr simulations"
-    echo "  short - runs all aodv and olsr simulations without longterm, mixed and trigger variants"
+    echo "  fast - runs all aodv and olsr simulations without longterm, mixed and trigger variants"
     echo "  normal - runs all aodv and olsr simulations without longterm"
     echo "  long - runs all aodv and olsr longterm simulations"
     echo "  study - runs all aodv and olsr simulations with varying parameter"
@@ -708,9 +708,9 @@ case $1 in
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
     echo "  batman - runs batman simulations without longterm"
-    echo "  olsrshort - runs olsr simulations without longterm, mixed and trigger variants"
-    echo "  aodvshort - runs aodv simulations without longterm, mixed and trigger variants"
-    echo "  batmanshort - runs batman simulations without longterm, mixed and trigger variants"
+    echo "  olsrfast - runs olsr simulations without longterm, mixed and trigger variants"
+    echo "  aodvfast - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  batmanfast - runs batman simulations without longterm, mixed and trigger variants"
     echo "  olsrlong - runs olsr longterm simulations"
     echo "  aodvlong - runs aodv longterm simulations"
     echo "  batmanlong - runs batman longterm simulations"
