@@ -129,4 +129,14 @@ Completed: 2017-07-30
 
 * Filtering on results
 * More Test cases
-* Fixes on Charts
+* Fixes on Chart
+
+
+Version: 0.93
+-------------
+
+Completed: In Progress
+
+* Much, much more repetitions
+* Added min/max/avg visualization to ANF files
+* Batman and DYMO excluded from further work, focus is on olsr and aodv

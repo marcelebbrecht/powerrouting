@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.92
+Current version: 0.93
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -72,9 +72,11 @@ Linux wasn't tested, yet.
 Space requirements
 ------------------
 
-Results and exports need about 15-20G space. A full run, an I7 3770 with 7 active threads 
+Until 0.92: Results and exports need about 15-20G space. A full run, an I7 3770 with 7 active threads 
 needs about 2 hours.
 
+Dunno atm ;) To much repitions and modes to run all at once. I will do a full run this night and hope
+the 1TB disk mounted on results directory will fit. 
 
 Installation
 ------------
@@ -137,7 +139,9 @@ inetmanet-3.5 (OLSRPO must be friend!).
 Repetitions
 -----------
 
-Currently all simulations will be run 5 times. Line Charts and HTML reports will be only created for runnumber 0.
+Currently nearly all simulations will be run multiple times. Line Charts and HTML reports will be only created for runnumber 0.
+Due high space and resultcomputation requirenments, parameter study is limited to one run. Mixed modes is only for demonstrating
+interoperability
 
 
 Simulations with AODV
@@ -203,6 +207,8 @@ mentioned before, nearly useless:
 * mixed networks to show interoperability of BatmanPO with normal Batman routers
 * for BatmanPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
 * longterm run (all routing nodes will run out of battery before end) to examine which mode transmitts more packets
+
+Since version 0.93 BATMAN is not longer maintained. Maybe I return to that piece of work later on.
 
 
 Simulations with DYMO
