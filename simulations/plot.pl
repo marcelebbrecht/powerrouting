@@ -3,10 +3,8 @@
 # free software, see LICENSE.md for details
 
 ### includes
-use Statistics::Lite qw(:all);
-use Chart::Gnuplot;
-use DateTime qw();
 use Switch;
+use strict;
 
 ### imports
 require "./subs.pl";
@@ -47,7 +45,6 @@ switch($mode) {
 		# plot charts
 		plotCapacityAtEnd($capacityAtEndPlotFile, $capacityAtEndPlotTitle, @resultsCapacityAtEnd);
 		plotCapacityAtEnd($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, @resultsCapacityShortAtEnd);
-		break;
 	}
 	
 	case "compareProtocol" {
@@ -57,12 +54,35 @@ switch($mode) {
 		shift;
 	    my $numberOfRuns = $ARGV[0];
 		shift;
+	    my $confidence = $ARGV[0];
+		shift;
+	    my $shortTime = $ARGV[0];
+		shift;
 		my @configurations = @ARGV;
 		
-		my @capacityAtEndDataStatistics = getCapacityAtEndStatistic($numberOfRuns, 1, @configurations);
-		my @capacityAtEndDataStatisticsShort = getCapacityAtEndStatistic($numberOfRuns, 0, @configurations);
+		# filenames
+		my $capacityAtEndPlotFile = "export/$protcolFamily-CapacityAtEndStatistics.png";
+		my $capacityAtEndPlotFileShort = "export/$protcolFamily-CapacityAtEndStatistics-Short.png";
+		my $capacityAtEndPlotTitle = "$protcolFamily ($numberOfRuns repetitions)";
+		my $capacityAtEndPlotTitleShort = "$protcolFamily (".$shortTime."s) ($numberOfRuns repetitions)";
 		
-		break;
+		# read data
+		my @capacityAtEndDataStatistics = getCapacityAtEndStatistic($numberOfRuns, 1, $confidence, @configurations);
+		my @capacityAtEndDataStatisticsShort = getCapacityAtEndStatistic($numberOfRuns, 0, $confidence, @configurations);
+		my @capacityAtEndData = getCapacityAtEndArray($numberOfRuns, 1, $confidence, @configurations);
+		my @capacityAtEndDataShort = getCapacityAtEndArray($numberOfRuns, 0, $confidence, @configurations);
+	
+		plotCapacityAtEndStatistics($capacityAtEndPlotFile, $capacityAtEndPlotTitle, $confidence, @capacityAtEndDataStatistics);
+		plotCapacityAtEndStatistics($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, $confidence, @capacityAtEndDataStatisticsShort);
+		
+		my $position = 0;
+		foreach (@configurations) {
+			plotCapacityAtEndConfidence($confidence, $_, $position, @capacityAtEndData);
+			plotCapacityAtEndConfidence($confidence, $_, $position, @capacityAtEndDataShort);
+			$position++;
+		}
+		
+		
 	}
 }
 

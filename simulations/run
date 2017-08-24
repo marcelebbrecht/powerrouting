@@ -34,6 +34,9 @@ DROPOUT="10"
 # timelimit for shorter analysis
 SHORTTIME="60"
 
+# confidence for statistics
+CONFIDENCE="95"
+
 ### functions ###        
 # get repeat
 # R: NUMBEROFREPETITIONS (number)
@@ -256,7 +259,7 @@ function plotOne {
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean.csv    | tail -1 | cut -d "," -f 2)
     TITLE="$1 - CapacityOverTime ($DATETIME)" 
-    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
+    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -271,7 +274,7 @@ function plotOne {
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean-Short.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean-Short.csv    | tail -1 | cut -d "," -f 2)
     TITLE="$1 ("$SHORTTIME"s) - CapacityOverTime ($DATETIME)"     
-    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
+    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean-Short.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -284,15 +287,7 @@ function plotOne {
 # 1: PROTOCOL (name)
 function plotProtocol {
     declare -a protocols=("${!3}")
-    #for PROTOCOL in "${protocols[@]}"; do
-    #	R=0
-    #	while [ $R -lt $2 ]; do
-    #	    ls results/$PROTOCOL-\#$R-CapacityOverTime-Clean.csv
-    #	    R=$(($R+1))
-    #	done
-    #done
-    echo $($PERL plot.pl compareProtocol $1 $2 ${protocols[@]})
-    #rm results/$1-CapacityOverTime*.csv
+    $PERL plot.pl compareProtocol $1 $2 $CONFIDENCE $SHORTTIME ${protocols[@]}
 }
 
 ### execution ###
