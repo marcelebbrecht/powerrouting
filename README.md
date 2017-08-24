@@ -166,7 +166,7 @@ Please create a runconfig that uses aodv.ini. The different configs are describe
 
 Feel free to experiment with the following parameters, set through aodv.ini:
 * aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 2.0)
-* aodvpo.powerTrigger - steps on relative charge for sending RERR. If set to 0.20, the router sends on 80%,60%,... an RERR, low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
+* aodvpo.powerTrigger - steps on relative charge for sending RERR. If set to 0.20, the router sends on 80%,60%,... an RERR, low values makes it triggerhappy (min: 0.05, max: 1.0, default: 0.3)
 * aodvpo.powerBias - constant value to add to hopCount for battery-based routers (min: 0.0, default: 0.0)
 
 
@@ -189,7 +189,7 @@ Please create a runconfig that uses olsr.ini. The different configs are describe
 
 Feel free to experiment with the following parameters, set through olsr.ini:
 * olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.0, max: 0.999999, default: 0.0)
-* olsrpo.powerTrigger - steps on relative charge for lowering willingness. If set to 0.20, the router set willingness on 80%,60%,..., low values makes it triggerhappy (min: 0.05, max: 0.5, default: 0.3)
+* olsrpo.powerTrigger - steps on relative charge for lowering willingness. If set to 0.20, the router set willingness on 80%,60%,..., low values makes it triggerhappy (min: 0.05, max: 1.0, default: 0.3)
 * olsrpo.powerBias - constant value to substract for battery-based routers (min: 0.0, default: 0.0)
 
 

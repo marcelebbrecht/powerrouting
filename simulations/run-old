@@ -84,9 +84,31 @@ function waitForFinish {
   while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
 }
 
+# wait until last opp_run is finished
+function waitForFinishScave {
+  sleep 0.1
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
+}
+
+# wait until last opp_run is finished
+function waitForFinishGnuplot {
+  sleep 0.1
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
+}
+
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlot {
   while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done  
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlotScave {
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $(($CPUCOUNT*$SCAVEFACTOR)) ]; do sleep 0.1; done  
+}
+
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlotGnuplot {
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge $(($CPUCOUNT*$PLOTFACTOR)) ]; do sleep 0.1; done  
 }
 
 # run single simulation
@@ -203,6 +225,114 @@ function getStudyResultName {
   echo "results/$2-$SUFFIX"
 }
 
+# create study charts
+# 1: TYPENAME (name)
+function createCharts {
+  echo
+  printf "Creating charts for $1, please wait ..."
+  cat ./charts/templates/$1Study.pre > ./charts/$1Study.anf  
+  for i in results/$1*Study*.vec; do 
+    OPT=$(echo $i | cut -d "-" -f 2)
+    echo "      <items xsi:type=\"scave:Group\" name=\"$OPT\">" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Add\" filterPattern=\"name(*Capacity*) AND attr:configname(*Parameter*) AND file(*$OPT*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*sender*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:Discard\" filterPattern=\"module(*receiver*)\" type=\"VECTOR\"/>" >> ./charts/$1Study.anf
+    echo "        <items xsi:type=\"scave:LineChart\" name=\"$OPT\" lineNameFormat=\"\">" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Graph.Title\" value=\"$OPT\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"X.Axis.Title\" value=\"host\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Y.Axis.Title\" value=\"capacity\"/>" >> ./charts/$1Study.anf
+    echo "          <properties name=\"Y.Axis.Min\" value=\"0.0\"/>" >> ./charts/$1Study.anf
+    echo "        </items>" >> ./charts/$1Study.anf
+    echo "      </items>" >> ./charts/$1Study.anf
+  done
+  echo "    </datasets>" >> ./charts/$1Study.anf
+  echo "  </datasets>" >> ./charts/$1Study.anf
+  echo "  <chartSheets>" >> ./charts/$1Study.anf
+  echo "    <chartSheets name=\"Compare\" charts=\"//@datasets/@datasets.0/@items.2/@items.3 //@datasets/@datasets.0/@items.0/@items.12 //@datasets/@datasets.0/@items.1/@items.6\"/>" >> ./charts/$1Study.anf
+  printf "    <chartSheets name=\"Study\" charts=\"" >> ./charts/$1Study.anf   
+  I=3
+  for i in results/$1*Study*.vec; do 
+    printf "//@datasets/@datasets.0/@items.$I/@items.3 " >> ./charts/$1Study.anf 
+    I=$(($I+1))
+  done
+  printf "\"/>" >> ./charts/$1Study.anf 
+  echo "  </chartSheets>" >> ./charts/$1Study.anf
+  cat ./charts/templates/$1Study.post >> ./charts/$1Study.anf  
+  echo " done!"
+}
+
+# export capacity csv data for given result
+# 1: EXPERIMENTNAME (name)
+function exportCapacityCsv {
+  echo
+  echo "Exporting CSV capacity data for $1"
+  mkdir -p ./csv/ > /dev/null 2>&1
+  rm csv/$1*.csv > /dev/null 2>&1
+  for i in results/$1*Study*.vec; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 2- | sed 's/\.vec//g')
+    echo "  exporting $RESULTNAME"
+    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O csv/$RESULTNAME.csv -F csv results/$RESULTNAME.vec > /dev/null 2>&1 &
+    waitForFreeSlotScave
+  done
+  waitForFinishScave
+}
+
+# plot capacity csv data for given result as png
+# 1: EXPERIMENTNAME (name)
+function plotCapacityCsv {
+  echo
+  echo "Plotting CSV capacity data for $1"
+  mkdir -p ./export/ > /dev/null 2>&1
+  rm export/$1*.png > /dev/null 2>&1
+  A=1;
+  for i in csv/$1*Study*.csv; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 2- | sed 's/\.csv//g')
+    NUMHOSTS=$(($(head -1 csv/$RESULTNAME.csv | sed 's/[^,]//g' | wc -m)-1))
+    CSVHEAD=$(head -1 csv/$RESULTNAME.csv)
+    MAXVALUE=$(head -2 csv/$RESULTNAME.csv  | tail -1 | cut -d "," -f 2)
+    TITLE="$RESULTNAME - $(ls --full-time csv/$RESULTNAME.csv | awk {'print $6'}) $(ls --full-time csv/$RESULTNAME.csv | awk {'print $7'} | cut -d "." -f 1)" 
+    PLOTSTRING="set title \"$TITLE\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE]; set term png size 900 400 font \"Helvetica,9\"; set auto x; set output \"export/$RESULTNAME.png\"; set datafile separator ','; plot " 
+    J=0
+    echo "  plotting $RESULTNAME"
+    while [[ $J -lt $NUMHOSTS ]]; do
+      PLOTSTRING="$PLOTSTRING \"csv/$RESULTNAME.csv\" using 1:$(($J+2)) with lines lw 3 smooth acsplines title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
+      J=$(($J+1))
+    done
+    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 && if [[ "$RESULTNAME" =~ "#0" ]]; then cp -a export/$RESULTNAME.png export/$1CapacityStudy-$A.png; fi & 
+    waitForFreeSlotGnuplot
+    A=$(($A+1))
+  done
+  waitForFinishGnuplot
+}
+
+# create html overview for given result
+# 1: EXPERIMENTNAME (name)
+function createCapacityHtmlReport {
+  echo
+  echo "Creating HTML capacity overview for $1"
+  mkdir -p ./export/ > /dev/null 2>&1
+  rm export/$1*.html > /dev/null 2>&1
+  echo "<HTML>" > export/$1CapacityReport.html
+  echo "  <HEAD>" >> export/$1CapacityReport.html
+  echo "    <TITLE>$1CapacityReport</TITLE>" >> export/$1CapacityReport.html
+  echo "  </HEAD>" >> export/$1CapacityReport.html
+  echo "  <BODY>" >> export/$1CapacityReport.html
+  echo "    <H1>$1CapacityReport</H1>" >> export/$1CapacityReport.html
+  EVEN=0
+  for i in ./export/$1CapacityStudy-*.png; do
+    RESULTNAME=$(echo $i | cut -d "/" -f 3-)
+    echo "    <img src=\"$RESULTNAME\">" >> export/$1CapacityReport.html
+    if [ $EVEN -ge 1 ]; then
+      echo "    <br>" >> export/$1CapacityReport.html
+      EVEN=0
+    else
+      EVEN=$(($EVEN+1))
+    fi 
+  done
+  echo "  </BODY>" >> export/$1CapacityReport.html
+  echo "</HTML>" >> export/$1CapacityReport.html
+}
+
 # filter results vector
 # 1: FILENAME (file)
 function filterResultsVector {
@@ -237,8 +367,6 @@ mkdir ../simulations/logs > /dev/null 2>&1
 
 # mode switch
 case $1 in
-
-
 
   # full set of simulations, except longterm
   aodv)
@@ -297,6 +425,69 @@ case $1 in
     runSimulation "aodv.ini" "AODVPOLong" $2
     runSimulation "aodv.ini" "AODVPOLongTriggerHappy" $2
     runSimulation "aodv.ini" "AODVPOLongTriggerSloppy" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+  
+  # full set of simulations, except longterm
+  batman)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    runSimulation "batman.ini" "BatmanPOTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOTriggerSloppy" $2
+    runSimulation "batman.ini" "BatmanPOMixed" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # fast set of simulations, no mixed or trigger modified runs
+  batmanfast)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "Batman" $2
+    runSimulation "batman.ini" "BatmanPO" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # compare set of simulations, no mixed or trigger modified runs
+  batmancompare)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "BatmanCompareOneToOne" $2
+    runSimulation "batman.ini" "BatmanCompareOneToMany" $2
+    runSimulation "batman.ini" "BatmanCompareManyToOne" $2
+    runSimulation "batman.ini" "BatmanCompareManyToMany" $2
+    runSimulation "batman.ini" "BatmanPOCompareOneToOne" $2
+    runSimulation "batman.ini" "BatmanPOCompareOneToMany" $2
+    runSimulation "batman.ini" "BatmanPOCompareManyToOne" $2
+    runSimulation "batman.ini" "BatmanPOCompareManyToMany" $2
+    waitForFinish
+    cleanLogs
+    runPostamble $1
+	deletePid $$
+  ;;
+
+  # longterm simulations
+  batmanlong)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    runSimulation "batman.ini" "BatmanLong" $2
+    runSimulation "batman.ini" "BatmanPOLong" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerHappy" $2
+    runSimulation "batman.ini" "BatmanPOLongTriggerSloppy" $2
     waitForFinish
     cleanLogs
     runPostamble $1
@@ -479,6 +670,27 @@ case $1 in
 	deletePid $$ 
   ;;
   
+  batmanstudy)
+    writePid $$
+    runPreamble $1
+	estimateThreads $2
+    RUNNUMS=$(numberOfRuns batman.ini BatmanPOParameterStudy)  
+    N=0
+    rm ./results/BatmanPOP* > /dev/null 2>&1
+    while [ $N -le $RUNNUMS ]; do
+      runStudySimulation "batman.ini" BatmanPOParameterStudy $N $RUNNUMS
+      N=$(($N+1))
+    done
+    waitForFinish      
+    cleanLogs
+    createCharts Batman  
+    exportCapacityCsv Batman
+    plotCapacityCsv Batman
+    createCapacityHtmlReport Batman
+    runPostamble $1
+	deletePid $$ 
+  ;;
+  
   *)
     echo
     echo "usage: ./run [mode] (verbose)"
@@ -495,14 +707,19 @@ case $1 in
     echo "  compare - runs all aodv and olsr simulations for comparision"
     echo "  olsr - runs olsr simulations without longterm"
     echo "  aodv - runs aodv simulations without longterm"
+    echo "  batman - runs batman simulations without longterm"
     echo "  olsrfast - runs olsr simulations without longterm, mixed and trigger variants"
     echo "  aodvfast - runs aodv simulations without longterm, mixed and trigger variants"
+    echo "  batmanfast - runs batman simulations without longterm, mixed and trigger variants"
     echo "  olsrlong - runs olsr longterm simulations"
     echo "  aodvlong - runs aodv longterm simulations"
+    echo "  batmanlong - runs batman longterm simulations"
     echo "  olsrcompare - runs olsr simulations for comparision"
     echo "  aodvcompare - runs aodv simulations for comparision"
+    echo "  batmancompare - runs batman simulations for comparision"
     echo "  olsrstudy - runs olsr simulations with varying parameter"
     echo "  aodvstudy - runs aodv simulations with varying parameter"
+    echo "  batmanstudy - runs batman simulations with varying parameter"
     echo "  killopp - kills all running opp_run processes"
     echo "  config CONFIGFILE CONFIGNAME - runs single simulation CONFIGNAME from CONFIGFILE"
     echo "  help - print this help"
