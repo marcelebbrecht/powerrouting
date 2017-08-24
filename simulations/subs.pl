@@ -100,6 +100,42 @@ sub getCapacityResults {
 	return @results;
 }
 
+# get cs as array (reads file and return)
+# 1: filename as string
+# R: two dimensional array with complete logfile
+sub getCsvAsArray {
+	# get parameters
+	my $filename = $_[0];
+	
+	# get information
+	my $resultsWidth = getCapacityResultsWidth($filename);
+	
+	# create array
+	my @results = ();
+	foreach my $i ( 0 .. 1 ) {
+		foreach my $j ( 0 .. $resultsWidth-1 ) {
+			push @{ $results[$i] }, $j;
+		}
+	}
+
+	# read file by line and write to new file and array
+	open(FILE, "<", $filename);
+	my $actualLine = 0;
+	while (my $line = <FILE>) {
+		my @line = split("," , $line);
+		my $actualColumn = 0;
+		foreach (@line) { 
+			chomp $_;
+			$results[$actualLine][$actualColumn] = $_;
+			$actualColumn++;
+		}
+		$actualLine++;
+	}
+	close FILE;
+	
+	return @results;
+}
+
 # convert capacity results array to shorter one
 # 1: time in seconds
 # 2: two dimensional array with complete logfile

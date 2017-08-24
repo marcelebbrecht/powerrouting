@@ -108,7 +108,7 @@ function runSimulation {
         N=0
         while [ $N -lt $(getRepeat) ]; do
             waitForFreeSlot
-            echo "    configuration: $2, run $(($N+1)) of $(getRepeat)"
+            echo "    run: $2, run $(($N+1)) of $(getRepeat)"
             opp_run -r $N -m -u Cmdenv \
                 -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
                 -l ../src/powerrouting -l ../../inet/src/inet \
@@ -119,7 +119,7 @@ function runSimulation {
         N=0
         while [ $N -lt $(getRepeat) ]; do
             waitForFreeSlot
-            echo "    configuration: $2, run $(($N+1)) of $(getRepeat)"
+            echo "    run: $2, run $(($N+1)) of $(getRepeat)"
             opp_run -r $N -m -u Cmdenv \
                 -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
                 -l ../src/powerrouting -l ../../inet/src/inet \
@@ -157,7 +157,7 @@ function plotSimulationProtocol {
 # 4: NUMBEROFALLRUNS (number) 
 function runStudySimulation {
     waitForFreeSlot
-    echo "    configuration: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
+    echo "    run: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
     opp_run -r $3 -m -u Cmdenv \
         -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
         -l ../src/powerrouting -l ../../inet/src/inet \
@@ -307,18 +307,18 @@ case $1 in
         writePid $$
         runPreamble $1
 		estimateThreads $2
-        #runSimulation "aodv.ini" "AODV" $2
-        #runSimulation "aodv.ini" "AODVPO" $2
-        #runSimulation "aodv.ini" "AODVPOTriggerHappy" $2
-        #runSimulation "aodv.ini" "AODVPOTriggerSloppy" $2
-        #runSimulation "aodv.ini" "AODVPOMixed" $2
-        #waitForFinish
-        #plotSimulation "AODV"
-        #plotSimulation "AODVPO"
-        #plotSimulation "AODVPOTriggerHappy"
-        #plotSimulation "AODVPOTriggerSloppy"
-        #plotSimulation "AODVPOMixed"
-        #waitForFinish
+        runSimulation "aodv.ini" "AODV" $2
+        runSimulation "aodv.ini" "AODVPO" $2
+        runSimulation "aodv.ini" "AODVPOTriggerHappy" $2
+        runSimulation "aodv.ini" "AODVPOTriggerSloppy" $2
+        runSimulation "aodv.ini" "AODVPOMixed" $2
+        waitForFinish
+        plotSimulation "AODV"
+        plotSimulation "AODVPO"
+        plotSimulation "AODVPOTriggerHappy"
+        plotSimulation "AODVPOTriggerSloppy"
+        plotSimulation "AODVPOMixed"
+        waitForFinish
         PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "AODVPOMixed")
         plotSimulationProtocol "AODV" PROTOCOLS[@]
         cleanLogs

@@ -60,8 +60,18 @@ switch($mode) {
 		
 		foreach (@configurations) {
 		  for ( my $run = 0; $run < $numberOfRuns; $run++) {
-		    print "results/$_-#$run-CapacityAtEnd-Clean.csv\n";
-		    print "results/$_-#$run-CapacityAtEnd-Clean-Short.csv\n";
+			
+			my @test = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean.csv", 1);
+			print $test[0][0]."\n";
+			print $test[1][0]."\n";
+			print $test[0][1]."\n";
+			print $test[1][1]."\n";
+			
+			my @test = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean-Short.csv", 1);
+			print $test[0][0]."\n";
+			print $test[1][0]."\n";
+			print $test[0][1]."\n";
+			print $test[1][1]."\n";
 		  }
 		}
 	}
