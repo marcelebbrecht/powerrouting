@@ -51,6 +51,7 @@ switch($mode) {
 	}
 	
 	case "compareProtocol" {
+		# get parameters
 		shift;
 	    my $protcolFamily = $ARGV[0];
 		shift;
@@ -58,22 +59,10 @@ switch($mode) {
 		shift;
 		my @configurations = @ARGV;
 		
-		foreach (@configurations) {
-		  for ( my $run = 0; $run < $numberOfRuns; $run++) {
-			
-			my @test = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean.csv", 1);
-			print $test[0][0]."\n";
-			print $test[1][0]."\n";
-			print $test[0][1]."\n";
-			print $test[1][1]."\n";
-			
-			my @test = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean-Short.csv", 1);
-			print $test[0][0]."\n";
-			print $test[1][0]."\n";
-			print $test[0][1]."\n";
-			print $test[1][1]."\n";
-		  }
-		}
+		my @capacityAtEndDataStatistics = getCapacityAtEndStatistic($numberOfRuns, 1, @configurations);
+		my @capacityAtEndDataStatisticsShort = getCapacityAtEndStatistic($numberOfRuns, 0, @configurations);
+		
+		break;
 	}
 }
 

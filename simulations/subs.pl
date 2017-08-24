@@ -219,12 +219,129 @@ sub getMinimumCapacityValues {
 	return @minArray;
 }
 
+# create capacity adt end statistic
+# 1: number of runs as integer
+# 2: long version = 1, short version = 0
+# 3: configurations as array
+# R: array with statistical data
+#	row0 -> name, row1 -> stddev, row2 -> min, row3 -> max
+sub getCapacityAtEndStatistic {
+	my $numberOfRuns = $_[0];
+	shift;
+	my $longVersion = $_[0];
+	shift;
+	my @configurations = @_;
+	
+	# first: create capacity stddev
+	my $capacityAtEndDataWidth = $numberOfRuns;
+	my $capacityAtEndDataLength = @configurations;
+	
+	# create array for minimum values
+	my @capacityAtEndData = ();
+
+	# iterate over configurations
+	my $configuration = 0;
+	foreach (@configurations) {
+	    # write stddev to subarrays
+		for ( my $run = 0; $run < $numberOfRuns; $run++) {
+			my @results;
+			if ( $longVersion == 1 ) {
+				@results = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean.csv", 1);
+			} else {
+				@results = getCsvAsArray("results/$_-#$run-CapacityAtEnd-Clean-Short.csv", 1);
+			}
+			$capacityAtEndData[$configuration][$run] = stddev(@{$results[1]});
+		}
+		
+		# calculate statistical data and write end of array
+		my $configurationMean = mean(@{$capacityAtEndData[$configuration]});
+		my $configurationMin = min(@{$capacityAtEndData[$configuration]});
+		my $configurationMax = max(@{$capacityAtEndData[$configuration]});						
+		push @{$capacityAtEndData[$configuration]}, $configurationMean;
+		push @{$capacityAtEndData[$configuration]}, $configurationMin;
+		push @{$capacityAtEndData[$configuration]}, $configurationMax;
+			
+		$configuration++;
+	}
+	
+	# rerun, write final statistics array
+	my @capacityAtEndDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$capacityAtEndDataStatistics[0]}, $_;
+		for ( my $run = 0; $run < $numberOfRuns; $run++ ) {
+			push @{$capacityAtEndDataStatistics[1]}, $capacityAtEndData[$configuration][$numberOfRuns];
+			push @{$capacityAtEndDataStatistics[2]}, $capacityAtEndData[$configuration][$numberOfRuns+1];
+			push @{$capacityAtEndDataStatistics[3]}, $capacityAtEndData[$configuration][$numberOfRuns+2];
+			$configuration++;
+		}
+	}
+}
+
 # create capacityAtEnd chart
 # 1: filename as string
 # 2: title as string
 # 3: minimum results as array
 # R: void
 sub plotCapacityAtEnd {
+	# get parameters
+	my $filename = $_[0];
+	my $title = $_[1];
+	shift;
+	shift;
+	my @statsArray = @_;
+	
+	# plot chart
+	my $minimumChart = Chart::Gnuplot->new(
+		output => $filename,
+		terminal => "png",
+		title => {
+			text => "$title - CapacityAtEnd (".DateTime->now->strftime('%Y-%m-%d %H:%I:%S').")",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$minArray[1]}) * 1.05 ],
+  
+		xlabel => {
+			text => "Router",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Capacity",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my $minimumDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@{$minArray[0]},
+		ydata => \@{$minArray[1]},
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$minimumChart->plot2d($minimumDataSet);
+}
+
+# create capacityAtEnd statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: results as array
+# R: void
+sub plotCapacityAtEndStatistics {
 	# get parameters
 	my $filename = $_[0];
 	my $title = $_[1];
