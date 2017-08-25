@@ -46,6 +46,16 @@ function getRepeat {
     else
         echo 1
     fi
+}  
+      
+# get simulation time
+# R: SIMULATIONTIME (number)
+function getSimTime {
+    if [ $(grep "sim-time-limit" ./common.ini | grep "=" | cut -d "=" -f 2 | wc -l) -eq 1 ]; then
+        grep "sim-time-limit" ./common.ini | grep "=" | cut -d "=" -f 2 | sed 's/ //g' | sed 's/s//g'
+    else
+        echo 1
+    fi
 }
 
 # estimating thread-count
@@ -137,6 +147,7 @@ function runSimulation {
 # 1: CONFIGNAME (name)
 function plotSimulation {
     N=0
+	mkdir -p ./export/$1 > /dev/null 2>&1
     while [ $N -lt $(getRepeat) ]; do
         waitForFreeSlotPlot
         echo "    plot: $1, run $(($N+1)) of $(getRepeat)"
@@ -148,6 +159,7 @@ function plotSimulation {
 # plot simulation for complete protocol
 # 1: CONFIGNAME (name)
 function plotSimulationProtocol {
+	mkdir -p ./export/Summary > /dev/null 2>&1
     echo "    plot: $1 protocol comparision"    
 	declare -a protocolArray=("${!2}")
     plotProtocol $1 $(getRepeat) protocolArray[@] &
@@ -246,11 +258,12 @@ function cleanTemp {
 # 1: EXPERIMENTNAME (name)
 function plotOne {
     # convert omnetdata to csv
-    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O    results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
     mkdir -p export > /dev/null 2>&1
+	PROTOCOL=$(echo $1 | cut -d "-" -f 1)
     
     # create better data with perl and plot files
-    $PERL plot.pl singleCapacity $1 $DROPOUT $SHORTTIME
+    $PERL plot.pl singleCapacity $1 $DROPOUT $SHORTTIME $(getSimTime)
     
     # perl::gnuplot is buggy, cant plot with more than 8 datasets, so we use bash
     # for timebased charts over all hosts, full time
@@ -258,8 +271,8 @@ function plotOne {
     NUMHOSTS=$(($(head -1 results/$1-CapacityOverTime.csv | sed 's/[^,]//g' | wc -m)-1))
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean.csv    | tail -1 | cut -d "," -f 2)
-    TITLE="$1 - CapacityOverTime ($DATETIME)" 
-    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
+    TITLE="$1 ("$(getSimTime)"s) - CapacityOverTime" 
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -273,8 +286,8 @@ function plotOne {
     NUMHOSTS=$(($(head -1 results/$1-CapacityOverTime.csv | sed 's/[^,]//g' | wc -m)-1))
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean-Short.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean-Short.csv    | tail -1 | cut -d "," -f 2)
-    TITLE="$1 ("$SHORTTIME"s) - CapacityOverTime ($DATETIME)"     
-    PLOTSTRING="set title \"$TITLE\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
+    TITLE="$1 ("$SHORTTIME"s) - CapacityOverTime"     
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean-Short.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -285,9 +298,12 @@ function plotOne {
 
 # plot capacity csv data for given result as png
 # 1: PROTOCOL (name)
+# 2: REPITITIONS (integer)
+# 3: CONFIGURATIONS (array)
 function plotProtocol {
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/$1-UDPStats.csv -F csv results/$1*.sca > /dev/null 2>&1
     declare -a protocols=("${!3}")
-    $PERL plot.pl compareProtocol $1 $2 $CONFIDENCE $SHORTTIME ${protocols[@]}
+    $PERL plot.pl compareProtocol $1 $2 $CONFIDENCE $SHORTTIME $(getSimTime) ${protocols[@]}
 }
 
 ### execution ###
@@ -316,6 +332,7 @@ case $1 in
         waitForFinish
         PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "AODVPOMixed")
         plotSimulationProtocol "AODV" PROTOCOLS[@]
+		waitForFinish
         cleanLogs
         runPostamble $1
 		deletePid $$
@@ -368,11 +385,15 @@ case $1 in
         runSimulation "olsr.ini" "OLSRPOTriggerSloppy" $2
         runSimulation "olsr.ini" "OLSRPOMixed" $2
         waitForFinish
-        plotSimulation "OLSR"
-        plotSimulation "OLSRPO"
-        plotSimulation "OLSRPOTriggerHappy"
-        plotSimulation "OLSRPOTriggerSloppy"
-        plotSimulation "OLSRPOMixed"
+        #plotSimulation "OLSR"
+        #plotSimulation "OLSRPO"
+        #plotSimulation "OLSRPOTriggerHappy"
+        #plotSimulation "OLSRPOTriggerSloppy"
+        #plotSimulation "OLSRPOMixed"
+        #waitForFinish
+        #PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
+        #plotSimulationProtocol "OLSR" PROTOCOLS[@]
+        #waitForFinish
         cleanLogs
         runPostamble $1
 		deletePid $$
