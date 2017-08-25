@@ -11,7 +11,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=1
+COREBIAS=4
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -330,7 +330,7 @@ case $1 in
         plotSimulation "AODVPOTriggerSloppy"
         plotSimulation "AODVPOMixed"
         waitForFinish
-        PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "AODVPOMixed")
+        PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy")
         plotSimulationProtocol "AODV" PROTOCOLS[@]
 		waitForFinish
         cleanLogs
@@ -385,15 +385,15 @@ case $1 in
         runSimulation "olsr.ini" "OLSRPOTriggerSloppy" $2
         runSimulation "olsr.ini" "OLSRPOMixed" $2
         waitForFinish
-        #plotSimulation "OLSR"
-        #plotSimulation "OLSRPO"
-        #plotSimulation "OLSRPOTriggerHappy"
-        #plotSimulation "OLSRPOTriggerSloppy"
-        #plotSimulation "OLSRPOMixed"
-        #waitForFinish
-        #PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
-        #plotSimulationProtocol "OLSR" PROTOCOLS[@]
-        #waitForFinish
+        plotSimulation "OLSR"
+        plotSimulation "OLSRPO"
+        plotSimulation "OLSRPOTriggerHappy"
+        plotSimulation "OLSRPOTriggerSloppy"
+        plotSimulation "OLSRPOMixed"
+        waitForFinish
+        PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
+        plotSimulationProtocol "OLSR" PROTOCOLS[@]
+        waitForFinish
         cleanLogs
         runPostamble $1
 		deletePid $$
