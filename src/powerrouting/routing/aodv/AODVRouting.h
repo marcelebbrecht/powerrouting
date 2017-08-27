@@ -144,7 +144,7 @@ class AODVRouting : public cSimpleModule, public ILifecycle, public INetfilter::
     void cancelRouteDiscovery(const L3Address& destAddr);
 
     /* Routing Table management */
-    void updateRoutingTable(IRoute *route, const L3Address& nextHop, unsigned int hopCount, bool hasValidDestNum, unsigned int destSeqNum, bool isActive, simtime_t lifeTime);
+    virtual void updateRoutingTable(IRoute *route, const L3Address& nextHop, unsigned int hopCount, bool hasValidDestNum, unsigned int destSeqNum, bool isActive, simtime_t lifeTime);
     IRoute *createRoute(const L3Address& destAddr, const L3Address& nextHop, unsigned int hopCount, bool hasValidDestNum, unsigned int destSeqNum, bool isActive, simtime_t lifeTime);
     bool updateValidRouteLifeTime(const L3Address& destAddr, simtime_t lifetime);
     void scheduleExpungeRoutes();

@@ -151,7 +151,8 @@ Mainly, the power-based version AODVPO does the following trick: Every time a pa
 battery storage is checked. If it drops a predefined ratio, the router adds a higher value to the nextHop information
 it transmitts to other routers for knows routes and send an RERR. After that, the router would look less attractive for 
 other hosts and so, if available, another router will be used. To ensure functionality on low capacity (and so, high
-hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024.
+hopCounts), I raised the netDiameter for AODV and AODVPO on routers to 1024. I raised the TTL for RERR from 1 to 3, to 
+reach more routers.
 
 Old: nextHopCount = oldHopCount + 1
 New: nextHopCount = oldHopCount + ( 1 / ( relativeCharge / powerSensitivity ) + powerBias ), where relativeCharge is in 0..1

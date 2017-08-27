@@ -48,35 +48,9 @@ network OLSRCoreNetwork
                 @display("p=900,700");
         }
         
-        router11: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
         router22: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,250");
+                @display("i=device/accesspoint;r=,,#707070;p=250,250");
         }
         
         router32: OLSRRouter {
@@ -86,17 +60,12 @@ network OLSRCoreNetwork
         
         router42: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,250");
-        }
-        
-        router52: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
+                @display("i=device/accesspoint;r=,,#707070;p=550,250");
         }
         
         router23: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,400");
+                @display("i=device/accesspoint;r=,,#707070;p=250,400");
         }
         
         router33: OLSRRouter {
@@ -106,17 +75,12 @@ network OLSRCoreNetwork
         
         router43: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,400");
-        }
-        
-        router14: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
+                @display("i=device/accesspoint;r=,,#707070;p=550,400");
         }
         
         router24: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,550");
+                @display("i=device/accesspoint;r=,,#707070;p=250,550");
         }
         
         router34: OLSRRouter {
@@ -126,33 +90,7 @@ network OLSRCoreNetwork
         
         router44: OLSRRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,550");
-        }
-        
-        router54: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: OLSRRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
+                @display("i=device/accesspoint;r=,,#707070;p=550,550");
         }
     connections allowunconnected:
 }
@@ -192,35 +130,9 @@ network OLSRPOCoreNetwork
                 @display("p=900,700");
         }
         
-        router11: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
         router22: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,250");
+                @display("i=device/accesspoint;r=,,#707070;p=250,250");
         }
         
         router32: OLSRPORouter {
@@ -230,17 +142,12 @@ network OLSRPOCoreNetwork
         
         router42: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,250");
-        }
-        
-        router52: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
+                @display("i=device/accesspoint;r=,,#707070;p=550,250");
         }
         
         router23: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,400");
+                @display("i=device/accesspoint;r=,,#707070;p=250,400");
         }
         
         router33: OLSRPORouter {
@@ -250,17 +157,12 @@ network OLSRPOCoreNetwork
         
         router43: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,400");
-        }
-        
-        router14: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
+                @display("i=device/accesspoint;r=,,#707070;p=550,400");
         }
         
         router24: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,550");
+                @display("i=device/accesspoint;r=,,#707070;p=250,550");
         }
         
         router34: OLSRPORouter {
@@ -270,33 +172,7 @@ network OLSRPOCoreNetwork
         
         router44: OLSRPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,550");
-        }
-        
-        router54: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
+                @display("i=device/accesspoint;r=,,#707070;p=550,550");
         }
     connections allowunconnected:
 }
@@ -336,32 +212,6 @@ network OLSRPOCoreNetworkMixed
                 @display("p=900,700");
         }
         
-        router11: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
         router22: OLSRRouter {
             parameters:
                 @display("i=device/accesspoint;p=250,250");
@@ -375,11 +225,6 @@ network OLSRPOCoreNetworkMixed
         router42: OLSRRouter {
             parameters:
                 @display("i=device/accesspoint;p=550,250");
-        }
-        
-        router52: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
         }
         
         router23: OLSRRouter {
@@ -397,11 +242,6 @@ network OLSRPOCoreNetworkMixed
                 @display("i=device/accesspoint;p=550,400");
         }
         
-        router14: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
-        }
-        
         router24: OLSRRouter {
             parameters:
                 @display("i=device/accesspoint;p=250,550");
@@ -415,32 +255,6 @@ network OLSRPOCoreNetworkMixed
         router44: OLSRRouter {
             parameters:
                 @display("i=device/accesspoint;p=550,550");
-        }
-        
-        router54: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: OLSRPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
         }
     connections allowunconnected:
 }

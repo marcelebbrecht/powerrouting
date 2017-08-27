@@ -11,7 +11,7 @@
 
 ### settings ###
 # substract from available cores (number >= 0)
-COREBIAS=4
+COREBIAS=1
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -21,6 +21,12 @@ DELETERUNLOGS="yes"
 
 # delete rt files (yes,no)
 DELETERTS="yes"
+
+# delete csv files (yes,no)
+DELETECSV="yes"
+
+# delete results files sca/vci/vec (yes,no)
+DELETERESULTS="yes"
 
 # gnuplot path for exporting graphs to png files
 GNUPLOT="/c/omnetpp/gnuplot/bin/gnuplot.exe"
@@ -100,9 +106,21 @@ function waitForFinish {
     while [ $(ps -s | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
 }
 
+# wait until last opp_run is finished
+function waitForFinishScave {
+  sleep 0.1
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
+}
+
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlot {
     while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done    
+}
+
+# wait until last opp_run is finished
+function waitForFinishGnuplot {
+  sleep 0.1
+  while [ $(ps aux | grep gnuplot | grep -v grep | wc -l) -ge 1 ]; do sleep 0.1; done
 }
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
@@ -112,16 +130,25 @@ function waitForFreeSlotPlot {
     while [ $(ps -s | grep gnuplot | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done
 }
 
+# wait for free slot (num of runnung processes < CPUCOUNT)
+function waitForFreeSlotScave {
+  while [ $(ps aux | grep scave | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 0.1; done  
+}
+
 # run simulation
 # 1: CONFIGFILE (filename)
 # 2: CONFIGNAME (name)
 # 3: verbose (if wanted)
 function runSimulation {
+    REPEAT=$(getRepeat)
+	#if [[ "$2" =~ "Mixed" ]]; then
+	#	REPEAT=1
+	#fi
     if [[ $3 =~ "verbose" ]]; then
         N=0
-        while [ $N -lt $(getRepeat) ]; do
+        while [ $N -lt $REPEAT ]; do
             waitForFreeSlot
-            echo "    run: $2, run $(($N+1)) of $(getRepeat)"
+            echo "    simulation: $2, run $(($N+1)) of $REPEAT"
             opp_run -r $N -m -u Cmdenv \
                 -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
                 -l ../src/powerrouting -l ../../inet/src/inet \
@@ -130,9 +157,9 @@ function runSimulation {
         done
     else
         N=0
-        while [ $N -lt $(getRepeat) ]; do
+        while [ $N -lt $REPEAT ]; do
             waitForFreeSlot
-            echo "    run: $2, run $(($N+1)) of $(getRepeat)"
+            echo "    simulation: $2, run $(($N+1)) of $REPEAT"
             opp_run -r $N -m -u Cmdenv \
                 -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
                 -l ../src/powerrouting -l ../../inet/src/inet \
@@ -146,11 +173,16 @@ function runSimulation {
 # plot simulation
 # 1: CONFIGNAME (name)
 function plotSimulation {
+    REPEAT=$(getRepeat)
+	#if [[ "$1" =~ "Mixed" ]]; then
+	#	REPEAT=1
+	#fi
     N=0
-	mkdir -p ./export/$1 > /dev/null 2>&1
-    while [ $N -lt $(getRepeat) ]; do
+	mkdir -p ./export/$1/CapacityOverTime > /dev/null 2>&1
+	mkdir -p ./export/$1/CapacityAtEnd > /dev/null 2>&1
+    while [ $N -lt $REPEAT ]; do
         waitForFreeSlotPlot
-        echo "    plot: $1, run $(($N+1)) of $(getRepeat)"
+        echo "    plot: $1, run $(($N+1)) of $REPEAT"
             plotOne "$1-#$N" &
         N=$(($N+1))
     done
@@ -159,7 +191,11 @@ function plotSimulation {
 # plot simulation for complete protocol
 # 1: CONFIGNAME (name)
 function plotSimulationProtocol {
-	mkdir -p ./export/Summary > /dev/null 2>&1
+	mkdir -p ./export/Summary/CapacityAtEnd > /dev/null 2>&1 > /dev/null 2>&1
+	mkdir -p ./export/Summary/UdpPacketLoss > /dev/null 2>&1 > /dev/null 2>&1
+	mkdir -p ./export/Summary/Performance > /dev/null 2>&1 > /dev/null 2>&1
+	mkdir -p ./export/Summary/CapacityAtEndConfidence > /dev/null 2>&1 > /dev/null 2>&1
+	mkdir -p ./export/Summary/UdpPacketLossConfidence > /dev/null 2>&1 > /dev/null 2>&1
     echo "    plot: $1 protocol comparision"    
 	declare -a protocolArray=("${!2}")
     plotProtocol $1 $(getRepeat) protocolArray[@] &
@@ -172,7 +208,7 @@ function plotSimulationProtocol {
 # 4: NUMBEROFALLRUNS (number) 
 function runStudySimulation {
     waitForFreeSlot
-    echo "    run: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
+    echo "    simulation: $2 ($(($3+1)) of $(($4+1)), log: logs/$2-$3.log)"
     opp_run -r $3 -m -u Cmdenv \
         -n "../src;../simulations;../../inet/examples;../../inet/showcases;../../inet/src;../../inet/tutorials" --image-path=../../inet/images \
         -l ../src/powerrouting -l ../../inet/src/inet \
@@ -258,7 +294,11 @@ function cleanTemp {
 # 1: EXPERIMENTNAME (name)
 function plotOne {
     # convert omnetdata to csv
-    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+    if [[ "$1" =~ "Mixed" ]]; then
+    	scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+    else 
+    	scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+    fi
     mkdir -p export > /dev/null 2>&1
 	PROTOCOL=$(echo $1 | cut -d "-" -f 1)
     
@@ -272,7 +312,7 @@ function plotOne {
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean.csv    | tail -1 | cut -d "," -f 2)
     TITLE="$1 ("$(getSimTime)"s) - CapacityOverTime" 
-    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/CapacityOverTime/$1-CapacityOverTime.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -287,7 +327,7 @@ function plotOne {
     CSVHEAD=$(head -1 results/$1-CapacityOverTime-Clean-Short.csv)
     MAXVALUE=$(head -2 results/$1-CapacityOverTime-Clean-Short.csv    | tail -1 | cut -d "," -f 2)
     TITLE="$1 ("$SHORTTIME"s) - CapacityOverTime"     
-    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$PROTOCOL/CapacityOverTime/$1-CapacityOverTime-Short.png\"; set datafile separator ','; plot " 
     J=0
     while [[ $J -lt $NUMHOSTS ]]; do
         PLOTSTRING="$PLOTSTRING \"results/$1-CapacityOverTime-Clean-Short.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
@@ -304,6 +344,54 @@ function plotProtocol {
 	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/$1-UDPStats.csv -F csv results/$1*.sca > /dev/null 2>&1
     declare -a protocols=("${!3}")
     $PERL plot.pl compareProtocol $1 $2 $CONFIDENCE $SHORTTIME $(getSimTime) ${protocols[@]}
+}
+
+# export capacity csv data for given result
+# 1: EXPERIMENTNAME (name)
+function plotStudy {
+  mkdir -p export/$1POParameterStudy/CapacityOverTime > /dev/null 2>&1
+  mkdir -p export/$1POParameterStudy/CapacityAtEnd > /dev/null 2>&1
+  for i in results/$1*Study*.vec; do
+    waitForFreeSlotPlot
+    RESULTNAME=$(echo $i | cut -d "/" -f 2- | sed 's/\.vec//g')
+    echo "  exporting $RESULTNAME"
+    scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$RESULTNAME-CapacityOverTime.csv -F csv results/$RESULTNAME.vec > /dev/null 2>&1 &&
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/$RESULTNAME-UDPStats.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
+	
+	# create better data with perl and plot files
+    $PERL plot.pl studyCapacity $RESULTNAME $DROPOUT $SHORTTIME $(getSimTime) &&
+	
+	# perl::gnuplot is buggy, cant plot with more than 8 datasets, so we use bash
+    # for timebased charts over all hosts, full time
+    DATETIME="$(ls --full-time results/$RESULTNAME.vec | awk {'print $6'}) $(ls --full-time results/$RESULTNAME.vec | awk {'print $7'} | cut -d "." -f 1)" &&
+    NUMHOSTS=$(($(head -1 results/$RESULTNAME-CapacityOverTime.csv | sed 's/[^,]//g' | wc -m)-1)) &&
+    CSVHEAD=$(head -1 results/$RESULTNAME-CapacityOverTime-Clean.csv) &&
+    MAXVALUE=$(head -2 results/$RESULTNAME-CapacityOverTime-Clean.csv | tail -1 | cut -d "," -f 2) &&
+    TITLE="$RESULTNAME ("$(getSimTime)"s) - CapacityOverTime" &&
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1POParameterStudy/CapacityOverTime/$RESULTNAME-CapacityOverTime.png\"; set datafile separator ','; plot " &&
+    J=0 &&
+    while [[ $J -lt $NUMHOSTS ]]; do 
+        PLOTSTRING="$PLOTSTRING \"results/$RESULTNAME-CapacityOverTime-Clean.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
+        J=$(($J+1))
+    done &&
+    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 &&
+    
+    # perl::gnuplot is buggy, cant plot with more than 8 datasets, so we use bash
+    # for timebased charts over all hosts, short time
+    DATETIME="$(ls --full-time results/$RESULTNAME.vec | awk {'print $6'}) $(ls --full-time results/$RESULTNAME.vec | awk {'print $7'} | cut -d "." -f 1)" &&
+    NUMHOSTS=$(($(head -1 results/$RESULTNAME-CapacityOverTime.csv | sed 's/[^,]//g' | wc -m)-1)) &&
+    CSVHEAD=$(head -1 results/$RESULTNAME-CapacityOverTime-Clean-Short.csv) &&
+    MAXVALUE=$(head -2 results/$RESULTNAME-CapacityOverTime-Clean-Short.csv | tail -1 | cut -d "," -f 2) &&
+    TITLE="$RESULTNAME ("$SHORTTIME"s) - CapacityOverTime" &&
+    PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set key outside right; set ylabel \"Capacity\"; set xlabel \"Time\"; set yrange [0:$MAXVALUE*1.05]; set term png size 900 400 font \"Arial,9\"; set auto x; set output \"export/$1POParameterStudy/CapacityOverTime/$RESULTNAME-CapacityOverTime-Short.png\"; set datafile separator ','; plot " &&
+    J=0 &&
+    while [[ $J -lt $NUMHOSTS ]]; do
+        PLOTSTRING="$PLOTSTRING \"results/$RESULTNAME-CapacityOverTime-Clean-Short.csv\" using 1:$(($J+2)) with lines lw 2 smooth bezier title \"$(echo $CSVHEAD | cut -d "," -f $(($J+2)) | cut -d "." -f 2)\","
+        J=$(($J+1))
+    done &&
+    $GNUPLOT -e "$PLOTSTRING" > /dev/null 2>&1 &
+  done
+  waitForFinish
 }
 
 ### execution ###
@@ -369,6 +457,7 @@ case $1 in
             N=$(($N+1))
         done
         waitForFinish        
+		plotStudy AODV
         cleanLogs
         runPostamble $1
 		deletePid $$ 

@@ -23,9 +23,9 @@ simple AODVPORouting
         double powerBiasMin = 0.0;
         double powerBiasDefault = 0.0;
         double powerBias = default(powerBiasDefault);
-        // power trigger, how much must the power be lower for sending routing error in 0.05 .. 1.0
+        // power trigger, how much must the power be lower for sending routing error in 0.05 .. 0.5
         double powerTriggerMin = 0.05;
-        double powerTriggerMax = 1.0;
+        double powerTriggerMax = 0.5;
         double powerTriggerDefault = 0.3;
         double powerTrigger = default(powerTriggerDefault);
         // end modification

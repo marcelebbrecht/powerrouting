@@ -42,41 +42,10 @@ network AODVCoreNetwork
             parameters:
                 @display("p=900,575");
         }
-//        scenarioManager: ScenarioManager {
-//            parameters:
-//                script = default(xml("<scenario/>"));
-//                @display("p=900,700");
-//        }
-        
-        router11: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
+
         router22: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,250");
+                @display("i=device/accesspoint;r=,,#707070;p=250,250");
         }
         
         router32: AODVRouter {
@@ -86,17 +55,12 @@ network AODVCoreNetwork
         
         router42: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,250");
-        }
-        
-        router52: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
+                @display("i=device/accesspoint;r=,,#707070;p=550,250");
         }
         
         router23: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,400");
+                @display("i=device/accesspoint;r=,,#707070;p=250,400");
         }
         
         router33: AODVRouter {
@@ -106,17 +70,12 @@ network AODVCoreNetwork
         
         router43: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,400");
+                @display("i=device/accesspoint;r=,,#707070;p=550,400");
         }
         
-        router14: AODVRouter {
+		router24: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
-        }
-        
-        router24: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,550");
+                @display("i=device/accesspoint;r=,,#707070;p=250,550");
         }
         
         router34: AODVRouter {
@@ -126,34 +85,9 @@ network AODVCoreNetwork
         
         router44: AODVRouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,550");
+                @display("i=device/accesspoint;r=,,#707070;p=550,550");
         }
         
-        router54: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: AODVRouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
-        }
     connections allowunconnected:
 }
 
@@ -192,35 +126,9 @@ network AODVPOCoreNetwork
                 @display("p=900,700");
         }
         
-        router11: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
         router22: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,250");
+                @display("i=device/accesspoint;r=,,#707070;p=250,250");
         }
         
         router32: AODVPORouter {
@@ -230,17 +138,12 @@ network AODVPOCoreNetwork
         
         router42: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,250");
-        }
-        
-        router52: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
+                @display("i=device/accesspoint;r=,,#707070;p=550,250");
         }
         
         router23: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,400");
+                @display("i=device/accesspoint;r=,,#707070;p=250,400");
         }
         
         router33: AODVPORouter {
@@ -250,17 +153,12 @@ network AODVPOCoreNetwork
         
         router43: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,400");
-        }
-        
-        router14: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
+                @display("i=device/accesspoint;r=,,#707070;p=550,400");
         }
         
         router24: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,550");
+                @display("i=device/accesspoint;r=,,#707070;p=250,550");
         }
         
         router34: AODVPORouter {
@@ -270,34 +168,9 @@ network AODVPOCoreNetwork
         
         router44: AODVPORouter {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,550");
+                @display("i=device/accesspoint;r=,,#707070;p=550,550");
         }
         
-        router54: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
-        }
     connections allowunconnected:
 }
 
@@ -336,32 +209,6 @@ network AODVPOCoreNetworkMixed
                 @display("p=900,700");
         }
         
-        router11: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,100");
-        }
-        
-        router21: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,100");
-        }
-        
-        router41: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,100");
-        }
-        
-        router51: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,100");
-        }
-        
-        
-        router12: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,250");
-        }
-        
         router22: AODVRouter {
             parameters:
                 @display("i=device/accesspoint;p=250,250");
@@ -375,11 +222,6 @@ network AODVPOCoreNetworkMixed
         router42: AODVRouter {
             parameters:
                 @display("i=device/accesspoint;p=550,250");
-        }
-        
-        router52: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,250");
         }
         
         router23: AODVRouter {
@@ -397,11 +239,6 @@ network AODVPOCoreNetworkMixed
                 @display("i=device/accesspoint;p=550,400");
         }
         
-        router14: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,550");
-        }
-        
         router24: AODVRouter {
             parameters:
                 @display("i=device/accesspoint;p=250,550");
@@ -417,31 +254,6 @@ network AODVPOCoreNetworkMixed
                 @display("i=device/accesspoint;p=550,550");
         }
         
-        router54: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,550");
-        }
-        
-        
-        router15: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=100,700");
-        }
-        
-        router25: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=250,700");
-        }
-        
-        router45: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=550,700");
-        }
-        
-        router55: AODVPORouter {
-            parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,700");
-        }
     connections allowunconnected:
 }
 

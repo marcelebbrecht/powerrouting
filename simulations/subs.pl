@@ -76,8 +76,14 @@ sub getCapacityResults {
 			foreach (@line) { 
 				chomp $_;
 				if ( "$_" =~ "[a-zA-Z0-9]" ) { 
-					$lastValues[$actualColumn] = $_;
-					$results[$actualLine][$actualColumn] = $_;
+					if ( $actualLine == 0 ) {
+						$lastValues[$actualColumn] = $_;
+						$results[$actualLine][$actualColumn] = $_;
+					} else {
+						$lastValues[$actualColumn] = sprintf("%.5f", $_);
+						$results[$actualLine][$actualColumn] = sprintf("%.5f", $_);
+					}
+					
 				} else {
 					$results[$actualLine][$actualColumn] = $lastValues[$actualColumn];
 				}
@@ -88,6 +94,10 @@ sub getCapacityResults {
 		$actualFile++;
 	}
 	close FILE;
+	
+	# remove last element of array
+	my $length = @results;
+	splice(@results, $length-1, 1);
 	
 	# rename hostname entries
 	$results[0][0] = "t";
@@ -383,7 +393,7 @@ sub getUdpPacketLossArray {
 			    if ( $firstvalue == 0 ) {
 					$firstvalue = $actline[18];
 				} else {
-					push @{$udpPacketLossData[$configuration]}, ($actline[18]/$firstvalue);
+					push @{$udpPacketLossData[$configuration]}, ($actline[18]/$firstvalue)*100;
 					$firstvalue = 0;
 				}
 			}
@@ -441,7 +451,7 @@ sub getUdpPacketLossStatistics {
 			    if ( $firstvalue == 0 ) {
 					$firstvalue = $actline[18];
 				} else {
-					push @{$udpPacketLossData[$configuration]}, ($actline[18]/$firstvalue);
+					push @{$udpPacketLossData[$configuration]}, ($actline[18]/$firstvalue)*100;
 					$firstvalue = 0;
 				}
 			}
@@ -481,17 +491,63 @@ sub getUdpPacketLossStatistics {
 }
 
 # calculate performance array
-# 1: 3dim array with stddev-array and packetloss-array as elements
+# 1: confidence as integer
+# 2: 3dim array with stddev-array and packetloss-array as elements
 # R: 2dim array with performance
 sub getPerformanceArray {
-	return @_;
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my @capacityArray = @{$_[0]};
+	my @udpArray = @{$_[1]};
+	my $columns = @{$capacityArray[0]};
+	
+	# calculate performance
+	my @performanceArray = ();
+	my $row = 0;
+	foreach (@capacityArray) {
+		for (my $column = 0; $column < $columns -6; $column++) {
+			$performanceArray[$row][$column] =  ( 1 - ( $capacityArray[$row][$column]  + 0.0000000000000001 ) ) / ( $udpArray[$row][$column] + 0.0000000000000001 );
+		}
+		my $configurationMean = mean(@{$performanceArray[$row]});
+		my $configurationMin = min(@{$performanceArray[$row]});
+		my $configurationMax = max(@{$performanceArray[$row]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$performanceArray[$row]});
+		push @{$performanceArray[$row]}, $configurationMean;
+		push @{$performanceArray[$row]}, $configurationMin;
+		push @{$performanceArray[$row]}, $configurationMax;
+		push @{$performanceArray[$row]}, $stats->lower_clm();
+		push @{$performanceArray[$row]}, $stats->upper_clm();
+		push @{$performanceArray[$row]}, $stats->upper_clm() - $configurationMean;		
+		$row++;
+	}
+	return @performanceArray;
 }
 
 # calculate performance array
-# 1: 3dim array with stddev-array and packetloss-array as elements
+# 1: confidence as integer
+# 2: 3dim array with stddev-array and packetloss-array as elements
 # R: 2dim array with performance
 sub getPerformanceStatistics {
-	return @_;  
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my @capacityArray = @{$_[0]};
+	my @udpArray = @{$_[1]};
+	my $columns = @{$capacityArray[0]};
+	
+	# calculate performance
+	my @performanceArray = ();
+	my $row = 0;
+	foreach (@capacityArray) {
+		for (my $column = 0; $column < $columns; $column++) {
+			$performanceArray[$row][$column] =  ( 1 - ( $capacityArray[$row][$column]  + 0.0000000000000001 ) ) / ( $udpArray[$row][$column] + 0.0000000000000001 );
+		}
+		$row++;
+	}
+	return @performanceArray;
 }
 
 # create capacityAtEnd chart
@@ -585,12 +641,12 @@ sub plotCapacityAtEndConfidence {
 	my $max = $statsArray[$position][$length-2];
 	my $filename;
 	if ( $long == 1 ) {
-	    $filename = "export/Summary/$configuration-CapacityAtEndConfidence.png";
+	    $filename = "export/Summary/CapacityAtEndConfidenc/$configuration-CapacityAtEndConfidence.png";
 	} else {
-		$filename = "export/Summary/$configuration-CapacityAtEndConfidence-Short.png";
+		$filename = "export/Summary/CapacityAtEndConfidenc/$configuration-CapacityAtEndConfidence-Short.png";
 	}
 	my $title = $configuration;
-	my $offset = 10 / ($length - 6);
+	my $offset = 10 / ( ($length - 6) * 1.25 );
 	my $maxX = ($length - 6);
 	
 	# plot chart
@@ -621,7 +677,7 @@ sub plotCapacityAtEndConfidence {
 	
 		xtics => {
 			font => "Arial, 9",
-			offset => "1",
+			offset => "$offset",
 			start => "1",
 			incr => "1",
 			end => "$maxX",
@@ -843,12 +899,12 @@ sub plotUdpPacketLossConfidence {
 	my $max = $statsArray[$position][$length-2];
 	my $filename;
 	if ( $long == 1 ) {
-	    $filename = "export/Summary/$configuration-UdpPacketLossConfidence.png";
+	    $filename = "export/Summary/UdpPacketLossConfidence/$configuration-UdpPacketLossConfidence.png";
 	} else {
-		$filename = "export/Summary/$configuration-UdpPacketLossConfidence-Short.png";
+		$filename = "export/Summary/UdpPacketLossConfidence/$configuration-UdpPacketLossConfidence-Short.png";
 	}
 	my $title = $configuration;
-	my $offset = 10 / ($length - 6);
+	my $offset = 10 / ( ($length - 6) * 1.25 );
 	my $maxX = ($length - 6);
 	
 	# plot chart
@@ -879,7 +935,7 @@ sub plotUdpPacketLossConfidence {
 	
 		xtics => {
 			font => "Arial, 9",
-			offset => "1",
+			offset => "$offset",
 			start => "1",
 			incr => "1",
 			end => "$maxX",
@@ -993,6 +1049,264 @@ sub plotUdpPacketLossStatistics {
 	
 		ylabel => {
 			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			incr => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+# create Performance chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotPerformanceConfidence {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Summary/CapacityAtEndConfidenc/$configuration-PerformanceConfidence.png";
+	} else {
+		$filename = "export/Summary/CapacityAtEndConfidenc/$configuration-PerformanceConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - PerformanceConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Points",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			incr => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+# create Performance statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotPerformanceStatistics {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - PerformanceStatistics",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Points",
 			font => "Arial, 9",
 		},
 	
