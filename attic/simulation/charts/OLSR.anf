@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="../results/OLSR-*.vec"/>
+    <inputs name="../results/OLSR-*.sca"/>
+    <inputs name="../results/OLSRL*.vec"/>
+    <inputs name="../results/OLSRL*.sca"/>
+    <inputs name="../results/OLSRPO-*.vec"/>
+    <inputs name="../results/OLSRPO-*.sca"/>
+    <inputs name="../results/OLSRPOT*.vec"/>
+    <inputs name="../results/OLSRPOT*.sca"/>
+    <inputs name="../results/OLSRPOM*.vec"/>
+    <inputs name="../results/OLSRPOM*.sca"/>
+    <inputs name="../results/OLSRPOL*.vec"/>
+    <inputs name="../results/OLSRPOL*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="OLSR-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSR)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSR.${router}.energyStorage" groupByExpr="(module =~ OLSR.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:BarChart" name="OLSR-Capacity-AtEnd">
+        <properties name="Graph.Title" value="OLSR-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSR.${router}.energyStorage" groupByExpr="(module =~ OLSR.${router=*}.** ) ? router : 0" averageReplications="true" computeMinMax="true"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity1MinStack" valueExpr="('remainingCapacity:min')" moduleExpr="OLSR.${router}.energyStorage" groupByExpr="(module =~ OLSR.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity2AvgStack" valueExpr="('remainingCapacity') - ('remainingCapacity1MinStack')" moduleExpr="OLSR.${router}.energyStorage" groupByExpr="(module =~ OLSR.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity3MaxStack" valueExpr="('remainingCapacity:max') - ('remainingCapacity1MinStack') - ('remainingCapacity2AvgStack')" moduleExpr="OLSR.${router}.energyStorage" groupByExpr="(module =~ OLSR.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:BarChart" name="OLSR-Capacity-AtEnd-MinAvgMax">
+        <properties name="Graph.Title" value="OLSR-Capacity-AtEnd-MinAvgMax"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Position" value="Right"/>
+        <properties name="Bar.Placement" value="Stacked"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSR) AND file(*0*)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="OLSR-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="OLSR-Capacity"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="OLSRPO-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPO)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:BarChart" name="OLSRPO-Capacity-AtEnd">
+        <properties name="Graph.Title" value="OLSRPO-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0" averageReplications="true" computeMinMax="true"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity1MinStack" valueExpr="('remainingCapacity:min')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity2AvgStack" valueExpr="('remainingCapacity') - ('remainingCapacity1MinStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity3MaxStack" valueExpr="('remainingCapacity:max') - ('remainingCapacity1MinStack') - ('remainingCapacity2AvgStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:BarChart" name="OLSRPO-Capacity-AtEnd-MinAvgMax">
+        <properties name="Graph.Title" value="OLSRPO-Capacity-AtEnd-MinAvgMax"/>
+        <properties name="X.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Bar.Placement" value="Stacked"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPO) AND file(*0*)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="OLSRPO-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="OLSRPO-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="OLSRPOTriggerHappy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPOTriggerHappy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:BarChart" name="OLSRPOTriggerHappy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="OLSRPOTriggerHappy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0" averageReplications="true" computeMinMax="true"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity1MinStack" valueExpr="('remainingCapacity:min')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity2AvgStack" valueExpr="('remainingCapacity') - ('remainingCapacity1MinStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity3MaxStack" valueExpr="('remainingCapacity:max') - ('remainingCapacity1MinStack') - ('remainingCapacity2AvgStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:BarChart" name="OLSRPOTriggerHappy-Capacity-AtEnd-MinMaxAvg">
+        <properties name="Graph.Title" value="OLSRPOTriggerHappy-Capacity-AtEnd-MinMaxAvg"/>
+        <properties name="X.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Bar.Placement" value="Stacked"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPOTriggerHappy) AND file(*0*)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="OLSRPOTriggerHappy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="OLSRPOTriggerHappy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="OLSRPOTriggerSloppy-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPOTriggerSloppy)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:BarChart" name="OLSRPOTriggerSloppy-Capacity-AtEnd">
+        <properties name="Graph.Title" value="OLSRPOTriggerSloppy-Capacity-AtEnd"/>
+        <properties name="X.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0" averageReplications="true" computeMinMax="true"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity1MinStack" valueExpr="('remainingCapacity:min')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity2AvgStack" valueExpr="('remainingCapacity') - ('remainingCapacity1MinStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity3MaxStack" valueExpr="('remainingCapacity:max') - ('remainingCapacity1MinStack') - ('remainingCapacity2AvgStack')" moduleExpr="OLSRPO.${router}.energyStorage" groupByExpr="(module =~ OLSRPO.${router=*}.** ) ? router : 0"/>
+      <items xsi:type="scave:Discard" filterPattern="name(remainingCapacity) OR name(remainingCapacity:*)"/>
+      <items xsi:type="scave:BarChart" name="OLSRPOTriggerSloppy-Capacity-AtEnd-MinMaxAvg">
+        <properties name="Graph.Title" value="OLSRPOTriggerSloppy-Capacity-AtEnd-MinMaxAvg"/>
+        <properties name="X.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Title" value="storage"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Bar.Placement" value="Stacked"/>
+      </items>
+      <items xsi:type="scave:Discard" filterPattern="" type="VECTOR"/>
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(OLSRPOTriggerSloppy) AND file(*0*)" type="VECTOR"/>
+      <items xsi:type="scave:LineChart" name="OLSRPOTriggerSloppy-Capacity-OverTime" lineNameFormat="">
+        <properties name="Graph.Title" value="OLSRPOTriggerSloppy-Capacity-OverTime"/>
+        <properties name="X.Axis.Title" value="time"/>
+        <properties name="Y.Axis.Title" value="capacity"/>
+        <properties name="Y.Axis.Min" value="0.0"/>
+        <properties name="Legend.Display" value="true"/>
+        <properties name="Legend.Position" value="Right"/>
+      </items>
+    </datasets>
+    <datasets name="OLSR-Comparision-Capacity">
+      <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) )" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+      <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-Capacity-Sum">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum" valueExpr="sum(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-Capacity-Sum">
+          <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Sum"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="capacity"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-Capacity-Sum-MinMaxAvg">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0" averageReplications="true" computeMinMax="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum" valueExpr="sum(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true" computeMinMax="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum1MinStack" valueExpr="('remainingCapacitySum:min')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum2AvgStack" valueExpr="('remainingCapacitySum') - ('remainingCapacitySum1MinStack')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacitySum3MaxStack" valueExpr="('remainingCapacitySum:max') - ('remainingCapacitySum1MinStack') - ('remainingCapacitySum2AvgStack')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*) or name(remainingCapacitySum) or name(remainingCapacitySum:*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-Capacity-Sum-MinMaxAvg">
+          <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Sum-MinMaxAvg"/>
+          <properties name="X.Axis.Title" value="capacity"/>
+          <properties name="Y.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Bar.Placement" value="Stacked"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-Capacity-Stddev">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-Capacity-Stddev">
+          <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Stddev"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="stddev"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-Capacity-Stddev-MinMaxAvg">
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true" computeMinMax="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev1MinStack" valueExpr="('remainingCapacityStddev:min')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev2AvgStack" valueExpr="('remainingCapacityStddev') - ('remainingCapacityStddev1MinStack')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev3MaxStack" valueExpr="('remainingCapacityStddev:max') - ('remainingCapacityStddev1MinStack') - ('remainingCapacityStddev2AvgStack')" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*) or name (remainingCapacityStddev) or name(remainingCapacityStddev:*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-Capacity-Stddev-MinMaxAvg">
+          <properties name="Graph.Title" value="OLSR-Comparision-Capacity-Stddev-MinMaxAvg"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="stddev"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Bar.Placement" value="Stacked"/>
+        </items>
+      </items>
+    </datasets>
+    <datasets name="OLSR-Comparision-UDP">
+      <items xsi:type="scave:Group" name="OLSR-Comparision-UDP-Packets">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-UDP-Packets">
+          <properties name="Graph.Title" value="OLSR-Comparision-UDP-Packets"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-UDP-Packets-MinMaxAvg">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="PacketCount" valueExpr="('rcvdPk:count')" moduleExpr="" groupByExpr="" averageReplications="true" computeMinMax="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="PacketCount1MinStack" valueExpr="('PacketCount:min')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="PacketCount2AvgStack" valueExpr="('PacketCount') - ('PacketCount1MinStack')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="PacketCount3MaxStack" valueExpr="('PacketCount:max') - ('PacketCount1MinStack') - ('PacketCount2AvgStack')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:*) or name(PacketCount) or name(PacketCount:*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-UDP-Packets-MinMaxAvg">
+          <properties name="Graph.Title" value="OLSR-Comparision-UDP-Packets-MinMaxAvg"/>
+          <properties name="X.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Bar.Placement" value="Stacked"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-UDP-LossRate">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(sentPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-UDP-LossRate">
+          <properties name="Graph.Title" value="OLSR-Comparision-UDP-LossRate"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="OLSR-Comparision-UDP-LossRate">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*receiver*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(rcvdPk:count)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*sender*udpApp[0]*&quot;)  AND ( attr:configname(OLSRPOTriggerHappy) OR attr:configname(OLSRPOTriggerSloppy) OR attr:configname(OLSRPO) OR attr:configname(OLSR) ) AND name(sentPk:count)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('rcvdPk:count') / max('sentPk:count') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true" computeMinMax="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss1MinStack" valueExpr="('packetLoss:min')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss2AvgStack" valueExpr="('packetLoss') - ('packetLoss1MinStack')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss3MaxStack" valueExpr="('packetLoss:max') - ('packetLoss1MinStack') - ('packetLoss2AvgStack')" moduleExpr="" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*) or name(packetLoss) or name(packetLoss:*) "/>
+        <items xsi:type="scave:BarChart" name="OLSR-Comparision-UDP-LossRate-MinMaxAvg">
+          <properties name="Graph.Title" value="OLSR-Comparision-UDP-LossRate-MinMaxAvg"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="lossRate"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Bar.Placement" value="Stacked"/>
+        </items>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="Capacity Over-Time" charts="//@datasets/@datasets.0/@items.14 //@datasets/@datasets.1/@items.14 //@datasets/@datasets.2/@items.14 //@datasets/@datasets.3/@items.13"/>
+    <chartSheets name="Capacity At-End" charts="//@datasets/@datasets.1/@items.4 //@datasets/@datasets.2/@items.4 //@datasets/@datasets.3/@items.4 //@datasets/@datasets.0/@items.11 //@datasets/@datasets.0/@items.4 //@datasets/@datasets.1/@items.11 //@datasets/@datasets.2/@items.11 //@datasets/@datasets.3/@items.10"/>
+    <chartSheets name="UDP Comparision" charts="//@datasets/@datasets.5/@items.2/@items.4 //@datasets/@datasets.5/@items.0/@items.1 //@datasets/@datasets.5/@items.3/@items.7 //@datasets/@datasets.5/@items.1/@items.6"/>
+    <chartSheets name="Capacity Deviation" charts="//@datasets/@datasets.4/@items.5/@items.3 //@datasets/@datasets.4/@items.6/@items.6"/>
+  </chartSheets>
+</scave:Analysis>

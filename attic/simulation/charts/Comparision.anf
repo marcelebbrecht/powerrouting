@@ -1,0 +1,276 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scave:Analysis xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:scave="http://www.omnetpp.org/omnetpp/scave">
+  <inputs>
+    <inputs name="../results/AODVPOC*.vec"/>
+    <inputs name="../results/AODVPOC*.sca"/>
+    <inputs name="../results/OLSRPOC*.vec"/>
+    <inputs name="../results/OLSRPOC*.sca"/>
+    <inputs name="../results/AODVC*.vec"/>
+    <inputs name="../results/AODVC*.sca"/>
+    <inputs name="../results/OLSRC*.vec"/>
+    <inputs name="../results/OLSRC*.sca"/>
+  </inputs>
+  <datasets>
+    <datasets name="Comparision-OneToOne">
+      <items xsi:type="scave:Group" name="Performance-OneToOne">
+        <items xsi:type="scave:Add" filterPattern="( module(&quot;*router*udpApp[0]*&quot;)   OR module(&quot;*router*udpApp[1]*&quot;)    ) AND attr:configname(*OneToOne*) AND ( name(&quot;rcvdPk:count&quot;) OR name(&quot;sentPk:count&quot;) )"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') )" moduleExpr="${experiment}.Overall" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*OneToOne*) " type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="Performance" valueExpr="(1 / ( mean(0.0000000000000001 + mean('remainingCapacityStddev')))) / ( 1 / ( 1 - (mean('packetLoss')+0.0000000000000001)))" moduleExpr="${experiment}.Overall.Performance" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Capacity*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*packetLoss*)"/>
+        <items xsi:type="scave:BarChart" name="Performance-OneToOne">
+          <properties name="Graph.Title" value="Performance-OneToOne"/>
+          <properties name="X.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Title" value="Performance"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Stddev-OneToOne">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*OneToOne*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Stddev-OneToOne">
+          <properties name="Graph.Title" value="Stddev-OneToOne"/>
+          <properties name="X.Axis.Title" value="Stddev"/>
+          <properties name="Y.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-Packets-OneToOne">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count) AND attr:configname(*OneToOne*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
+        <items xsi:type="scave:BarChart" name="UDP-Packets-OneToOne">
+          <properties name="Graph.Title" value="UDP-Packets-OneToOne"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-LossRate-OneToOne">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)  AND attr:configname(*OneToOne*)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[1]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(sentPk:count)  AND attr:configname(*OneToOne*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Packets*)"/>
+        <items xsi:type="scave:BarChart" name="UDP-LossRate-OneToOne">
+          <properties name="Graph.Title" value="UDP-LossRate-OneToOne"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+    </datasets>
+    
+    <datasets name="Comparision-ManyToOne">
+      <items xsi:type="scave:Group" name="Performance-ManyToOne">
+        <items xsi:type="scave:Add" filterPattern="( module(&quot;*router*udpApp[0]*&quot;)   OR module(&quot;*router*udpApp[1]*&quot;)    ) AND attr:configname(*ManyToOne*) AND ( name(&quot;rcvdPk:count&quot;) OR name(&quot;sentPk:count&quot;) )"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') )" moduleExpr="${experiment}.Overall" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*ManyToOne*) " type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="Performance" valueExpr="(1 / ( mean(0.0000000000000001 + mean('remainingCapacityStddev')))) / ( 1 / ( 1 - (mean('packetLoss')+0.0000000000000001)))" moduleExpr="${experiment}.Overall.Performance" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Capacity*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*packetLoss*)"/>
+        <items xsi:type="scave:BarChart" name="Performance-ManyToOne">
+          <properties name="Graph.Title" value="Performance-ManyToOne"/>
+          <properties name="X.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Title" value="Performance"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Stddev-ManyToOne">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*ManyToOne*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Stddev-ManyToOne">
+          <properties name="Graph.Title" value="Stddev-ManyToOne"/>
+          <properties name="X.Axis.Title" value="Stddev"/>
+          <properties name="Y.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-Packets-ManyToOne">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count) AND attr:configname(*ManyToOne*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
+        <items xsi:type="scave:BarChart" name="UDP-Packets-ManyToOne">
+          <properties name="Graph.Title" value="UDP-Packets-ManyToOne"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-LossRate-ManyToOne">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)  AND attr:configname(*ManyToOne*)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[1]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(sentPk:count)  AND attr:configname(*ManyToOne*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Packets*)"/>
+        <items xsi:type="scave:BarChart" name="UDP-LossRate-ManyToOne">
+          <properties name="Graph.Title" value="UDP-LossRate-ManyToOne"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+    </datasets>
+    
+    <datasets name="Comparision-OneToMany">
+      <items xsi:type="scave:Group" name="Performance-OneToMany">
+        <items xsi:type="scave:Add" filterPattern="( module(&quot;*router*udpApp[0]*&quot;)   OR module(&quot;*router*udpApp[1]*&quot;)    ) AND attr:configname(*OneToMany*) AND ( name(&quot;rcvdPk:count&quot;) OR name(&quot;sentPk:count&quot;) )"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') )" moduleExpr="${experiment}.Overall" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*OneToMany*) " type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="Performance" valueExpr="(1 / ( mean(0.0000000000000001 + mean('remainingCapacityStddev')))) / ( 1 / ( 1 - (mean('packetLoss')+0.0000000000000001)))" moduleExpr="${experiment}.Overall.Performance" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Capacity*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*packetLoss*)"/>
+        <items xsi:type="scave:BarChart" name="Performance-OneToMany">
+          <properties name="Graph.Title" value="Performance-OneToMany"/>
+          <properties name="X.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Title" value="Performance"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Stddev-OneToMany">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*OneToMany*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Stddev-OneToMany">
+          <properties name="Graph.Title" value="Stddev-OneToMany"/>
+          <properties name="X.Axis.Title" value="Stddev"/>
+          <properties name="Y.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-Packets-OneToMany">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count) AND attr:configname(*OneToMany*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
+        <items xsi:type="scave:BarChart" name="UDP-Packets-OneToMany">
+          <properties name="Graph.Title" value="UDP-Packets-OneToMany"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-LossRate-OneToMany">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)  AND attr:configname(*OneToMany*)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[1]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(sentPk:count)  AND attr:configname(*OneToMany*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Packets*)"/>
+        <items xsi:type="scave:BarChart" name="UDP-LossRate-OneToMany">
+          <properties name="Graph.Title" value="UDP-LossRate-OneToMany"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+    </datasets>
+    
+    <datasets name="Comparision-ManyToMany">
+      <items xsi:type="scave:Group" name="Performance-ManyToMany">
+        <items xsi:type="scave:Add" filterPattern="( module(&quot;*router*udpApp[0]*&quot;)   OR module(&quot;*router*udpApp[1]*&quot;)    ) AND attr:configname(*ManyToMany*) AND ( name(&quot;rcvdPk:count&quot;) OR name(&quot;sentPk:count&quot;) )"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - sum('rcvdPk:count') / sum('sentPk:count') )" moduleExpr="${experiment}.Overall" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*ManyToMany*) " type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="Performance" valueExpr="(1 / ( mean(0.0000000000000001 + mean('remainingCapacityStddev')))) / ( 1 / ( 1 - (mean('packetLoss')+0.0000000000000001)))" moduleExpr="${experiment}.Overall.Performance" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Capacity*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*packetLoss*)"/>
+        <items xsi:type="scave:BarChart" name="Performance-ManyToMany">
+          <properties name="Graph.Title" value="Performance-ManyToMany"/>
+          <properties name="X.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Title" value="Performance"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Stddev-ManyToMany">
+        <items xsi:type="scave:Add" filterPattern="name(*Capacity*) AND attr:configname(*Compare*) AND attr:configname(*ManyToMany*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*sender*)" type="VECTOR"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*receiver*)" type="VECTOR"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacity" valueExpr="min('residualEnergyCapacity:vector')" moduleExpr="${experiment}.${router}.energyStorage" groupByExpr="(module =~ ${experiment=*}.${router=*}.** ) ? router : 0"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="remainingCapacityStddev" valueExpr="stddev(remainingCapacity)" moduleExpr="${experiment}.Overall.energyStorage" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0"/>
+        <items xsi:type="scave:Discard" filterPattern="module(*router*)"/>
+        <items xsi:type="scave:BarChart" name="Stddev-ManyToMany">
+          <properties name="Graph.Title" value="Stddev-ManyToMany"/>
+          <properties name="X.Axis.Title" value="Stddev"/>
+          <properties name="Y.Axis.Title" value="Configuration"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+          <properties name="Legend.Display" value="true"/>
+          <properties name="Legend.Position" value="Right"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-Packets-ManyToMany">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*udpApp[0]*&quot;)  AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count) AND attr:configname(*ManyToMany*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr=""/>
+        <items xsi:type="scave:Discard" filterPattern="name(rcvdPk:count) "/>
+        <items xsi:type="scave:BarChart" name="UDP-Packets-ManyToMany">
+          <properties name="Graph.Title" value="UDP-Packets-ManyToMany"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="packets"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+      <items xsi:type="scave:Group" name="Comparision-UDP-LossRate-ManyToMany">
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[0]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(rcvdPk:count)  AND attr:configname(*ManyToMany*)"/>
+        <items xsi:type="scave:Add" filterPattern="module(&quot;*router*udpApp[1]*&quot;) AND ( attr:configname(AODVPOC*) OR attr:configname(OLSRPOC*) OR attr:configname(AODVC*) OR attr:configname(OLSRC*) ) AND name(sentPk:count)  AND attr:configname(*ManyToMany*)"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="ReceivedPackets" valueExpr="sum('rcvdPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="SentPackets" valueExpr="sum('sentPk:count')" moduleExpr="Overall" groupByExpr="" averageReplications="true"/>
+        <items xsi:type="scave:ComputeScalar" scalarName="packetLoss" valueExpr="( 1 - max('ReceivedPackets') / max('SentPackets') ) * 100" moduleExpr="${experiment}.Overall.udpApp[0]" groupByExpr="(module =~ ${experiment=*}.** ) ? experiment: 0" averageReplications="true"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*count*)"/>
+        <items xsi:type="scave:Discard" filterPattern="name(*Packets*)"/>
+        <items xsi:type="scave:BarChart" name="UDP-LossRate-ManyToMany">
+          <properties name="Graph.Title" value="UDP-LossRate-ManyToMany"/>
+          <properties name="X.Axis.Title" value="configuration"/>
+          <properties name="Y.Axis.Title" value="percent"/>
+          <properties name="Y.Axis.Min" value="0.0"/>
+        </items>
+      </items>
+    </datasets>
+  </datasets>
+  <chartSheets>
+    <chartSheets name="Comparision-OneToOne" charts="//@datasets/@datasets.0/@items.3/@items.7 //@datasets/@datasets.0/@items.2/@items.3 //@datasets/@datasets.0/@items.0/@items.9 //@datasets/@datasets.0/@items.1/@items.6"/>
+    <chartSheets name="Comparision-ManyToOne" charts="//@datasets/@datasets.1/@items.3/@items.7 //@datasets/@datasets.1/@items.2/@items.3 //@datasets/@datasets.1/@items.0/@items.9 //@datasets/@datasets.1/@items.1/@items.6"/>
+    <chartSheets name="Comparision-OneToMany" charts="//@datasets/@datasets.2/@items.3/@items.7 //@datasets/@datasets.2/@items.2/@items.3 //@datasets/@datasets.2/@items.0/@items.9 //@datasets/@datasets.2/@items.1/@items.6"/>
+    <chartSheets name="Comparision-ManyToMany" charts="//@datasets/@datasets.3/@items.3/@items.7 //@datasets/@datasets.3/@items.2/@items.3 //@datasets/@datasets.3/@items.0/@items.9 //@datasets/@datasets.3/@items.1/@items.6"/>
+  </chartSheets>
+</scave:Analysis>

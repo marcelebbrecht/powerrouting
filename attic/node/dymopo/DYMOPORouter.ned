@@ -6,7 +6,8 @@
 package powerrouting.node.dymopo;
 
 import inet.node.inet.WirelessHost;
-import powerrouting.routing.dymopo.DYMOPO;
+import inet.routing.dymo.IDYMO;
+import inet.node.dymo.DYMORouter;
 
 
 //
@@ -26,17 +27,6 @@ import powerrouting.routing.dymopo.DYMOPO;
 // The AODV v.2 (known as DYMOPO) is also implemented: ~DYMOPO,
 // ~DYMOPORouter.
 //
-module DYMOPORouter extends WirelessHost
+module DYMOPORouter extends DYMORouter
 {
-    parameters:
-        @display("i=device/cellphone");
-        forwarding = true;
-        wlan[*].mgmtType = default("Ieee80211MgmtAdhoc");
-    submodules:
-        dymopo: DYMOPO {
-            @display("p=558,307");
-        }
-    connections:
-        dymopo.ipOut --> networkLayer.transportIn++;
-        dymopo.ipIn <-- networkLayer.transportOut++;
 }
