@@ -39,7 +39,7 @@ PERL="/c/Perl64/bin/perl.exe"
 DECIMALPLACES="5"
 
 # dropout interval in csv
-DROPOUT="5"
+DROPOUT="3"
 
 # timelimit for shorter analysis
 SHORTTIME="60"
@@ -110,19 +110,21 @@ function cleanFiles {
     echo
     if [[ "$DELETECSV" =~ "yes" ]]; then
         echo "Removing csv files."
-        rm ./results/$i*.csv > /dev/null 2>&1
+        rm ./results/$1*.csv > /dev/null 2>&1
     fi
     if [[ "$DELETERESULTS" =~ "yes" ]]; then
         echo "Removing result files."
-        rm ./logs/$i*.vec > /dev/null 2>&1
-        rm ./logs/$i*.sca > /dev/null 2>&1
-        rm ./logs/$i*.vci > /dev/null 2>&1
+        rm ./results/$1*.vec > /dev/null 2>&1
+        rm ./results/$1*.sca > /dev/null 2>&1
+        rm ./results/$1*.vci > /dev/null 2>&1
     fi
 }
 
 # wait until last opp_run is finished
 function waitForFinish {
     sleep 1
+    while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
+    while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
     while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
     while [ $(ps aux | grep scavetool | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
     while [ $(ps -s | grep perl | grep -v grep | wc -l) -ge 1 ]; do sleep 1; done
@@ -137,6 +139,9 @@ function waitForFinishScave {
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlot {
+	sleep 1
+    while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done    
+    while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done    
     while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done    
 }
 
@@ -628,8 +633,10 @@ case $1 in
     # create aodv and olsr protocol comparision
     compare)
         writePid $$
+        runPreamble $1
         PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
         compareProtocols "AODV-OLSR" PROTOCOLS[@]
+        runPostamble $1
 		deletePid $$
     ;;
 
