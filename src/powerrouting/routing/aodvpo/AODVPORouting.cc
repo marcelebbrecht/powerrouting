@@ -1,7 +1,7 @@
-// PowerRouting for OMNeT++ - AODV routing
+// PowerRouting for OMNeT++ - AODVPO routing
 // Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 // free software, see LICENSE.md for details
-// derived from inetmanet-3.5, AODVPORouting.cc
+// derived from inetmanet-3.5, AODVRouting.cc
 
 #include "../aodvpo/AODVPORouting.h"
 
@@ -442,9 +442,9 @@ void AODVPORouting::sendRREP(AODVRREP *rrep, const L3Address& destAddr, unsigned
     waitPacket = rrep;
     waitAddress = nextHop;
     waitTimer = timeToLive;
-    EV_INFO << "Sending Route Reply in " << 0.1*calculatePenalty() << endl;
+    EV_INFO << "Sending Route Reply in " << 0.02*calculatePenalty() << endl;
     cancelEvent(waitForRREP);
-    scheduleAt(simTime() + (0.1*calculatePenalty()), waitForRREP);
+    scheduleAt(simTime() + (0.02*calculatePenalty()), waitForRREP);
 }
 
 AODVRREQ *AODVPORouting::createRREQ(const L3Address& destAddr)
@@ -606,7 +606,11 @@ AODVRREP *AODVPORouting::createGratuitousRREP(AODVRREQ *rreq, IRoute *originator
     //                                  as known by the intermediate node.
 
     grrep->setPacketType(RREP);
+
+    // HIER
     grrep->setHopCount(originatorRoute->getMetric() + calculatePenalty());
+    //grrep->setHopCount(originatorRoute->getMetric());
+
     grrep->setDestAddr(rreq->getOriginatorAddr());
     grrep->setDestSeqNum(rreq->getOriginatorSeqNum());
     grrep->setOriginatorAddr(rreq->getDestAddr());
@@ -782,7 +786,10 @@ void AODVPORouting::updateRoutingTable(IRoute *route, const L3Address& nextHop, 
     EV_DETAIL << "Updating existing route: " << route << endl;
 
     route->setNextHop(nextHop);
+
+    // HIER
     route->setMetric(hopCount + calculatePenalty());
+    //route->setMetric(hopCount);
 
     AODVRouteData *routingData = check_and_cast<AODVRouteData *>(route->getProtocolData());
     ASSERT(routingData != nullptr);
@@ -1063,7 +1070,10 @@ IRoute *AODVPORouting::createRoute(const L3Address& destAddr, const L3Address& n
     newRoute->setSourceType(IRoute::AODV);
     newRoute->setSource(this);
     newRoute->setProtocolData(newProtocolData);
+
+    // HIER
     newRoute->setMetric(hopCount + calculatePenalty());
+    //newRoute->setMetric(hopCount);
     newRoute->setNextHop(nextHop);
     newRoute->setPrefixLength(addressType->getMaxPrefixLength());    // TODO:
 
@@ -1614,7 +1624,10 @@ INetfilter::IHook::Result AODVPORouting::datagramForwardHook(INetworkDatagram *d
             IRoute *route = routingTable->getRoute(i);
             const L3Address& routeAddr = route->getDestinationAsGeneric();
             sendRERRWhenNoRouteToForward(routeAddr);
+
+            // HIER
             route->setMetric(route->getMetric() + calculatePenalty());
+            //route->setMetric(route->getMetric());
         }
     }
     EV_INFO << "Power Routing - Updating power trigger, old: " << powerTriggerLast << ", new: " << newTrigger << endl;

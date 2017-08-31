@@ -22,6 +22,8 @@ my $mode = $ARGV[0];
 ### execution
 # mode switch
 switch($mode) {
+
+	# mode for creating data for a single run and plot some charts
 	case "singleCapacity" {	
 		# get parameters
 		shift;
@@ -52,6 +54,8 @@ switch($mode) {
 		my @resultsCapacityShort = getCapacityResultsShort($shortTime, @resultsCapacity);
 		my @resultsCapacityAtEnd = getMinimumCapacityValues(@resultsCapacity);
 		my @resultsCapacityShortAtEnd = getMinimumCapacityValues(@resultsCapacityShort);
+		
+		# write data to csv files
 		writeCapacityArrayToCsv($capacityOverTimeCsvFile, @resultsCapacity);
 		writeCapacityArrayToCsv($capacityOverTimeCsvFileShort, @resultsCapacityShort);
 		writeCapacityArrayToCsv($capacityAtEndCsvFile, @resultsCapacityAtEnd);
@@ -62,6 +66,7 @@ switch($mode) {
 		plotCapacityAtEnd($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, @resultsCapacityShortAtEnd);
 	}
 	
+	# mode for creating data for study run and plot some charts
 	case "studyCapacity" {	
 		# get parameters
 		shift;
@@ -92,6 +97,8 @@ switch($mode) {
 		my @resultsCapacityShort = getCapacityResultsShort($shortTime, @resultsCapacity);
 		my @resultsCapacityAtEnd = getMinimumCapacityValues(@resultsCapacity);
 		my @resultsCapacityShortAtEnd = getMinimumCapacityValues(@resultsCapacityShort);
+		
+		# write data to csv files		
 		writeCapacityArrayToCsv($capacityOverTimeCsvFile, @resultsCapacity);
 		writeCapacityArrayToCsv($capacityOverTimeCsvFileShort, @resultsCapacityShort);
 		writeCapacityArrayToCsv($capacityAtEndCsvFile, @resultsCapacityAtEnd);
@@ -102,6 +109,7 @@ switch($mode) {
 		plotCapacityAtEnd($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, @resultsCapacityShortAtEnd);
 	}
 	
+	# mode for creating data for a comparision of a single protocol and plot some charts
 	case "compareProtocol" {
 		# get parameters
 		shift;
@@ -116,6 +124,8 @@ switch($mode) {
 		my $longTime = $ARGV[0];
 		shift;
 		my @configurations = @ARGV;
+		
+		# create some variables
 		my $xlabelAdd = "";
 		my $labelcount = 1;
 		foreach (@configurations) {
@@ -141,35 +151,34 @@ switch($mode) {
 		my @udpStats = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @udpStatsStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		
+		# calculate confidence
 		my @performanceArrayCarrier = ();
 		push @{$performanceArrayCarrier[0]}, @capacityAtEndData;
 		push @{$performanceArrayCarrier[1]}, @udpStats;
-		my @performanceArray = getPerformanceArray($confidence, @performanceArrayCarrier);
-		
+		my @performanceArray = getPerformanceArray($confidence, @performanceArrayCarrier);		
 		my @performanceStatisticsCarrier = ();
 		push @{$performanceStatisticsCarrier[0]}, @capacityAtEndDataStatistics;
 		push @{$performanceStatisticsCarrier[1]}, @udpStatsStatistics;
 		my @performanceStatistics = getPerformanceStatistics($confidence, @performanceStatisticsCarrier);
-			
+
+		# plot single charts
 		plotCapacityAtEndStatistics($capacityAtEndPlotFile, $capacityAtEndPlotTitle, $confidence, @capacityAtEndDataStatistics);
 		plotCapacityAtEndStatistics($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, $confidence, @capacityAtEndDataStatisticsShort);
 		plotUdpPacketLossStatistics($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);
 		plotPerformanceStatistics($performanceLossFile, $performancePlotTitle, $confidence, $xlabelAdd, @performanceStatistics);
 		
-		# plot charts
+		# plot charts for each configuration
 		my $position = 0;
 		foreach (@configurations) {
 			plotCapacityAtEndConfidence($confidence, 1, $longTime, $_, $position, @capacityAtEndData);
 			plotCapacityAtEndConfidence($confidence, 0, $shortTime, $_, $position, @capacityAtEndDataShort);
 			$position++;
-		}
-		
+		}		
 		my $position = 0;
 		foreach (@configurations) {
 			plotUdpPacketLossConfidence($confidence, 1, $longTime, $_, $position, @udpStats);
 			$position++;
-		}
-		
+		}		
 		my $position = 0;
 		foreach (@configurations) {
 			plotPerformanceConfidence($confidence, 1, $longTime, $_, $position, @performanceArray);
@@ -177,6 +186,7 @@ switch($mode) {
 		}
 	}
 	
+	# mode for creating data for a comparision of a given protocols and plot some charts
 	case "compareProtocols" {
 		# get parameters
 		shift;
@@ -191,14 +201,15 @@ switch($mode) {
 		my $longTime = $ARGV[0];
 		shift;
 		my @configurations = @ARGV;
+		
+		# create some variables
 		my $xlabelAdd = "";
 		my $labelcount = 1;
 		foreach (@configurations) {
 			$xlabelAdd .= " $labelcount:$_ ";
 			$labelcount++;
 		}
-		
-		
+			
 		# filenames
 		my $capacityAtEndPlotFile = "export/Compare/CapacityAtEnd/Full/$protcolFamily-CapacityAtEndStatistics.png";
 		my $capacityAtEndPlotFileShort = "export/Compare/CapacityAtEnd/Short/$protcolFamily-CapacityAtEndStatistics-Short.png";
@@ -217,35 +228,34 @@ switch($mode) {
 		my @udpStats = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @udpStatsStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		
+		# calculate confidence
 		my @performanceArrayCarrier = ();
 		push @{$performanceArrayCarrier[0]}, @capacityAtEndData;
 		push @{$performanceArrayCarrier[1]}, @udpStats;
-		my @performanceArray = getPerformanceArray($confidence, @performanceArrayCarrier);
-		
+		my @performanceArray = getPerformanceArray($confidence, @performanceArrayCarrier);		
 		my @performanceStatisticsCarrier = ();
 		push @{$performanceStatisticsCarrier[0]}, @capacityAtEndDataStatistics;
 		push @{$performanceStatisticsCarrier[1]}, @udpStatsStatistics;
 		my @performanceStatistics = getPerformanceStatistics($confidence, @performanceStatisticsCarrier);
 		
+		# plot single charts
 		plotCapacityAtEndStatisticsCompare($capacityAtEndPlotFile, $capacityAtEndPlotTitle, $confidence, @capacityAtEndDataStatistics);
 		plotCapacityAtEndStatisticsCompare($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, $confidence, @capacityAtEndDataStatisticsShort);		
 		plotUdpPacketLossStatisticsCompare($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);
 		plotPerformanceStatistics($performanceLossFile, $performancePlotTitle, $confidence, $xlabelAdd, @performanceStatistics);
 		
-		# plot charts
+		# plot charts for each configuration
 		my $position = 0;
 		foreach (@configurations) {
 			plotCapacityAtEndConfidenceCompare($confidence, 1, $longTime, $_, $position, @capacityAtEndData);
 			plotCapacityAtEndConfidenceCompare($confidence, 0, $shortTime, $_, $position, @capacityAtEndDataShort);
 			$position++;
 		}
-		
 		my $position = 0;
 		foreach (@configurations) {
 			plotUdpPacketLossConfidenceCompare($confidence, 1, $longTime, $_, $position, @udpStats);
 			$position++;
 		}
-		
 		my $position = 0;
 		foreach (@configurations) {
 			plotPerformanceConfidenceCompare($confidence, 1, $longTime, $_, $position, @performanceArray);
@@ -259,10 +269,10 @@ switch($mode) {
 	    my $protcolFamily = $ARGV[0];
 		shift;
 	    my $decimalplaces = $ARGV[0];
+		
+		# create some variables
 		my $xValues = 0;
 		my $yValues = 0;
-		
-		# create variables
 		my @capacityAtEndDataX;
 		my @capacityAtEndDataY;
 		my @capacityAtEndDataZ;
@@ -325,20 +335,17 @@ switch($mode) {
 		push (@{$capacityAtEndDataShort[0]}, @capacityAtEndDataShortX);
 		push (@{$capacityAtEndDataShort[1]}, @capacityAtEndDataShortY);
 		push (@{$capacityAtEndDataShort[2]}, @capacityAtEndDataShortZ);
-		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd-Short.dat", $decimalplaces, @capacityAtEndDataShort);
-		
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd-Short.dat", $decimalplaces, @capacityAtEndDataShort);		
 		my @capacityAtEndData = ();
 		push (@{$capacityAtEndData[0]}, @capacityAtEndDataX);
 		push (@{$capacityAtEndData[1]}, @capacityAtEndDataY);
 		push (@{$capacityAtEndData[2]}, @capacityAtEndDataZ);
-		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd.dat", $decimalplaces, @capacityAtEndData);
-		
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd.dat", $decimalplaces, @capacityAtEndData);		
 		my @udpStatsData = ();
 		push (@{$udpStatsData[0]}, @udpStatsDataX);
 		push (@{$udpStatsData[1]}, @udpStatsDataY);
 		push (@{$udpStatsData[2]}, @udpStatsDataZ);
-		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-UDPStats.dat", $decimalplaces, @udpStatsData);
-		
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-UDPStats.dat", $decimalplaces, @udpStatsData);		
 		my @performanceData = ();
 		push (@{$performanceData[0]}, @performanceDataX);
 		push (@{$performanceData[1]}, @performanceDataY);
@@ -346,6 +353,26 @@ switch($mode) {
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-Performance.dat", $decimalplaces, @performanceData);
 	}
 	
+	# create html stuff
+	case "createHTML" {
+		htmlIndex();
+		htmlSimulation("AODV", "aodv", "AODV");
+		htmlSimulation("AODVPO", "aodvpo", "AODVPO");
+		htmlSimulation("AODVPO Trigger Happy", "aodvpotriggerhappy", "AODVPOTriggerHappy");
+		htmlSimulation("AODVPO Trigger Sloppy", "aodvpotriggersloppy", "AODVPOTriggerSloppy");
+		htmlSimulation("AODV/AODVPO Mixed", "aodvpomixed", "AODVPOMixed");
+		htmlSimulation("OLSR", "olsr", "OLSR");
+		htmlSimulation("OLSRPO", "olsrpo", "OLSRPO");
+		htmlSimulation("OLSRPO Trigger Happy", "olsrpotriggerhappy", "OLSRPOTriggerHappy");
+		htmlSimulation("OLSRPO Trigger Sloppy", "olsrpotriggersloppy", "OLSRPOTriggerSloppy");
+		htmlSimulation("OLSR/OLSRPO Mixed", "olsrpomixed", "OLSRPOMixed");
+		htmlStudy("AODVPO", "aodvstudy", "AODVPOParameterStudy");
+		htmlStudy("OLSRPO", "olsrstudy", "OLSRPOParameterStudy");
+		htmlCompare("compare", "compare");
+		htmlSummary("summary", "summary");
+	}
+	
+	# if no mode given, print help
 	else {
 		print "\n";
 		print "plot.pl - converts data and creates charts with GNUPLOT\n";
@@ -361,6 +388,8 @@ switch($mode) {
 		print "        generate comparision for given parameter study\n";
 		print "    plot.pl studyCapacity RESULTNAME DROPOUT SHORTTIME LONGTIME\n";
 		print "        generate capacity charts and data for given parameter study result\n";
+		print "    plot.pl createHTML\n";
+		print "        creates HTML reports\n";
 		print "    plot.pl help\n";
 		print "        print this help\n";
 		print "\n";

@@ -1,7 +1,7 @@
-// PowerRouting for OMNeT++ - AODV routing
+// PowerRouting for OMNeT++ - AODVPO routing
 // Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 // free software, see LICENSE.md for details
-// derived from inetmanet-3.5, AODVPORouting.h
+// derived from inetmanet-3.5, AODVRouting.h
 
 #ifndef __INET_AODVPORouting_H
 #define __INET_AODVPORouting_H

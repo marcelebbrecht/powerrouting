@@ -1,4 +1,4 @@
-// PowerRouting for OMNeT++ - AODVPO route data
+// PowerRouting for OMNeT++ - AODV route data
 // Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
 // free software, see LICENSE.md for details
 // derived from inetmanet-3.5, AODVRouteData.h

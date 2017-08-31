@@ -207,7 +207,8 @@ sub writeCapacityArrayToCsv {
 
 # write new gnuplot data file
 # 1: filename as string
-# 2: results as array
+# 2: decimal places as integer
+# 3: results as array
 # R: void
 sub writeGnuplotDatafile {
 	# get parameters
@@ -266,7 +267,8 @@ sub getMinimumCapacityValues {
 # create capacity at end array
 # 1: number of runs as integer
 # 2: long version = 1, short version = 0
-# 3: configurations as array
+# 3: confidence as integer
+# 4: configurations as array
 # R: array with statistical data
 #	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
 #	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
@@ -323,7 +325,8 @@ sub getCapacityAtEndArray {
 # create capacity at end statistic
 # 1: number of runs as integer
 # 2: long version = 1, short version = 0
-# 3: configurations as array
+# 3: confidence as integer
+# 4: configurations as array
 # R: array with statistical data
 #	row0 -> name, row1 -> stddev, row2 -> min, row3 -> max, 
 #	row4 -> lower-clm, row5 -> upper-clm, row6 -> error
@@ -905,6 +908,7 @@ sub plotCapacityAtEndStatisticsCompare {
 	
 	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
 }
+
 # create capacityAtEnd chart show confidence
 # 1: confidence as integer
 # 2: long version = 1, short version = 0
@@ -2041,8 +2045,6 @@ sub plotPerformanceStatistics {
 	push @max, 0;
 	my @err = @{$statistics[6]};
 
-	
-	
 	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
 		xdata => [@xstddev],
 		ydata => [[@stddev], [@err]],
@@ -2074,5 +2076,304 @@ sub plotPerformanceStatistics {
 	);
 	
 	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+# create html index file
+# R: void
+sub htmlIndex {
+	# create variables
+	system("cp ./style.css export/");
+	my $filename = "export/index.html";
+	
+	# create capacity file
+	open(FILE, ">", $filename);
+	print FILE "<html>\n";
+	print FILE "	<head>\n";
+	print FILE "		<title>Powerrouting reports</title>\n";
+	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
+	print FILE "	</head>\n";
+	print FILE "	<body>\n";
+	print FILE "		<h2>Powerrouting reports</h2>\n";
+	print FILE "		<a href=\"aodv.html\">Simulation: AODV</a><br>\n";
+	print FILE "		<a href=\"aodvpo.html\">Simulation: AODVPO</a><br>\n";
+	print FILE "		<a href=\"aodvpotriggerhappy.html\">Simulation: AODVPO Trigger Happy</a><br>\n";
+	print FILE "		<a href=\"aodvpotriggersloppy.html\">Simulation: AODVPO Trigger Sloppy</a><br>\n";
+	print FILE "		<a href=\"aodvpomixed.html\">Simulation: AODV/AODVPO Mixed</a><br><br>\n";
+	print FILE "		<a href=\"olsr.html\">Simulation: OLSR</a><br>\n";
+	print FILE "		<a href=\"olsrpo.html\">Simulation: OLSRPO</a><br>\n";
+	print FILE "		<a href=\"olsrpotriggerhappy.html\">Simulation: OLSRPO Trigger Happy</a><br>\n";
+	print FILE "		<a href=\"olsrpotriggersloppy.html\">Simulation: OLSRPO Trigger Sloppy</a><br>\n";
+	print FILE "		<a href=\"olsrpomixed.html\">Simulation: OLSR/OLSRPO Mixed</a><br><br>\n";
+	print FILE "		<a href=\"aodvstudy.html\">Parameter Study: AODVPO</a><br>\n";
+	print FILE "		<a href=\"olsrstudy.html\">Parameter Study: OLSRPO</a><br><br>\n";
+	print FILE "		<a href=\"compare.html\">Comparision: AODV/OLSR</a><br>\n";
+	print FILE "		<a href=\"summary.html\">Summary: AODV/OLSR</a><br><br>\n";
+	print FILE "	</body>\n";
+	print FILE "</html>\n";
+	close FILE;
+}
+
+# create html simulation file
+# 1: simulation name as string
+# 2: filenamepart name as string
+# 3: imagepath as string
+# R: void
+sub htmlSimulation {
+	# get parameters
+	my $simulation = $_[0];
+	shift;
+	my $filenamepart = $_[0];
+	shift;
+	my $imagepath = $_[0];
+	shift;
+	
+	# create variables
+	system("cp ./style.css export/");
+	my $filename = "export/$filenamepart.html";
+	
+	# create capacity file
+	open(FILE, ">", $filename);
+	print FILE "<html>\n";
+	print FILE "	<head>\n";
+	print FILE "		<title>Powerrouting reports: Simulation $simulation</title>\n";
+	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
+	print FILE "	</head>\n";
+	print FILE "	<body>\n";
+	print FILE "		<h2>Powerrouting reports: Simulation $simulation</h2>\n";
+	print FILE "		<h3>Capacity over time (left full, right short time)</h3>\n";
+	
+	foreach my $image (glob("./export/$imagepath/CapacityOverTime/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+	
+	print FILE "		<h3>Capacity at end of run (left full, right short time)</h3>\n";
+	
+	foreach my $image (glob("./export/$imagepath/CapacityAtEnd/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+		
+	print FILE "	</body>\n";
+	print FILE "</html>\n";
+	close FILE;
+}
+
+# create html study file
+# 1: simulation name as string
+# 2: filenamepart name as string
+# 3: imagepath as string
+# R: void
+sub htmlStudy {
+	# get parameters
+	my $simulation = $_[0];
+	shift;
+	my $filenamepart = $_[0];
+	shift;
+	my $imagepath = $_[0];
+	shift;
+	
+	# create variables
+	system("cp ./style.css export/");
+	my $filename = "export/$filenamepart.html";
+	
+	# create capacity file
+	open(FILE, ">", $filename);
+	print FILE "<html>\n";
+	print FILE "	<head>\n";
+	print FILE "		<title>Powerrouting reports: Study $simulation</title>\n";
+	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
+	print FILE "	</head>\n";
+	print FILE "	<body>\n";
+	print FILE "		<h2>Powerrouting reports: Study $simulation</h2>\n";
+	print FILE "		<h3>Capacity at End (left full, right short time)</h3>\n";
+	
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-CapacityAtEnd-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	$image =~ s/Full/Short/g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
+	print FILE "		<h3>Capacity at End (left full, right short time)</h3>\n";
+	
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-CapacityAtEnd-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	$image =~ s/Full/Short/g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+		
+	print FILE "		<h3>Capacity over time (left full, right short time)</h3>\n";
+	
+	foreach my $image (glob("./export/$imagepath/CapacityOverTime/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+	
+	print FILE "		<h3>Capacity at end of run (left full, right short time)</h3>\n";
+	
+	foreach my $image (glob("./export/$imagepath/CapacityAtEnd/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+		
+	print FILE "	</body>\n";
+	print FILE "</html>\n";
+	close FILE;
+}
+
+# create html study file
+# 1: filenamepart name as string
+# 2: imagepath as string
+# R: void
+sub htmlCompare {
+	# get parameters
+	my $filenamepart = $_[0];
+	shift;
+	my $imagepath = $_[0];
+	shift;
+	
+	# create variables
+	system("cp ./style.css export/");	
+	my $filename = "export/$filenamepart.html";
+	
+	# create capacity file
+	open(FILE, ">", $filename);
+		print FILE "<html>\n";
+	print FILE "	<head>\n";
+	print FILE "		<title>Powerrouting reports: Comparision</title>\n";
+	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
+	print FILE "	</head>\n";
+	print FILE "	<body>\n";
+	print FILE "		<h2>Powerrouting reports: Comparision</h2>\n";
+
+	print FILE "		<h3>Capacity at end (full time)</h3>\n";	
+	my $image = "./$imagepath/CapacityAtEnd/Full/AODV-OLSR-CapacityAtEndStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+	
+	print FILE "		<h3>Capacity at End (short time)</h3>\n";	
+	my $image = "./$imagepath/CapacityAtEnd/Short/AODV-OLSR-CapacityAtEndStatistics-Short.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>UDP packet loss (full time)</h3>\n";	
+	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-OLSR-UdpPacketLossStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+	
+	print FILE "		<h3>Capacity at end confidence (left full, right short time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/CapacityAtEndConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/UdpPacketLossConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+			
+	print FILE "	</body>\n";
+	print FILE "</html>\n";
+	close FILE;
+}
+
+# create html study file
+# 1: filenamepart name as string
+# 2: imagepath as string
+# R: void
+sub htmlSummary {
+	# get parameters
+	my $filenamepart = $_[0];
+	shift;
+	my $imagepath = $_[0];
+	shift;
+	
+	# create variables
+	system("cp ./style.css export/");	
+	my $filename = "export/$filenamepart.html";
+	
+	# create capacity file
+	open(FILE, ">", $filename);
+		print FILE "<html>\n";
+	print FILE "	<head>\n";
+	print FILE "		<title>Powerrouting reports: Comparision</title>\n";
+	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
+	print FILE "	</head>\n";
+	print FILE "	<body>\n";
+	print FILE "		<h2>Powerrouting reports: Comparision</h2>\n";
+
+	print FILE "		<h3>Capacity at end (full time)</h3>\n";	
+	my $image = "./$imagepath/CapacityAtEnd/Full/AODV-CapacityAtEndStatistics.png";
+	print FILE "		<img src=\"$image\" width=\"900\">\n";
+	my $image = "./$imagepath/CapacityAtEnd/Full/OLSR-CapacityAtEndStatistics.png";
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+
+	print FILE "		<h3>Capacity at end (short time)</h3>\n";	
+	my $image = "./$imagepath/CapacityAtEnd/Short/AODV-CapacityAtEndStatistics-Short.png";
+	print FILE "		<img src=\"$image\" width=\"900\">\n";
+	my $image = "./$imagepath/CapacityAtEnd/Short/OLSR-CapacityAtEndStatistics-Short.png";
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+
+	print FILE "		<h3>UDP packet loss (full time)</h3>\n";	
+	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-UdpPacketLossStatistics.png";
+	print FILE "		<img src=\"$image\">\n";
+	my $image = "./$imagepath/UdpPacketLoss/Full/OLSR-UdpPacketLossStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+	
+	print FILE "		<h3>Capacity at end confidence (left full, right short time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/CapacityAtEndConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/UdpPacketLossConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+			
+	print FILE "	</body>\n";
+	print FILE "</html>\n";
+	close FILE;
 }
 1;

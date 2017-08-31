@@ -1,0 +1,22 @@
+/* 
+PowerRouting for OMNeT++ - css file
+Marcel Ebbrecht, marcel.ebbrecht@googlemail.com
+free software, see LICENSE.md for details
+*/
+
+body { color: #333; background-color: #FFFFFF; text-align: center; margin-top: 50px; font: 14px "Lucida Grande", "Lucida Sans Unicode", Helvetica, Arial, Verdana, sans-serif; }
+h1, h2 { font-size: 200%; color: #b0cb36 }
+address { text-align: center; }
+a:link { color: #b0cb36; text-decoration: none; }
+a:visited { color: #b0cb36; }
+a:focus { color: #b0cb36; }
+a:hover { color: #a8be43; text-decoration: underline; }
+a:active { color: #b0cb36; }
+table { margin: 0px auto; padding: 0px; min-width: 800px; text-align: left; }
+td { padding: 3px; margin: 0px; text-align: left; }
+hr { border: 0; border-bottom: 1px solid black; }
+ul { list-style: none; text-align: left; }
+li { margin-bottom: 3px; }
+li:before { content: "\00B7\20"; }
+.wrapper { width: 900px; margin:0px auto; }
+.smalltext { font-size: 85%; }

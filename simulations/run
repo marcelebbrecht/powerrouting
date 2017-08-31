@@ -23,10 +23,10 @@ DELETERUNLOGS="yes"
 DELETERTS="yes"
 
 # delete csv files (yes,no) after study
-DELETECSV="yes"
+#DELETECSV="yes"
 
 # delete results files sca/vci/vec (yes,no) after study
-DELETERESULTS="yes"
+#DELETERESULTS="yes"
 
 # gnuplot path for exporting graphs to png files
 # please also set path in subs.pl for perl
@@ -106,6 +106,7 @@ function cleanLogs {
 }
 
 # remove logfiles: csv, vec, sca, vci
+# 1: First part of name of files to remove (string)
 function cleanFiles {
     echo
     if [[ "$DELETECSV" =~ "yes" ]]; then
@@ -535,6 +536,12 @@ function plotStudy {
   	waitForFinish
 }
 
+# create html reports
+function createHTML {
+    echo "    creating HTML reports"
+	$PERL plot.pl createHTML
+}
+
 ### execution ###
 # create directory for logs
 mkdir ../simulations/logs > /dev/null 2>&1
@@ -562,11 +569,13 @@ case $1 in
         PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy")
         plotSimulationProtocol "AODV" PROTOCOLS[@]
 		waitForFinish
+		createHTML
         cleanLogs
         runPostamble $1
 		deletePid $$
     ;;
 
+	# run aodv study
     aodvstudy)
         writePid $$
         runPreamble $1
@@ -581,7 +590,8 @@ case $1 in
         waitForFinish        
 		plotStudy AODV $(($RUNNUMS+1))
         cleanLogs
-		cleanFiles AODVPOP
+		createHTML
+		#cleanFiles AODVPOP
         runPostamble $1
 		deletePid $$ 
     ;;
@@ -607,10 +617,12 @@ case $1 in
         plotSimulationProtocol "OLSR" PROTOCOLS[@]
         waitForFinish
         cleanLogs
+		createHTML
         runPostamble $1
 		deletePid $$
     ;;
     
+	# run olsr study
     olsrstudy)
         writePid $$
         runPreamble $1
@@ -625,7 +637,8 @@ case $1 in
         waitForFinish        
 		plotStudy OLSR $(($RUNNUMS+1))
         cleanLogs
-		cleanFiles OLSRPOP
+		createHTML
+		#cleanFiles OLSRPOP
         runPostamble $1
 		deletePid $$ 
     ;;
@@ -636,6 +649,7 @@ case $1 in
         runPreamble $1
         PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
         compareProtocols "AODV-OLSR" PROTOCOLS[@]
+		createHTML
         runPostamble $1
 		deletePid $$
     ;;
@@ -663,6 +677,8 @@ case $1 in
         $0 olsr $2
         $0 aodvstudy $2
         $0 olsrstudy $2
+        $0 compare $2
+        $0 createHTML $2
 		deletePid $$
     ;;
 
@@ -670,7 +686,17 @@ case $1 in
     killopp)
         killOppRun
     ;;
+
+    # create html reports
+    createHTML)
+        writePid $$
+        runPreamble $1
+		createHTML
+        runPostamble $1
+		deletePid $$
+    ;;
     
+	# if no mode given print help
     *)
         echo
         echo "usage: ./run [mode] (verbose)"
@@ -687,6 +713,7 @@ case $1 in
         echo "    olsrstudy - runs olsr simulations with varying parameter"
         echo "    aodvstudy - runs aodv simulations with varying parameter"
         echo "    compare - creates comparision charts for olsr and aodv, run after aodv and olsr"
+        echo "    createHTML - creates HTML reports"
         echo "    killopp - kills all running opp_run processes"
         echo "    help - print this help"
         echo
