@@ -2211,7 +2211,31 @@ sub htmlStudy {
 	print FILE "		<img src=\"$image\" width=\"900\">";
 	$image =~ s/Full/Short/g;
 	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
-		
+	
+	print FILE "		<h3>UDP packets transmitted (full time)</h3>\n";		
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-UDPStats-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-UDPStats-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
+	print FILE "		<h3>Performance (full time)</h3>\n";		
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-Performance-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-Performance-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
+	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-OLSR-UdpPacketLossStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	
 	print FILE "		<h3>Capacity over time (left full, right short time)</h3>\n";
 	
 	foreach my $image (glob("./export/$imagepath/CapacityOverTime/Full/*.png")) {
@@ -2324,7 +2348,7 @@ sub htmlSummary {
 	open(FILE, ">", $filename);
 		print FILE "<html>\n";
 	print FILE "	<head>\n";
-	print FILE "		<title>Powerrouting reports: Comparision</title>\n";
+	print FILE "		<title>Powerrouting reports: Summary</title>\n";
 	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
 	print FILE "	</head>\n";
 	print FILE "	<body>\n";

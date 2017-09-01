@@ -303,7 +303,7 @@ switch($mode) {
 			
 			push (@udpStatsDataX, $sensibility);
 			push (@udpStatsDataY, $trigger);	
-			push (@udpStatsDataZ, ( $udpStatsArray[2][28] / ++$udpStatsArray[1][28] ) * 100);	
+			push (@udpStatsDataZ, ( $udpStatsArray[2][34] / ++$udpStatsArray[1][34]) * 100);	
 			
 			push (@capacityAtEndDataX, $sensibility);
 			push (@capacityAtEndDataY, $trigger);
@@ -311,7 +311,7 @@ switch($mode) {
 			
 			push (@performanceDataX, $sensibility);
 			push (@performanceDataY, $trigger);	
-			push (@performanceDataZ, ( 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001 ) ) / ( ( ( 1 - ( $udpStatsArray[2][28] / $udpStatsArray[1][28] ) ) * 100 ) + 0.0000000000000001 ));			
+			push (@performanceDataZ, ( 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001 ) ) / ( ( ( 1 - ( $udpStatsArray[2][34] / $udpStatsArray[1][34] ) ) * 100 ) + 0.0000000000000001 ));			
 		}		
 		
 		# create data arrays for short version

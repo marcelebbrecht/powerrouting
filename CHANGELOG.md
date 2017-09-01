@@ -135,8 +135,24 @@ Completed: 2017-07-30
 Version: 0.93
 -------------
 
-Completed: In Progress
+Completed: 2017-07-31
 
 * Much, much more repetitions
 * Added min/max/avg visualization to ANF files
 * Batman and DYMO excluded from further work, focus is on olsr and aodv
+
+
+Version: 0.94
+-------------
+
+Completed: 2017-09-01
+
+* Batman, DYMO removed
+* Comparision with different scenarios removed
+* ANF files are not important, so reduced
+* Switched to 25 runs for normal simulations, 1 for study
+* Statistics are now done by Perl, Bash and Gnuplot
+* Added more indicators and 3d/map charts
+* Complete export to csv of important data with scavetool
+* Creating clean data files from original CSV with Perl, dropout added
+* Removed Power-Drop Bugs

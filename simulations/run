@@ -538,7 +538,7 @@ function plotStudy {
 
 # create html reports
 function createHTML {
-    echo "    creating HTML reports"
+    echo "    report: creating HTML files"
 	$PERL plot.pl createHTML
 }
 
@@ -589,8 +589,8 @@ case $1 in
         done
         waitForFinish        
 		plotStudy AODV $(($RUNNUMS+1))
-        cleanLogs
 		createHTML
+        cleanLogs
 		#cleanFiles AODVPOP
         runPostamble $1
 		deletePid $$ 
@@ -616,8 +616,8 @@ case $1 in
         PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
         plotSimulationProtocol "OLSR" PROTOCOLS[@]
         waitForFinish
-        cleanLogs
 		createHTML
+        cleanLogs
         runPostamble $1
 		deletePid $$
     ;;
@@ -636,8 +636,8 @@ case $1 in
         done
         waitForFinish        
 		plotStudy OLSR $(($RUNNUMS+1))
-        cleanLogs
 		createHTML
+        cleanLogs
 		#cleanFiles OLSRPOP
         runPostamble $1
 		deletePid $$ 
@@ -678,7 +678,6 @@ case $1 in
         $0 aodvstudy $2
         $0 olsrstudy $2
         $0 compare $2
-        $0 createHTML $2
 		deletePid $$
     ;;
 

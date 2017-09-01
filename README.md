@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.93
+Current version: 0.94
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -66,17 +66,16 @@ I use Windows Version of OMNeT++ 5.1, Build id: 170331-7c4e366 for this project:
 
 https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omnetpp-5-1-windows
 
-Linux wasn't tested, yet.
+Linux wasn't tested, yet, but should work. Please adopt paths in run and subs.pl
 
 
-Space requirements
-------------------
+Time, RAM, Disk and other requirements
+--------------------------------------
 
-Until 0.92: Results and exports need about 15-20G space. A full run, an I7 3770 with 7 active threads 
-needs about 2 hours.
+Results and exports need about 25G space without elog and rt files. A full run, an I7 3770 with 7
+active threads needs about 30-45 Minutes.
 
-Dunno atm ;) To much repitions and modes to run all at once. I will do a full run this night and hope
-the 1TB disk mounted on results directory will fit. 
+Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
 Installation
 ------------
@@ -280,7 +279,7 @@ To get a simple value from studytests, I created a simple perfomance function:
 Performance = ( 1 - ( packetLoss + 0.0000000000000001 ) ) / ( CapacityStdDev + 0.0000000000000001 )
 
 The constant is added to avoid division with zero. The higher the performance, the better 
-is the deviation in relation with loss rate.
+is the deviation in relation with loss rate. This will be improved in later versions.
 
 
 Protocol comparision
