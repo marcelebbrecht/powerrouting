@@ -159,6 +159,10 @@ void AODVPORouting::initialize(int stage)
     powerTriggerMin = par("powerTriggerMin");
     powerTriggerMax = par("powerTriggerMax");
     powerTriggerDefault = par("powerTriggerDefault");
+    timePenalty = par("timePenalty");
+    timePenaltyMin = par("timePenaltyMin");
+    timePenaltyMax = par("timePenaltyMax");
+    timePenaltyDefault = par("timePenaltyDefault");
 
     // checking and setting power routing values to default if out if bounds
     if ( powerSensitivity < powerSensitivityMin || powerSensitivity > powerSensitivityMax ) {
@@ -178,6 +182,12 @@ void AODVPORouting::initialize(int stage)
         powerTrigger = powerTriggerDefault;
     }
     EV_INFO << "Power Routing - powerTrigger: " << powerTrigger << endl;
+
+    if ( timePenalty < timePenaltyMin || timePenalty > timePenaltyMax ) {
+        EV_ERROR << "Power Routing - timePenalty out of bounds: " << timePenalty << ", setting default value: " << timePenaltyDefault << endl;
+        timePenalty = timePenaltyDefault;
+    }
+    EV_INFO << "Power Routing - timePenalty: " << timePenalty << endl;
 }
 
 void AODVPORouting::handleMessage(cMessage *msg)
@@ -442,9 +452,9 @@ void AODVPORouting::sendRREP(AODVRREP *rrep, const L3Address& destAddr, unsigned
     waitPacket = rrep;
     waitAddress = nextHop;
     waitTimer = timeToLive;
-    EV_INFO << "Sending Route Reply in " << 0.02*calculatePenalty() << endl;
+    EV_INFO << "Sending Route Reply in " << timePenalty * calculatePenalty() << endl;
     cancelEvent(waitForRREP);
-    scheduleAt(simTime() + (0.02*calculatePenalty()), waitForRREP);
+    scheduleAt(simTime() + (timePenalty * calculatePenalty()), waitForRREP);
 }
 
 AODVRREQ *AODVPORouting::createRREQ(const L3Address& destAddr)

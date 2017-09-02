@@ -17,7 +17,7 @@ simple AODVPORouting
         // sensitivity must be in 0.1 ... 10
         double powerSensitivityMin = 0.1;
         double powerSensitivityMax = 10.0;
-        double powerSensitivityDefault = 2.0;
+        double powerSensitivityDefault = 4.5;
         double powerSensitivity = default(powerSensitivityDefault);
         // power bias must be greater 0
         double powerBiasMin = 0.0;
@@ -28,6 +28,11 @@ simple AODVPORouting
         double powerTriggerMax = 0.5;
         double powerTriggerDefault = 0.3;
         double powerTrigger = default(powerTriggerDefault);
+		// time penalty, factor for waiting time t in 0.0 .. 1.0
+        double timePenaltyMin = 0.0;
+        double timePenaltyMax = 1.0;
+        double timePenaltyDefault = 0.02;
+        double timePenalty = default(timePenaltyDefault);
         // end modification
         
         string routingTableModule = default("^.routingTable");

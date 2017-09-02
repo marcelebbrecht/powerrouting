@@ -154,6 +154,10 @@ class AODVPORouting : public cSimpleModule, public ILifecycle, public INetfilter
     double powerTriggerMax = 0;
     double powerTriggerDefault = 0;
     double powerTriggerDouble = 0;
+    double timePenalty = 0;
+    double timePenaltyMin = 0;
+    double timePenaltyMax = 0;
+    double timePenaltyDefault = 0;
     int powerTriggerCalculated = 999999999;
     int powerTriggerLast = 999999999;
     AODVRREP *waitPacket;
