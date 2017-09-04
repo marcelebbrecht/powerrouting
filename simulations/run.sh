@@ -587,13 +587,13 @@ case $1 in
         runPreamble $1
         estimateThreads $2
         RUNNUMS=$(numberOfRuns aodv.ini AODVPOParameterStudy)    
-        #N=0
-        #rm ./results/AODVPOP* > /dev/null 2>&1
-        #while [ $N -le $RUNNUMS ]; do
-        #    runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
-        #    N=$(($N+1))
-        #done
-        #waitForFinish        
+        N=0
+        rm ./results/AODVPOP* > /dev/null 2>&1
+        while [ $N -le $RUNNUMS ]; do
+            runStudySimulation "aodv.ini" AODVPOParameterStudy $N $RUNNUMS
+            N=$(($N+1))
+        done
+        waitForFinish        
         plotStudy AODV $(($RUNNUMS+1))
         createHTML
         cleanLogs
@@ -634,13 +634,13 @@ case $1 in
         runPreamble $1
         estimateThreads $2
         RUNNUMS=$(numberOfRuns olsr.ini OLSRPOParameterStudy)    
-        #N=0
-        #rm ./results/OLSRPOP* > /dev/null 2>&1
-        #while [ $N -le $RUNNUMS ]; do
-        #    runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
-        #    N=$(($N+1))
-        #done
-        #waitForFinish        
+        N=0
+        rm ./results/OLSRPOP* > /dev/null 2>&1
+        while [ $N -le $RUNNUMS ]; do
+            runStudySimulation "olsr.ini" OLSRPOParameterStudy $N $RUNNUMS
+            N=$(($N+1))
+        done
+        waitForFinish        
         plotStudy OLSR $(($RUNNUMS+1))
         createHTML
         cleanLogs
