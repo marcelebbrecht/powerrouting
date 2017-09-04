@@ -5,6 +5,7 @@ PowerRouting for OMNeT++ - ToDo
 Future versions
 ---------------
 
+* Better xtics for histograms
 * Create scalar data after shorttime
 * Clean and compact BASH code
 * Clean and compact PERL code

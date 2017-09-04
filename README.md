@@ -81,14 +81,40 @@ https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omn
 Time, RAM, Disk and other requirements
 --------------------------------------
 
-Results and exports need about 25G space without elog and rt files. A full run, an I7 3770 with 7
-active threads needs about 30-45 Minutes.
+Results and exports need about 100G space without elog and rt files. A full run, an I7 3770 with 7
+active threads needs about 2 hours.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
 
-Installation Windows
---------------------
+Installation Linux
+------------------
+
+Download, extract and build OMNet++. I use ~/omnetpp as target directory. 
+
+Now, create a new workspace, download, extract, import and build inetmanet-3.x. If you use a different path than default
+'inetmanet-3.x', then please correct it in run.sh.
+
+Now, apply patch for ACK message bug as mentioned under bugs (see at the end of this document).
+
+Now, clone this project from GitHub and import it as 'powerrouting' into you workspace and build it.
+
+Please set project reference from powerrouting to inetmanet-3.x.
+
+You need:
+* perl
+* gnuplot
+
+If needed, set full paths in run.sh.
+
+Also, please install the following modules:
+* Statistics::Lite qw(:all)
+* Statistics::PointEstimation
+* Chart::Gnuplot
+* Switch
+
+Installation Windows (DEPRECATED)
+---------------------------------
 
 Download and extract OMNeT++ from above. Inetmanet uses OSG for visualization, but it's broken
 in OMNeT++ 5.1 (if you build inetmanet, you get errors if vizualization feature is enabled). 
@@ -99,7 +125,6 @@ First of all, disable the following features and dependencies in inetmanet:
 Also please exclude the following path from build:
 * inet/routing/extras/olsr
 * inet/routing/extras/batman
-* inet/routing/aodv
 
 Now apply patch for ACK message bug as mentioned under bugs (see at the end of this document).
 
@@ -146,11 +171,12 @@ Also, please install the following modules:
 Batch processing
 ----------------
 
-To quickly run all simulations, go into the simulation directory and execute "./run all" or "./run help" for more 
+To quickly run all simulations, go into the simulation directory and execute "./run.sh all" or "./run.sh help" for more 
 infomation about the different modes. You will find proper results in simulations/results and logs in simulations/logs. 
 All charts will be exported to simulations/export, also a html overview is created. All significant data will be exported
 to CSV, theoretically all OMNet resultfiles can be deleted after a full run.
 
+On windows, use 'run' instead of 'run.sh'
 
 Inheritance
 -----------
@@ -163,7 +189,7 @@ inetmanet-3.5 (OLSRPO must be friend!).
 Repetitions
 -----------
 
-Currently nearly all simulations will be run multiple times, 25 atm. Line Charts and HTML reports with ANF in OMNet are only
+Currently nearly all simulations will be run multiple times, 100 atm. Line Charts and HTML reports with ANF in OMNet are only
 created for runnumber 0. Due high space and resultcomputation requirenments, parameter study is limited to one run. Mixed 
 modes is only for demonstrating interoperability.
 
@@ -266,11 +292,13 @@ void OperationalBase::handleMessageWhenDown(cMessage *message)
         // now we send a message instead of throwing a runtime error, dunno if it's a dump hack ;)
         //throw cRuntimeError("Self message '%s' received when %s is down", message->getName(), getComponentType()->getName());
         EV_WARN << "Self message " << message->getName() << " received when " << getComponentType()->getName() << " is down" << endl;
-    else if (simTime() == lastChange)
+    else if (simTime() == lastChange) {
         EV_WARN << getComponentType()->getName() << " is down, dropping '" << message->getName() << "' message\n";
-    else
+        delete message;
+    } else {
         throw cRuntimeError("Message '%s' received when %s is down", message->getName(), getComponentType()->getName());
-    delete message;
+        delete message;
+    }
 }
 ```
 
