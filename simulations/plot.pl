@@ -266,9 +266,9 @@ switch($mode) {
 	case "studyCompare" {
 		# get parameters
 		shift;
-	    my $protcolFamily = $ARGV[0];
+	    	my $protcolFamily = $ARGV[0];
 		shift;
-	    my $decimalplaces = $ARGV[0];
+	    	my $decimalplaces = $ARGV[0];
 		
 		# create some variables
 		my $xValues = 0;
@@ -285,71 +285,133 @@ switch($mode) {
 		my @performanceDataX;
 		my @performanceDataY;
 		my @performanceDataZ;
+		my $runcounter = 0;
+
+		# count repeats
+		foreach (glob("./results/".$protcolFamily."POParameterStudy*#0*CapacityAtEnd-Clean.csv")) {
+			my $newfile = $_;	
+			$runcounter = 0;
+			while ( -e $newfile ) {	
+				my $newcounter = $runcounter + 1;
+				$newfile =~ s/#$runcounter/#$newcounter/g;
+				$runcounter++;				
+			}
+		}
 		
 		# create data arrays for long version
 		foreach (glob("./results/".$protcolFamily."POParameterStudy*#0*CapacityAtEnd-Clean.csv")) {
-			my $filename = $_;
-			my @filename = split("-", $filename);
-			my @parameters = split(",", $filename[1]);
-			my ( $crap, $sensibility ) = split("=", $parameters[0]);
-			my ( $crap, $trigger ) = split("=", $parameters[1]);
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				my $filename = $_;
+				my $newcounter = $run + 1;
+				$filename =~ s/#0/#$run/g;
+
+				my @filename = split("-", $filename);
+				my @parameters = split(",", $filename[1]);
+				my ( $crap, $sensibility ) = split("=", $parameters[0]);
+				my ( $crap, $trigger ) = split("=", $parameters[1]);
 			
-			my $capacityAtEndFilename = $filename;
-			my $udpStatsFilename = $filename;
-			$udpStatsFilename =~ s/CapacityAtEnd-Clean/UDPStats/g;
+				my $capacityAtEndFilename = $filename;
+				my $udpStatsFilename = $filename;
+				$udpStatsFilename =~ s/CapacityAtEnd-Clean/UDPStats/g;
 			
-			my @capacityAtEndArray = getCsvAsArray($capacityAtEndFilename);
-			my @udpStatsArray = getCsvAsArray($udpStatsFilename);
+				my @capacityAtEndArray = getCsvAsArray($capacityAtEndFilename);
+				my @udpStatsArray = getCsvAsArray($udpStatsFilename);
+
+				if ( $run == 0 ) {			
+					push (@udpStatsDataX, $sensibility);
+					push (@udpStatsDataY, $trigger);	
+					push (@capacityAtEndDataX, $sensibility);
+					push (@capacityAtEndDataY, $trigger);
+					push (@performanceDataX, $sensibility);
+					push (@performanceDataY, $trigger);	
+				}
+
+				push (@{$udpStatsDataZ[$newcounter]}, ( $udpStatsArray[2][41] / ++$udpStatsArray[1][41]) * 100);
 			
-			push (@udpStatsDataX, $sensibility);
-			push (@udpStatsDataY, $trigger);	
-			push (@udpStatsDataZ, ( $udpStatsArray[2][34] / ++$udpStatsArray[1][34]) * 100);	
+				push (@{$capacityAtEndDataZ[$newcounter]}, 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001) );
 			
-			push (@capacityAtEndDataX, $sensibility);
-			push (@capacityAtEndDataY, $trigger);
-			push (@capacityAtEndDataZ, 1 / ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001) );
-			
-			push (@performanceDataX, $sensibility);
-			push (@performanceDataY, $trigger);	
-			push (@performanceDataZ, ( 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001 ) ) / ( ( ( 1 - ( $udpStatsArray[2][34] / $udpStatsArray[1][34] ) ) * 100 ) + 0.0000000000000001 ));			
-		}		
+				push (@{$performanceDataZ[$newcounter]}, ( 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001 ) ) / ( ( ( 1 - ( $udpStatsArray[2][41] / ++$udpStatsArray[1][41] ) ) * 100 ) + 0.0000000000000001 ));
+			}
+		}
 		
-		# create data arrays for short version
-		foreach my $filename (glob("./results/".$protcolFamily."POParameterStudy*CapacityAtEnd-Clean-Short.csv")) {
-			my @filename = split("-", $filename);
-			my @parameters = split(",", $filename[1]);
-			my ( $crap, $sensibility,  ) = split("=", $parameters[0]);
-			my ( $crap, $trigger ) = split("=", $parameters[1]);
+		# create data arrays for long version
+		foreach (glob("./results/".$protcolFamily."POParameterStudy*#0*CapacityAtEnd-Clean-Short.csv")) {
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				my $filename = $_;
+				my $newcounter = $run + 1;
+				$filename =~ s/#0/#$run/g;
+
+				my @filename = split("-", $filename);
+				my @parameters = split(",", $filename[1]);
+				my ( $crap, $sensibility ) = split("=", $parameters[0]);
+				my ( $crap, $trigger ) = split("=", $parameters[1]);
 			
-			my $capacityAtEndFilename = $filename;
+				my $capacityAtEndFilename = $filename;
 			
-			my @capacityAtEndArray = getCsvAsArray($capacityAtEndFilename);
-			
-			push (@capacityAtEndDataShortX, $sensibility);
-			push (@capacityAtEndDataShortY, $trigger);
-			push (@capacityAtEndDataShortZ, 1 / ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001) );
+				my @capacityAtEndArray = getCsvAsArray($capacityAtEndFilename);
+
+				if ( $run == 0 ) {				
+					push (@capacityAtEndDataShortX, $sensibility);
+					push (@capacityAtEndDataShortY, $trigger);
+				}
+				push (@{$capacityAtEndDataShortZ[$newcounter]}, 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001) );
+			}
+		}
+
+		# write mean data to array's first row
+		my $udpStatsDataZLength = @{$udpStatsDataZ[1]};
+		for ( my $column = 0; $column < $udpStatsDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $udpStatsDataZ[$run+1][$column]);
+			}
+			push (@{$udpStatsDataZ[0]}, mean(@meanValues));
+		}
+		my $capacityAtEndDataZLength = @{$capacityAtEndDataZ[1]};
+		for ( my $column = 0; $column < $capacityAtEndDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $capacityAtEndDataZ[$run+1][$column]);
+			}
+			push (@{$capacityAtEndDataZ[0]}, mean(@meanValues));
+		}
+		my $performanceDataZLength = @{$performanceDataZ[1]};
+		for ( my $column = 0; $column < $performanceDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $performanceDataZ[$run+1][$column]);
+			}
+			push (@{$performanceDataZ[0]}, mean(@meanValues));
+		}
+		my $capacityAtEndDataShortZLength = @{$capacityAtEndDataShortZ[1]};
+		for ( my $column = 0; $column < $capacityAtEndDataShortZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $capacityAtEndDataShortZ[$run+1][$column]);
+			}
+			push (@{$capacityAtEndDataShortZ[0]}, mean(@meanValues));
 		}
 		
 		# write datafiles
 		my @capacityAtEndDataShort = ();
 		push (@{$capacityAtEndDataShort[0]}, @capacityAtEndDataShortX);
 		push (@{$capacityAtEndDataShort[1]}, @capacityAtEndDataShortY);
-		push (@{$capacityAtEndDataShort[2]}, @capacityAtEndDataShortZ);
+		push (@{$capacityAtEndDataShort[2]}, @{$capacityAtEndDataShortZ[0]});
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd-Short.dat", $decimalplaces, @capacityAtEndDataShort);		
 		my @capacityAtEndData = ();
 		push (@{$capacityAtEndData[0]}, @capacityAtEndDataX);
 		push (@{$capacityAtEndData[1]}, @capacityAtEndDataY);
-		push (@{$capacityAtEndData[2]}, @capacityAtEndDataZ);
+		push (@{$capacityAtEndData[2]}, @{$capacityAtEndDataZ[0]});
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-CapacityAtEnd.dat", $decimalplaces, @capacityAtEndData);		
 		my @udpStatsData = ();
 		push (@{$udpStatsData[0]}, @udpStatsDataX);
 		push (@{$udpStatsData[1]}, @udpStatsDataY);
-		push (@{$udpStatsData[2]}, @udpStatsDataZ);
+		push (@{$udpStatsData[2]}, @{$udpStatsDataZ[0]});
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-UDPStats.dat", $decimalplaces, @udpStatsData);		
 		my @performanceData = ();
 		push (@{$performanceData[0]}, @performanceDataX);
 		push (@{$performanceData[1]}, @performanceDataY);
-		push (@{$performanceData[2]}, @performanceDataZ);
+		push (@{$performanceData[2]}, @{$performanceDataZ[0]});
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-Performance.dat", $decimalplaces, @performanceData);
 	}
 	
@@ -368,8 +430,8 @@ switch($mode) {
 		htmlSimulation("OLSR/OLSRPO Mixed", "olsrpomixed", "OLSRPOMixed");
 		htmlStudy("AODVPO", "aodvstudy", "AODVPOParameterStudy");
 		htmlStudy("OLSRPO", "olsrstudy", "OLSRPOParameterStudy");
-		htmlCompare("compare", "compare");
-		htmlSummary("summary", "summary");
+		htmlCompare("compare", "Compare");
+		htmlSummary("summary", "Summary");
 	}
 	
 	# if no mode given, print help
@@ -380,9 +442,9 @@ switch($mode) {
 		print "\n";
 		print "    plot.pl singleCapacity RESULTNAME DROPOUT SHORTTIME LONGTIME\n";
 		print "        generate capacity charts and data for given \n";
-		print "    plot.pl compareProtocols TITLE REPITITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
+		print "    plot.pl compareProtocols TITLE REPETITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
 		print "        generate multiprotocol-comparision for given configurations\n";
-		print "    plot.pl compareProtocol [AODV|OLSR] REPITITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
+		print "    plot.pl compareProtocol [AODV|OLSR] REPETITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
 		print "        generate comparision for given configurations\n";
 		print "    plot.pl studyCompare [AODV|OLSR]\n";
 		print "        generate comparision for given parameter study\n";

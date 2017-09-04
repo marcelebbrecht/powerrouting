@@ -9,7 +9,7 @@
 # You habe been warned ;)
 
 ### settings
-my $gnuplotPath = "C:\\omnetpp\\gnuplot\\bin\\gnuplot.exe";
+my $gnuplotPath = "gnuplot";
 
 ### includes
 use Statistics::Lite qw(:all);
@@ -628,7 +628,6 @@ sub plotCapacityAtEnd {
 	
 		xtics => {
 			font => "Arial, 9",
-			offset => "0.5",
 		},
 	
 		ytics => {
@@ -705,7 +704,6 @@ sub plotCapacityAtEndStatistics {
 	
 		xtics => {
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 			font => "Arial, 9",
 		},
@@ -835,7 +833,6 @@ sub plotCapacityAtEndStatisticsCompare {
 	
 		xtics => {
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 			font => "Arial, 9",
 		},
@@ -977,7 +974,6 @@ sub plotCapacityAtEndConfidenceCompare {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -1108,7 +1104,6 @@ sub plotCapacityAtEndConfidence {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -1239,7 +1234,6 @@ sub plotUdpPacketLossConfidence {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -1370,7 +1364,6 @@ sub plotUdpPacketLossConfidenceCompare {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -1488,7 +1481,6 @@ sub plotUdpPacketLossStatistics {
 	
 		xtics => {
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 			font => "Arial, 9",
 		},
@@ -1617,7 +1609,6 @@ sub plotUdpPacketLossStatisticsCompare {
 	
 		xtics => {
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 			font => "Arial, 9",
 		},
@@ -1759,7 +1750,6 @@ sub plotPerformanceConfidence {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -1890,7 +1880,6 @@ sub plotPerformanceConfidenceCompare {
 			font => "Arial, 9",
 			offset => "$offset",
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 		},
 	
@@ -2006,7 +1995,6 @@ sub plotPerformanceStatistics {
 	
 		xtics => {
 			start => "1",
-			incr => "1",
 			end => "$maxX",
 			font => "Arial, 9",
 		},
@@ -2352,7 +2340,7 @@ sub htmlSummary {
 	print FILE "		<link rel=\"stylesheet\" href=\"./style.css\" type=\"text/css\">\n";
 	print FILE "	</head>\n";
 	print FILE "	<body>\n";
-	print FILE "		<h2>Powerrouting reports: Comparision</h2>\n";
+	print FILE "		<h2>Powerrouting reports: Summary</h2>\n";
 
 	print FILE "		<h3>Capacity at end (full time)</h3>\n";	
 	my $image = "./$imagepath/CapacityAtEnd/Full/AODV-CapacityAtEndStatistics.png";

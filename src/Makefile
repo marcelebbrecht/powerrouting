@@ -2,20 +2,20 @@
 # OMNeT++/OMNEST Makefile for $(LIB_PREFIX)powerrouting
 #
 # This file was generated with the command:
-#  opp_makemake --make-so -f --deep -KINET_PROJ=../../inet -DINET_IMPORT -I$$\(INET_PROJ\)/src -L$$\(INET_PROJ\)/out/$$\(CONFIGNAME\)/src -llibINET -lINET
+#  opp_makemake --make-so -f --deep -KINETMANET_3_X_PROJ=../../inetmanet-3.x -DINET_IMPORT -I$$\(INETMANET_3_X_PROJ\)/src -L$$\(INETMANET_3_X_PROJ\)/out/$$\(CONFIGNAME\)/src -lINET
 #
 
 # Name of target to be created (-o option)
 TARGET = $(LIB_PREFIX)powerrouting$(SHARED_LIB_SUFFIX)
 
 # C++ include paths (with -I)
-INCLUDE_PATH = -I$(INET_PROJ)/src
+INCLUDE_PATH = -I$(INETMANET_3_X_PROJ)/src
 
 # Additional object and library files to link with
 EXTRA_OBJS =
 
 # Additional libraries (-L, -l options)
-LIBS = $(LDFLAG_LIBPATH)$(INET_PROJ)/out/$(CONFIGNAME)/src  -llibINET -lINET
+LIBS = $(LDFLAG_LIBPATH)$(INETMANET_3_X_PROJ)/out/$(CONFIGNAME)/src  -lINET
 
 # Output directory
 PROJECT_OUTPUT_DIR = ../out
@@ -43,7 +43,7 @@ MSGFILES = \
 SMFILES =
 
 # Other makefile variables (-K)
-INET_PROJ=../../inet
+INETMANET_3_X_PROJ=../../inetmanet-3.x
 
 #------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ include $(CONFIGFILE)
 # Simulation kernel and user interface libraries
 OMNETPP_LIBS = -loppenvir$D $(KERNEL_LIBS) $(SYS_LIBS)
 ifneq ($(TOOLCHAIN_NAME),clangc2)
-LIBS += -Wl,-rpath,$(abspath $(INET_PROJ)/out/$(CONFIGNAME)/src)
+LIBS += -Wl,-rpath,$(abspath $(INETMANET_3_X_PROJ)/out/$(CONFIGNAME)/src)
 endif
 
 COPTS = $(CFLAGS) $(IMPORT_DEFINES) -DINET_IMPORT $(INCLUDE_PATH) -I$(OMNETPP_INCL_DIR)

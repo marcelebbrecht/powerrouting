@@ -59,14 +59,23 @@ Big thank you to all authors, that made that stuff possible. For more informatio
 please look at the packages README.md, CREDITS and License. 
 
 
-OMNeT++ on Windows
+OMNeT++ on Linux
 ------------------
 
 I use OMNeT++ 5.1 for Windows, Build id: 170331-7c4e366 for this project:
 
-https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omnetpp-5-1-windows
+https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2309-omnetpp-5-1-linux
 
-Linux wasn't tested, yet, but should work. Please adopt paths in run and subs.pl
+
+OMNeT++ on Windows
+------------------
+
+The preferred way ist Linux, the following could work, must not. Installing on Linux is easier,
+simulations and compilation runs faster, try it. If you use Windows, use runfile "run".
+
+I use OMNeT++ 5.1 for Windows, Build id: 170331-7c4e366 for this project:
+
+https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omnetpp-5-1-windows
 
 
 Time, RAM, Disk and other requirements
@@ -76,6 +85,7 @@ Results and exports need about 25G space without elog and rt files. A full run, 
 active threads needs about 30-45 Minutes.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
+
 
 Installation Windows
 --------------------
@@ -89,6 +99,7 @@ First of all, disable the following features and dependencies in inetmanet:
 Also please exclude the following path from build:
 * inet/routing/extras/olsr
 * inet/routing/extras/batman
+* inet/routing/aodv
 
 Now apply patch for ACK message bug as mentioned under bugs (see at the end of this document).
 
@@ -247,6 +258,7 @@ Dont know ....
 
 Solution: I patched a file in inetmanet-3.5 (src/inet/common/lifecycle/OperationalBase.cc), just exchange the method handleMessageWhenDown:
 
+```
 void OperationalBase::handleMessageWhenDown(cMessage *message)
 {
     if (message->isSelfMessage())
@@ -260,6 +272,7 @@ void OperationalBase::handleMessageWhenDown(cMessage *message)
         throw cRuntimeError("Message '%s' received when %s is down", message->getName(), getComponentType()->getName());
     delete message;
 }
+```
 
 
 Bugs - Power Drops 

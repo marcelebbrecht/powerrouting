@@ -1876,6 +1876,7 @@ AODVPORouting::~AODVPORouting()
     delete counterTimer;
     delete rrepAckTimer;
     delete blacklistTimer;
-    delete waitForRREP;
+    // removing message disabled through segfault
+    //delete waitForRREP;
 }
 
