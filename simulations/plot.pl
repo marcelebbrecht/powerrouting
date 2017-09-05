@@ -113,13 +113,13 @@ switch($mode) {
 	case "compareProtocol" {
 		# get parameters
 		shift;
-	    my $protcolFamily = $ARGV[0];
+		my $protcolFamily = $ARGV[0];
 		shift;
-	    my $numberOfRuns = $ARGV[0];
+		my $numberOfRuns = $ARGV[0];
 		shift;
-	    my $confidence = $ARGV[0];
+		my $confidence = $ARGV[0];
 		shift;
-	    my $shortTime = $ARGV[0];
+		my $shortTime = $ARGV[0];
 		shift;
 		my $longTime = $ARGV[0];
 		shift;
@@ -190,13 +190,13 @@ switch($mode) {
 	case "compareProtocols" {
 		# get parameters
 		shift;
-	    my $protcolFamily = $ARGV[0];
+		my $protcolFamily = $ARGV[0];
 		shift;
-	    my $numberOfRuns = $ARGV[0];
+		my $numberOfRuns = $ARGV[0];
 		shift;
-	    my $confidence = $ARGV[0];
+		my $confidence = $ARGV[0];
 		shift;
-	    my $shortTime = $ARGV[0];
+		my $shortTime = $ARGV[0];
 		shift;
 		my $longTime = $ARGV[0];
 		shift;
@@ -266,9 +266,9 @@ switch($mode) {
 	case "studyCompare" {
 		# get parameters
 		shift;
-	    	my $protcolFamily = $ARGV[0];
+			my $protcolFamily = $ARGV[0];
 		shift;
-	    	my $decimalplaces = $ARGV[0];
+			my $decimalplaces = $ARGV[0];
 		
 		# create some variables
 		my $xValues = 0;
