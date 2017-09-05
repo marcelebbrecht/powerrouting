@@ -25,7 +25,7 @@ DIALOG="no"
 
 ### settings - may set ###
 # substract from available cores (number >= 0)
-COREBIAS=4
+COREBIAS=0
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
