@@ -453,6 +453,152 @@ sub getUdpPacketLossArray {
 	return @udpPacketLossData;	
 }
 
+# create udp packet loss array
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getUdpPacketLossArrayMultiple {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create UdpPacketLoss data
+	my $udpPacketLossDataWidth = $numberOfRuns;
+	my $udpPacketLossDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @udpPacketLossData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		my $firstvalue = 0;
+		my $oldexperiment = "";
+		my $sendcount = 0;
+		my $recvcount = 0;
+		my $firstrun = 0;
+		my $filename = "results/$_-UDPStats.csv";
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			my $actexperiment = $actline[15];
+
+			if ( $firstrun < 2 && "$_" =~ "Multiple" ) {
+				$firstrun++;
+				$oldexperiment = $actexperiment;
+			} elsif ( $firstrun < 1 ) {
+				$firstrun++;
+				$oldexperiment = $actexperiment;
+			} else {
+	
+				if ( $actexperiment != $oldexperiment ) {
+					push @{$udpPacketLossData[$configuration]}, (1 - ($recvcount/++$sendcount))*100;
+					$sendcount = 0;
+					$recvcount = 0;
+					$oldexperiment = $actexperiment;
+				}
+
+				if ( "$actline[17]" eq "rcvdPk:count" ) {
+					$recvcount += $actline[18];
+				} else {
+					$sendcount += $actline[18];
+				}
+			}
+		}
+
+
+		my $configurationMean = mean(@{$udpPacketLossData[$configuration]});
+		my $configurationMin = min(@{$udpPacketLossData[$configuration]});
+		my $configurationMax = max(@{$udpPacketLossData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$udpPacketLossData[$configuration]});
+		push @{$udpPacketLossData[$configuration]}, $configurationMean;
+		push @{$udpPacketLossData[$configuration]}, $configurationMin;
+		push @{$udpPacketLossData[$configuration]}, $configurationMax;
+		push @{$udpPacketLossData[$configuration]}, $stats->lower_clm();
+		push @{$udpPacketLossData[$configuration]}, $stats->upper_clm();
+		push @{$udpPacketLossData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	return @udpPacketLossData;	
+}
+
+# create udp packet loss array
+# 1: number of runs as integer
+# 2: long version = 1, short version = 0
+# 3: confidence as integer
+# 4: protocol as string
+# 5: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getCapacityAtEndSumArrayMultiple {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create CapacityAtEndSum data
+	my $capacityAtEndSumDataWidth = $numberOfRuns;
+	my $capacityAtEndSumDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @capacityAtEndSumData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+	
+		my @files = ();
+		if ( $long == 1 ) {
+		        @files = glob("./results/$_-*CapacityAtEnd-Clean.csv");
+		} else {
+		        @files = glob("./results/$_-*CapacityAtEnd-Clean-Short.csv");
+		}
+	        foreach my $file (@files) {
+			my $firstrun = 0;
+			open(FILE, "<", $file);
+			while (my $line = <FILE>) {
+				if ( $firstrun == 0 ) {
+					$firstrun++;
+				} else {
+					my @actline = split("," , $line);
+					push @{$capacityAtEndSumData[$configuration]}, sum(@actline);
+				}
+			}
+		}
+
+		my $configurationMean = mean(@{$capacityAtEndSumData[$configuration]});
+		my $configurationMin = min(@{$capacityAtEndSumData[$configuration]});
+		my $configurationMax = max(@{$capacityAtEndSumData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$capacityAtEndSumData[$configuration]});
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMean;
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMin;
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMax;
+		push @{$capacityAtEndSumData[$configuration]}, $stats->lower_clm();
+		push @{$capacityAtEndSumData[$configuration]}, $stats->upper_clm();
+		push @{$capacityAtEndSumData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	return @capacityAtEndSumData;	
+}
+
 # create udp packet loss statistics
 # 1: number of runs as integer
 # 2: confidence as integer
@@ -525,6 +671,191 @@ sub getUdpPacketLossStatistics {
 	}
 	
 	return @udpPacketLossDataStatistics;	
+}
+
+# create udp packet loss statistics
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getUdpPacketLossStatisticsMultiple {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create UdpPacketLoss data
+	my $filename = "results/$protocol-UDPStats.csv";
+	my $udpPacketLossDataWidth = $numberOfRuns;
+	my $udpPacketLossDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @udpPacketLossData = ();
+	my $configuration = 0;
+	my $firstvalue = 0;
+	foreach (@configurations) {
+		my $firstvalue = 0;
+		my $oldexperiment = "";
+		my $sendcount = 0;
+		my $recvcount = 0;
+		my $firstrun = 0;
+		my $filename = "results/$_-UDPStats.csv";
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			my $actexperiment = $actline[15];
+
+			if ( $firstrun < 2 && "$_" =~ "Multiple" ) {
+				$firstrun++;
+				$oldexperiment = $actexperiment;
+			} elsif ( $firstrun < 1 ) {
+				$firstrun++;
+				$oldexperiment = $actexperiment;
+			} else {
+	
+				if ( $actexperiment != $oldexperiment ) {
+					push @{$udpPacketLossData[$configuration]}, (1 - ($recvcount/++$sendcount))*100;
+					$sendcount = 0;
+					$recvcount = 0;
+					$oldexperiment = $actexperiment;
+				}
+
+				if ( "$actline[17]" eq "rcvdPk:count" ) {
+					$recvcount += $actline[18];
+				} else {
+					$sendcount += $actline[18];
+				}
+			}
+		}
+
+		my $configurationMean = mean(@{$udpPacketLossData[$configuration]});
+		my $configurationMin = min(@{$udpPacketLossData[$configuration]});
+		my $configurationMax = max(@{$udpPacketLossData[$configuration]});
+
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$udpPacketLossData[$configuration]});
+
+		push @{$udpPacketLossData[$configuration]}, $configurationMean;
+		push @{$udpPacketLossData[$configuration]}, $configurationMin;
+		push @{$udpPacketLossData[$configuration]}, $configurationMax;
+		push @{$udpPacketLossData[$configuration]}, $stats->lower_clm();
+		push @{$udpPacketLossData[$configuration]}, $stats->upper_clm();
+		push @{$udpPacketLossData[$configuration]}, $stats->upper_clm() - $configurationMean;
+
+		$configuration++;
+		close FILE;
+	}
+	
+	# rerun, write final statistics array
+	my @udpPacketLossDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$udpPacketLossDataStatistics[0]}, $_;
+		push @{$udpPacketLossDataStatistics[1]}, $udpPacketLossData[$configuration][$numberOfRuns-1];
+		push @{$udpPacketLossDataStatistics[2]}, $udpPacketLossData[$configuration][$numberOfRuns];
+		push @{$udpPacketLossDataStatistics[3]}, $udpPacketLossData[$configuration][$numberOfRuns+1];
+		push @{$udpPacketLossDataStatistics[4]}, $udpPacketLossData[$configuration][$numberOfRuns+2];
+		push @{$udpPacketLossDataStatistics[5]}, $udpPacketLossData[$configuration][$numberOfRuns+3];
+		push @{$udpPacketLossDataStatistics[6]}, $udpPacketLossData[$configuration][$numberOfRuns+4];
+		$configuration++;
+	}
+	
+	return @udpPacketLossDataStatistics;	
+}
+
+# create udp packet loss statistics
+# 1: number of runs as integer
+# 2: long version = 1, short version = 0
+# 3: confidence as integer
+# 4: protocol as string
+# 5: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getCapacityAtEndSumStatisticsMultiple {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create UdpPacketLoss data
+	my $capacityAtEndSumDataWidth = $numberOfRuns;
+	my $capacityAtEndSumDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @capacityAtEndSumData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+	
+		my @files = ();
+		if ( $long == 1 ) {
+		        @files = glob("./results/$_-*CapacityAtEnd-Clean.csv");
+		} else {
+		        @files = glob("./results/$_-*CapacityAtEnd-Clean-Short.csv");
+		}
+	        foreach my $file (@files) {
+			my $firstrun = 0;
+			open(FILE, "<", $file);
+			while (my $line = <FILE>) {
+				if ( $firstrun == 0 ) {
+					$firstrun++;
+				} else {
+					my @actline = split("," , $line);
+					push @{$capacityAtEndSumData[$configuration]}, sum(@actline);
+				}
+			}
+		}
+
+		my $configurationMean = mean(@{$capacityAtEndSumData[$configuration]});
+		my $configurationMin = min(@{$capacityAtEndSumData[$configuration]});
+		my $configurationMax = max(@{$capacityAtEndSumData[$configuration]});
+
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$capacityAtEndSumData[$configuration]});
+
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMean;
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMin;
+		push @{$capacityAtEndSumData[$configuration]}, $configurationMax;
+		push @{$capacityAtEndSumData[$configuration]}, $stats->lower_clm();
+		push @{$capacityAtEndSumData[$configuration]}, $stats->upper_clm();
+		push @{$capacityAtEndSumData[$configuration]}, $stats->upper_clm() - $configurationMean;
+
+		$configuration++;
+		close FILE;
+	}
+	
+	# rerun, write final statistics array
+	my @capacityAtEndSumDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$capacityAtEndSumDataStatistics[0]}, $_;
+		push @{$capacityAtEndSumDataStatistics[1]}, $capacityAtEndSumData[$configuration][$numberOfRuns-1];
+		push @{$capacityAtEndSumDataStatistics[2]}, $capacityAtEndSumData[$configuration][$numberOfRuns];
+		push @{$capacityAtEndSumDataStatistics[3]}, $capacityAtEndSumData[$configuration][$numberOfRuns+1];
+		push @{$capacityAtEndSumDataStatistics[4]}, $capacityAtEndSumData[$configuration][$numberOfRuns+2];
+		push @{$capacityAtEndSumDataStatistics[5]}, $capacityAtEndSumData[$configuration][$numberOfRuns+3];
+		push @{$capacityAtEndSumDataStatistics[6]}, $capacityAtEndSumData[$configuration][$numberOfRuns+4];
+		$configuration++;
+	}
+	
+	return @capacityAtEndSumDataStatistics;	
 }
 
 # calculate performance array
@@ -1426,6 +1757,266 @@ sub plotUdpPacketLossConfidenceCompare {
 	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
 }
 
+# create CapacityAtEndSum chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotCapacityAtEndSumConfidenceCompareMultiple {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/CompareSending/CapacityAtEndSumConfidence/Full/$configuration-UdpPacketLossConfidence.png";
+	} else {
+		$filename = "export/CompareSending/CapacityAtEndSumConfidence/Short/$configuration-UdpPacketLossConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - CapacityAtEndSumConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Joule",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+# create UdpPacketLoss chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotUdpPacketLossConfidenceCompareMultiple {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/CompareSending/UdpPacketLossConfidence/Full/$configuration-UdpPacketLossConfidence.png";
+	} else {
+		$filename = "export/CompareSending/UdpPacketLossConfidence/Short/$configuration-UdpPacketLossConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - UdpPacketLossConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
 # create UdpPacketLoss statistics chart for all runs and one config
 # 1: filename as string
 # 2: title as string
@@ -1467,6 +2058,134 @@ sub plotUdpPacketLossStatistics {
 		},
 		
 		yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+# create CapacityAtEndSum statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotCapacityAtEndSumStatisticsCompare {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - CapacityAtEndSumStatistics",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statistics[3]}) * 1.25 ],
 		xrange => [0, $maxX+1],
   
 		xlabel => {
@@ -1603,7 +2322,7 @@ sub plotUdpPacketLossStatisticsCompare {
 		},
 	
 		ylabel => {
-			text => "Percent",
+			text => "Joule",
 			font => "Arial, 9",
 		},
 	
@@ -2086,12 +2805,16 @@ sub htmlIndex {
 	print FILE "		<a href=\"aodvpo.html\">Simulation: AODVPO</a><br>\n";
 	print FILE "		<a href=\"aodvpotriggerhappy.html\">Simulation: AODVPO Trigger Happy</a><br>\n";
 	print FILE "		<a href=\"aodvpotriggersloppy.html\">Simulation: AODVPO Trigger Sloppy</a><br>\n";
-	print FILE "		<a href=\"aodvpomixed.html\">Simulation: AODV/AODVPO Mixed</a><br><br>\n";
+	print FILE "		<a href=\"aodvpomixed.html\">Simulation: AODV/AODVPO Mixed</a><br>\n";
+	print FILE "		<a href=\"aodvmultiple.html\">Simulation: AODV Multiple</a><br>\n";
+	print FILE "		<a href=\"aodvpomultiple.html\">Simulation: AODVPO Multiple</a><br><br>\n";
 	print FILE "		<a href=\"olsr.html\">Simulation: OLSR</a><br>\n";
 	print FILE "		<a href=\"olsrpo.html\">Simulation: OLSRPO</a><br>\n";
 	print FILE "		<a href=\"olsrpotriggerhappy.html\">Simulation: OLSRPO Trigger Happy</a><br>\n";
 	print FILE "		<a href=\"olsrpotriggersloppy.html\">Simulation: OLSRPO Trigger Sloppy</a><br>\n";
-	print FILE "		<a href=\"olsrpomixed.html\">Simulation: OLSR/OLSRPO Mixed</a><br><br>\n";
+	print FILE "		<a href=\"olsrpomixed.html\">Simulation: OLSR/OLSRPO Mixed</a><br>\n";
+	print FILE "		<a href=\"olsrmultiple.html\">Simulation: OLSR Multiple</a><br>\n";
+	print FILE "		<a href=\"olsrpomultiple.html\">Simulation: OLSRPO Multiple</a><br><br>\n";
 	print FILE "		<a href=\"aodvstudy.html\">Parameter Study: AODVPO</a><br>\n";
 	print FILE "		<a href=\"olsrstudy.html\">Parameter Study: OLSRPO</a><br><br>\n";
 	print FILE "		<a href=\"compare.html\">Comparision: AODV/OLSR</a><br>\n";
@@ -2288,6 +3011,18 @@ sub htmlCompare {
 	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-OLSR-UdpPacketLossStatistics.png";
 	print FILE "		<img src=\"$image\"><br>\n";
 	
+	print FILE "		<h3>Capacity at end sum (full time)</h3>\n";	
+	my $image = "./".$imagepath."Sending/CapacityAtEndSum/Full/AODV-OLSR-Sending-CapacityAtEndSum.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+	
+	print FILE "		<h3>Capacity at end sum (short time)</h3>\n";	
+	my $image = "./".$imagepath."Sending/CapacityAtEndSum/Short/AODV-OLSR-Sending-CapacityAtEndSum.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>UDP packet loss (full time)</h3>\n";	
+	my $image = "./".$imagepath."Sending/UdpPacketLoss/Full/AODV-OLSR-Sending-UdpPacketLossStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+	
 	print FILE "		<h3>Capacity at end confidence (left full, right short time)</h3>\n";	
 	foreach my $image (glob("./export/$imagepath/CapacityAtEndConfidence/Full/*.png")) {
 		$image =~ s/#/%23/g;
@@ -2301,6 +3036,30 @@ sub htmlCompare {
 	my $line = 0;
 	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
 	foreach my $image (glob("./export/$imagepath/UdpPacketLossConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+			
+	print FILE "		<h3>Capacity at end sum confidence (left full, right short time)</h3>\n";	
+	foreach my $image (glob("./export/".$imagepath."Sending/CapacityAtEndSumConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		$image =~ s/Full/Short/g;
+		$image =~ s/.png/-Short.png/g;
+		print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/".$imagepath."Sending/UdpPacketLossConfidence/Full/*.png")) {
 		$image =~ s/#/%23/g;
 		$image =~ s/\/export//g;
 		print FILE "		<img src=\"$image\" width=\"900\">";

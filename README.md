@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.94
+Current version: 0.95
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -222,6 +222,7 @@ Please create a runconfig that uses aodv.ini. The different configs are describe
 * mixed networks to show interoperability of AODVPO with normal AODV routers
 * for AODVPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
 * a study simulation, that iterates about sensitivity and trigger
+* a run with random recipients
 
 Feel free to experiment with the following parameters, set through aodv.ini:
 * aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 2.0)
@@ -248,6 +249,8 @@ Please create a runconfig that uses olsr.ini. The different configs are describe
 * pure OLSR and OLSRPO simulations
 * mixed networks to show interoperability of OLSRPO with normal OLSR routers
 * for OLSRPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
+* a study simulation, that iterates about sensitivity and trigger
+* a run with random recipients
 
 Feel free to experiment with the following parameters, set through olsr.ini:
 * olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.0, max: 0.999999, default: 0.0)

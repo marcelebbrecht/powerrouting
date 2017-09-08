@@ -40,16 +40,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="org.omnetpp.cdt.gnu.config.debug.25814405.2031177795" name="/" resourcePath="src/powerrouting/routing/batmanpo">
-						<toolChain id="org.omnetpp.cdt.gnu.toolchain.debug.801476210" name="C++ Toolchain for OMNeT++" superClass="org.omnetpp.cdt.gnu.toolchain.debug" unusedChildren="">
-							<tool id="cdt.managedbuild.tool.gnu.archiver.base.852065053" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base.671705518"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1492890103" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base.1844739634"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1565448993" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base.116359020"/>
-							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1336210796" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base.1810839926"/>
-							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.base.1468606689" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base.349412754"/>
-							<tool id="cdt.managedbuild.tool.gnu.assembler.base.674731737" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base.1536261420"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="simulations"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>

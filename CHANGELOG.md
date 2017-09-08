@@ -156,3 +156,14 @@ Completed: 2017-09-01
 * Complete export to csv of important data with scavetool
 * Creating clean data files from original CSV with Perl, dropout added
 * Removed Power-Drop Bugs
+
+
+Version: 0.95
+-------------
+
+Completed: 2017-09-08
+
+* Dialog added for status of simulations
+* Removing VEC files after CSV creation
+* Comparesimulations for multiple recipients added
+* Added CapacityAtEndSum Charts for comparision

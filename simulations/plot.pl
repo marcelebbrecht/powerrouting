@@ -263,6 +263,69 @@ switch($mode) {
 		}
 	}
 	
+	# mode for creating data for a comparision of a given protocols and plot some charts
+	case "compareSending" {
+		# get parameters
+		shift;
+		my $protcolFamily = $ARGV[0];
+		shift;
+		my $numberOfRuns = $ARGV[0];
+		shift;
+		my $confidence = $ARGV[0];
+		shift;
+		my $shortTime = $ARGV[0];
+		shift;
+		my $longTime = $ARGV[0];
+		shift;
+		my @configurations = @ARGV;
+		
+		# create some variables
+		my $xlabelAdd = "";
+		my $labelcount = 1;
+		foreach (@configurations) {
+			$xlabelAdd .= " $labelcount:$_ ";
+			$labelcount++;
+		}
+			
+		# filenames
+		my $udpPacketLossFile = "export/CompareSending/UdpPacketLoss/Full/$protcolFamily-UdpPacketLossStatistics.png";
+		my $udpPacketLossPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $capacityAtEndSumFile = "export/CompareSending/CapacityAtEndSum/Full/$protcolFamily-CapacityAtEndSum.png";
+		my $capacityAtEndSumPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $capacityAtEndSumFileShort = "export/CompareSending/CapacityAtEndSum/Short/$protcolFamily-CapacityAtEndSum.png";
+		my $capacityAtEndSumPlotTitleShort = "$protcolFamily (".$shortTime."s) ($numberOfRuns repetitions)";
+		
+		# read data	
+		my @udpStats = getUdpPacketLossArrayMultiple($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @udpStatsStatistics = getUdpPacketLossStatisticsMultiple($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @capacityAtEndSum = getCapacityAtEndSumArrayMultiple($numberOfRuns, 1, $confidence, $protcolFamily, @configurations);
+		my @capacityAtEndSumShort = getCapacityAtEndSumArrayMultiple($numberOfRuns, 0, $confidence, $protcolFamily, @configurations);
+		my @capacityAtEndSumStatistics = getCapacityAtEndSumStatisticsMultiple($numberOfRuns, 1, $confidence, $protcolFamily, @configurations);
+		my @capacityAtEndSumStatisticsShort = getCapacityAtEndSumStatisticsMultiple($numberOfRuns, 0, $confidence, $protcolFamily, @configurations);
+
+		# plot single charts	
+		plotUdpPacketLossStatisticsCompare($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);
+		plotCapacityAtEndSumStatisticsCompare($capacityAtEndSumFile, $capacityAtEndSumPlotTitle, $confidence, @capacityAtEndSumStatistics);
+		plotCapacityAtEndSumStatisticsCompare($capacityAtEndSumFileShort, $capacityAtEndSumPlotTitleShort, $confidence, @capacityAtEndSumStatisticsShort);
+
+		# plot charts for each configuration
+		my $position = 0;
+		foreach (@configurations) {
+			plotUdpPacketLossConfidenceCompareMultiple($confidence, 1, $longTime, $_, $position, @udpStats);
+			$position++;
+		}
+		my $position = 0;
+		foreach (@configurations) {
+			plotCapacityAtEndSumConfidenceCompareMultiple($confidence, 1, $longTime, $_, $position, @capacityAtEndSum);
+			$position++;
+		}
+		my $position = 0;
+		foreach (@configurations) {
+			plotCapacityAtEndSumConfidenceCompareMultiple($confidence, 0, $longTime, $_, $position, @capacityAtEndSumShort);
+			$position++;
+		}
+	}
+	
 	case "studyCompare" {
 		# get parameters
 		shift;
@@ -423,11 +486,15 @@ switch($mode) {
 		htmlSimulation("AODVPO Trigger Happy", "aodvpotriggerhappy", "AODVPOTriggerHappy");
 		htmlSimulation("AODVPO Trigger Sloppy", "aodvpotriggersloppy", "AODVPOTriggerSloppy");
 		htmlSimulation("AODV/AODVPO Mixed", "aodvpomixed", "AODVPOMixed");
+		htmlSimulation("AODV Multiple", "aodvmultiple", "AODVMultiple");
+		htmlSimulation("AODVPO Multiple", "aodvpomultiple", "AODVPOMultiple");
 		htmlSimulation("OLSR", "olsr", "OLSR");
 		htmlSimulation("OLSRPO", "olsrpo", "OLSRPO");
 		htmlSimulation("OLSRPO Trigger Happy", "olsrpotriggerhappy", "OLSRPOTriggerHappy");
 		htmlSimulation("OLSRPO Trigger Sloppy", "olsrpotriggersloppy", "OLSRPOTriggerSloppy");
 		htmlSimulation("OLSR/OLSRPO Mixed", "olsrpomixed", "OLSRPOMixed");
+		htmlSimulation("OLSR Multiple", "olsrmultiple", "OLSRMultiple");
+		htmlSimulation("OLSRPO Multiple", "olsrpomultiple", "OLSRPOMultiple");
 		htmlStudy("AODVPO", "aodvstudy", "AODVPOParameterStudy");
 		htmlStudy("OLSRPO", "olsrstudy", "OLSRPOParameterStudy");
 		htmlCompare("compare", "Compare");
@@ -444,6 +511,8 @@ switch($mode) {
 		print "        generate capacity charts and data for given \n";
 		print "    plot.pl compareProtocols TITLE REPETITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
 		print "        generate multiprotocol-comparision for given configurations\n";
+		print "    plot.pl compareSending TITLE REPETITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
+		print "        generate multiprotocol-comparision for given configurations on random recipients\n";
 		print "    plot.pl compareProtocol [AODV|OLSR] REPETITIONS CONFIDENCE SHORTTIME LONGTIME CONFIG1 CONFIG2 ...\n";
 		print "        generate comparision for given configurations\n";
 		print "    plot.pl studyCompare [AODV|OLSR]\n";

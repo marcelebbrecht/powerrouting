@@ -3,7 +3,7 @@
 	<name>powerrouting</name>
 	<comment></comment>
 	<projects>
-		<project>inet</project>
+		<project>inetmanet-3.x</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

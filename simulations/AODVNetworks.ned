@@ -323,32 +323,87 @@ network AODVPOMixed extends AODVPOCoreNetworkMixed
     connections allowunconnected:
 }
 
-network AODVPOCompare extends AODVPOCoreNetwork
+network AODVMultiple
 {
+    parameters:
+        @display("bgb=1050,850");
     submodules:
-        router13: AODVPORouter {
+        radioMedium: IdealRadioMedium {
             parameters:
-                @display("i=device/accesspoint;p=100,400");
+                @display("p=900,75");
         }
-        router53: AODVPORouter {
+        visualizer: <default("IntegratedCanvasVisualizer")> like IIntegratedVisualizer if hasVisualizer() {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
+            	@display("p=900,200");
         }
-        router31: AODVPORouter {
+        configurator: IPv4NetworkConfigurator {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
+                addDefaultRoutes = false;
+                addStaticRoutes = false;
+                addSubnetRoutes = false;
+                config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");
+                @display("p=900,325");
         }
-        router35: AODVPORouter {
+        routingTableRecorder: RoutingTableRecorder {
             parameters:
-                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
+                @display("p=900,450");
         }
-    connections allowunconnected:
-}
-
-network AODVCompare extends AODVCoreNetwork
-{
-    submodules:
-        router13: AODVRouter {
+        lifecycleController: LifecycleController {
+            parameters:
+                @display("p=900,575");
+        }
+        scenarioManager: ScenarioManager {
+            parameters:
+                script = default(xml("<scenario/>"));
+                @display("p=900,700");
+        }
+        
+        router22: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,250");
+        }
+        
+        router32: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,250");
+        }
+        
+        router42: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,250");
+        }
+        
+        router23: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,400");
+        }
+        
+        router33: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,400");
+        }
+        
+        router43: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,400");
+        }
+        
+        router24: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,550");
+        }
+        
+        router34: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,550");
+        }
+        
+        router44: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,550");
+        }
+        
+        sender1: AODVRouter {
             parameters:
                 @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
         }
@@ -361,6 +416,105 @@ network AODVCompare extends AODVCoreNetwork
                 @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
         }
         router35: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
+        }
+    connections allowunconnected:
+}
+
+network AODVPOMultiple
+{
+    parameters:
+        @display("bgb=1050,850");
+    submodules:
+        radioMedium: IdealRadioMedium {
+            parameters:
+                @display("p=900,75");
+        }
+        visualizer: <default("IntegratedCanvasVisualizer")> like IIntegratedVisualizer if hasVisualizer() {
+            parameters:
+            	@display("p=900,200");
+        }
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                addDefaultRoutes = false;
+                addStaticRoutes = false;
+                addSubnetRoutes = false;
+                config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");
+                @display("p=900,325");
+        }
+        routingTableRecorder: RoutingTableRecorder {
+            parameters:
+                @display("p=900,450");
+        }
+        lifecycleController: LifecycleController {
+            parameters:
+                @display("p=900,575");
+        }
+        scenarioManager: ScenarioManager {
+            parameters:
+                script = default(xml("<scenario/>"));
+                @display("p=900,700");
+        }
+        
+        router22: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,250");
+        }
+        
+        router32: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,250");
+        }
+        
+        router42: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,250");
+        }
+        
+        router23: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,400");
+        }
+        
+        router33: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,400");
+        }
+        
+        router43: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,400");
+        }
+        
+        router24: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,550");
+        }
+        
+        router34: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,550");
+        }
+        
+        router44: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,550");
+        }
+        
+        sender1: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=100,400");
+        }
+        router53: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=700,400");
+        }
+        router31: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;r=,,#707070;p=400,100");
+        }
+        router35: AODVPORouter {
             parameters:
                 @display("i=device/pocketpc_s;r=,,#707070;p=400,700");
         }

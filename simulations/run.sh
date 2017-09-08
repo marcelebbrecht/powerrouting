@@ -25,7 +25,7 @@ DIALOG="no"
 
 ### settings - may set ###
 # substract from available cores (number >= 0)
-COREBIAS=0
+COREBIAS=1
 
 # delete elog files (yes,no)
 DELETELOGS="yes"
@@ -39,8 +39,8 @@ DELETERTS="yes"
 # delete csv files (yes,no) after study
 DELETECSV="no"
 
-# delete results files sca/vci/vec (yes,no) after study
-DELETERESULTS="no"
+# delete results files vec (yes,no) after study
+DELETERESULTS="yes"
 
 # decimal places for comparision
 DECIMALPLACES="5"
@@ -112,18 +112,11 @@ function cleanLogs {
 	fi
 }
 
-# remove logfiles: csv, vec, sca, vci
+# remove logfiles: vec, vci
 # 1: First part of name of files to remove (string)
 function cleanFiles {
-	echo
-	if [[ "$DELETECSV" =~ "yes" ]]; then
-		echo "Removing csv files."
-		rm ./results/$1*.csv > /dev/null 2>&1
-	fi
 	if [[ "$DELETERESULTS" =~ "yes" ]]; then
-		echo "Removing result files."
 		rm ./results/$1*.vec > /dev/null 2>&1
-		rm ./results/$1*.sca > /dev/null 2>&1
 		rm ./results/$1*.vci > /dev/null 2>&1
 	fi
 }
@@ -235,27 +228,19 @@ function plotSimulationProtocol {
 	mkdir -p ./export/Summary/CapacityAtEnd/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/UdpPacketLoss/Full > /dev/null 2>&1
-	mkdir -p ./export/Summary/UdpPacketLoss/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/Performance/Full > /dev/null 2>&1
-	mkdir -p ./export/Summary/Performance/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEndConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEndConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/UdpPacketLossConfidence/Full > /dev/null 2>&1
-	mkdir -p ./export/Summary/UdpPacketLossConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/PerformanceConfidence/Full > /dev/null 2>&1
-	mkdir -p ./export/Summary/PerformanceConfidence/Short > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEnd/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEnd/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/UdpPacketLoss/Full/$1* > /dev/null 2>&1
-	rm ./export/Summary/UdpPacketLoss/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/Performance/Full/$1* > /dev/null 2>&1
-	rm ./export/Summary/Performance/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEndConfidence/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEndConfidence/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/UdpPacketLossConfidence/Full/$1* > /dev/null 2>&1
-	rm ./export/Summary/UdpPacketLossConfidence/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/PerformanceConfidence/Full/$1* > /dev/null 2>&1
-	rm ./export/Summary/PerformanceConfidence/Short/$1* > /dev/null 2>&1
 	echo "    plot: $1 protocol comparision"	
 	declare -a protocolArray=("${!2}")
 	plotProtocol $1 $(getRepeat) protocolArray[@] &
@@ -267,31 +252,53 @@ function compareProtocols {
 	mkdir -p ./export/Compare/CapacityAtEnd/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/UdpPacketLoss/Full > /dev/null 2>&1
-	mkdir -p ./export/Compare/UdpPacketLoss/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/Performance/Full > /dev/null 2>&1
-	mkdir -p ./export/Compare/Performance/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEndConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEndConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/UdpPacketLossConfidence/Full > /dev/null 2>&1
-	mkdir -p ./export/Compare/UdpPacketLossConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/PerformanceConfidence/Full > /dev/null 2>&1
-	mkdir -p ./export/Compare/PerformanceConfidence/Short > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEnd/Full/* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEnd/Short/* > /dev/null 2>&1
 	rm ./export/Compare/UdpPacketLoss/Full/* > /dev/null 2>&1
-	rm ./export/Compare/UdpPacketLoss/Short/* > /dev/null 2>&1
 	rm ./export/Compare/Performance/Full/* > /dev/null 2>&1
-	rm ./export/Compare/Performance/Short/* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEndConfidence/Full/* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEndConfidence/Short/* > /dev/null 2>&1
 	rm ./export/Compare/UdpPacketLossConfidence/Full/* > /dev/null 2>&1
-	rm ./export/Compare/UdpPacketLossConfidence/Short/* > /dev/null 2>&1
 	rm ./export/Compare/PerformanceConfidence/Full/* > /dev/null 2>&1
-	rm ./export/Compare/PerformanceConfidence/Short/* > /dev/null 2>&1
 	echo "    plot: $1 protocol comparision"	
 	declare -a protocolArray=("${!2}")
 	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/AODV-OLSR-UDPStats.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
 	$PERL plot.pl compareProtocols $1 $(getRepeat) $CONFIDENCE $SHORTTIME $(getSimTime) ${protocolArray[@]}
+}
+
+# plot simulation for compare protocols
+# 1: CONFIGNAME (name)
+function compareSending {
+	mkdir -p ./export/CompareSending/CapacityAtEndSum/Full > /dev/null 2>&1
+	mkdir -p ./export/CompareSending/CapacityAtEndSum/Short > /dev/null 2>&1
+	mkdir -p ./export/CompareSending/UdpPacketLoss/Full > /dev/null 2>&1
+	mkdir -p ./export/CompareSending/CapacityAtEndSumConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/CompareSending/CapacityAtEndSumConfidence/Short > /dev/null 2>&1
+	mkdir -p ./export/CompareSending/UdpPacketLossConfidence/Full > /dev/null 2>&1
+	rm ./export/CompareSending/CapacityAtEndSum/Full/* > /dev/null 2>&1
+	rm ./export/CompareSending/CapacityAtEndSum/Short/* > /dev/null 2>&1
+	rm ./export/CompareSending/UdpPacketLoss/Full/* > /dev/null 2>&1
+	rm ./export/CompareSending/Performance/Full/* > /dev/null 2>&1
+	rm ./export/CompareSending/CapacityAtEndSumConfidence/Full/* > /dev/null 2>&1
+	rm ./export/CompareSending/CapacityAtEndSumConfidence/Short/* > /dev/null 2>&1
+	rm ./export/CompareSending/UdpPacketLossConfidence/Full/* > /dev/null 2>&1
+	rm ./export/CompareSending/PerformanceConfidence/Full/* > /dev/null 2>&1
+	echo "    plot: $1 protocol comparision random recipient"	
+	declare -a protocolArray=("${!2}")
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*router*udpApp[0]) AND name(rcvdPk:count))' -O results/AODVMultiple-UDPStats.csv -F csv results/AODVMultiple-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*router*udpApp[0]) AND name(rcvdPk:count))' -O results/AODVPOMultiple-UDPStats.csv -F csv results/AODVPOMultiple-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*router*udpApp[0]) AND name(rcvdPk:count))' -O results/OLSRMultiple-UDPStats.csv -F csv results/OLSRMultiple-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*router*udpApp[0]) AND name(rcvdPk:count))' -O results/OLSRPOMultiple-UDPStats.csv -F csv results/OLSRPOMultiple-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/AODV-UDPStats.csv -F csv results/AODV-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/AODVPO-UDPStats.csv -F csv results/AODVPO-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/OLSR-UDPStats.csv -F csv results/OLSR-*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/OLSRPO-UDPStats.csv -F csv results/OLSRPO-*.sca > /dev/null 2>&1
+	$PERL plot.pl compareSending $1 $(getRepeat) $CONFIDENCE $SHORTTIME $(getSimTime) ${protocolArray[@]}
 }
 
 # run simulation part of study
@@ -391,7 +398,11 @@ function cleanTemp {
 # 1: EXPERIMENTNAME (name)
 function plotOne {
 	# convert omnetdata to csv
-	scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+	if [[ "$1" =~ "Multiple" ]]; then 
+		scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+	else
+		scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$1-CapacityOverTime.csv -F csv results/$1.vec > /dev/null 2>&1
+	fi
 	mkdir -p export > /dev/null 2>&1
 	PROTOCOL=$(echo $1 | cut -d "-" -f 1)
 	
@@ -576,18 +587,29 @@ case $1 in
 		runSimulation "aodv.ini" "AODVPOTriggerHappy" $2
 		runSimulation "aodv.ini" "AODVPOTriggerSloppy" $2
 		runSimulation "aodv.ini" "AODVPOMixed" $2
+		runSimulation "aodv.ini" "AODVMultiple" $2
+		runSimulation "aodv.ini" "AODVPOMultiple" $2
 		waitForFinish
 		plotSimulation "AODV"
 		plotSimulation "AODVPO"
 		plotSimulation "AODVPOTriggerHappy"
 		plotSimulation "AODVPOTriggerSloppy"
 		plotSimulation "AODVPOMixed"
+		plotSimulation "AODVMultiple"
+		plotSimulation "AODVPOMultiple"
 		waitForFinish
 		PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy")
 		plotSimulationProtocol "AODV" PROTOCOLS[@]
 		waitForFinish
 		createHTML
 		cleanLogs
+		cleanFiles AODV-
+		cleanFiles AODVPO-
+		cleanFiles AODVPOTriggerHappy-
+		cleanFiles AODVPOTriggerSloppy-
+		cleanFiles AODVPOMixed-
+		cleanFiles AODVMultiple-
+		cleanFiles AODVPOMultiple-
 		runPostamble $1
 		deletePid $$
 	;;
@@ -623,18 +645,29 @@ case $1 in
 		runSimulation "olsr.ini" "OLSRPOTriggerHappy" $2
 		runSimulation "olsr.ini" "OLSRPOTriggerSloppy" $2
 		runSimulation "olsr.ini" "OLSRPOMixed" $2
+		runSimulation "olsr.ini" "OLSRMultiple" $2
+		runSimulation "olsr.ini" "OLSRPOMultiple" $2
 		waitForFinish
 		plotSimulation "OLSR"
 		plotSimulation "OLSRPO"
 		plotSimulation "OLSRPOTriggerHappy"
 		plotSimulation "OLSRPOTriggerSloppy"
 		plotSimulation "OLSRPOMixed"
+		plotSimulation "OLSRMultiple"
+		plotSimulation "OLSRPOMultiple"
 		waitForFinish
 		PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
 		plotSimulationProtocol "OLSR" PROTOCOLS[@]
 		waitForFinish
 		createHTML
 		cleanLogs
+		cleanFiles OLSR-
+		cleanFiles OLSRPO-
+		cleanFiles OLSRPOTriggerHappy-
+		cleanFiles OLSRPOTriggerSloppy-
+		cleanFiles OLSRPOMixed-
+		cleanFiles OLSRMultiple-
+		cleanFiles OLSRPOMultiple-
 		runPostamble $1
 		deletePid $$
 	;;
@@ -665,7 +698,9 @@ case $1 in
 		writePid $$
 		runPreamble $1
 		PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy" "OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
+		SENDING=("AODV" "AODVPO" "AODVMultiple" "AODVPOMultiple" "OLSR" "OLSRPO" "OLSRMultiple" "OLSRPOMultiple")
 		compareProtocols "AODV-OLSR" PROTOCOLS[@]
+		compareSending "AODV-OLSR-Sending" SENDING[@]
 		createHTML
 		runPostamble $1
 		deletePid $$
