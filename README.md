@@ -81,8 +81,8 @@ https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omn
 Time, RAM, Disk and other requirements
 --------------------------------------
 
-Results and exports need about 100G space without elog and rt files. A full run, an I7 3770 with 7
-active threads needs about 2 hours.
+Results and exports need about 15G space without elog and rt files and if it deletes the vec's.
+A full run, an I7 3770 with 7 active threads needs about 2 hours.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
