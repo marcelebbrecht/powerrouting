@@ -520,3 +520,328 @@ network AODVPOMultiple
         }
     connections allowunconnected:
 }
+
+network AODVPOMultiHop
+{
+    parameters:
+        @display("bgb=1050,850");
+    submodules:
+        radioMedium: IdealRadioMedium {
+            parameters:
+                @display("p=900,75");
+        }
+        visualizer: <default("IntegratedCanvasVisualizer")> like IIntegratedVisualizer if hasVisualizer() {
+            parameters:
+            	@display("p=900,200");
+        }
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                addDefaultRoutes = false;
+                addStaticRoutes = false;
+                addSubnetRoutes = false;
+                config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");
+                @display("p=900,325");
+        }
+        routingTableRecorder: RoutingTableRecorder {
+            parameters:
+                @display("p=900,450");
+        }
+        lifecycleController: LifecycleController {
+            parameters:
+                @display("p=900,575");
+        }
+        scenarioManager: ScenarioManager {
+            parameters:
+                script = default(xml("<scenario/>"));
+                @display("p=900,700");
+        }
+        
+        router11: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,100");
+        }
+        
+        router21: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,100");
+        }
+        
+        router31: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,100");
+        }
+        
+        router41: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,100");
+        }
+        
+        router51: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,100");
+        }
+        
+        router12: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,250");
+        }
+        
+        router22: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,250");
+        }
+        
+        router32: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,250");
+        }
+        
+        router42: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,250");
+        }
+        
+        router52: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,250");
+        }
+        
+        router23: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,400");
+        }
+        
+        router33: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,400");
+        }
+        
+        router43: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,400");
+        }
+        
+        router14: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,550");
+        }
+        
+        router24: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,550");
+        }
+        
+        router34: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,550");
+        }
+        
+        router44: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,550");
+        }
+        
+        router54: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,550");
+        }
+        
+        router15: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,700");
+        }
+        
+        router25: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,700");
+        }
+        
+        router35: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,700");
+        }
+        
+        router45: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,700");
+        }
+        
+        router55: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,700");
+        }
+        
+        sender1: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,400");
+        }
+
+        receiver1: AODVPORouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,400");
+        }
+    connections allowunconnected:
+}
+
+network AODVMultiHop
+{
+    parameters:
+        @display("bgb=1050,850");
+    submodules:
+        radioMedium: IdealRadioMedium {
+            parameters:
+                @display("p=900,75");
+        }
+        visualizer: <default("IntegratedCanvasVisualizer")> like IIntegratedVisualizer if hasVisualizer() {
+            parameters:
+            	@display("p=900,200");
+        }
+        configurator: IPv4NetworkConfigurator {
+            parameters:
+                addDefaultRoutes = false;
+                addStaticRoutes = false;
+                addSubnetRoutes = false;
+                config = xml("<config><interface hosts='*' address='145.236.x.x' netmask='255.255.0.0'/></config>");
+                @display("p=900,325");
+        }
+        routingTableRecorder: RoutingTableRecorder {
+            parameters:
+                @display("p=900,450");
+        }
+        lifecycleController: LifecycleController {
+            parameters:
+                @display("p=900,575");
+        }
+        scenarioManager: ScenarioManager {
+            parameters:
+                script = default(xml("<scenario/>"));
+                @display("p=900,700");
+        }
+        
+        router11: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,100");
+        }
+        
+        router21: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,100");
+        }
+        
+        router31: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,100");
+        }
+        
+        router41: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,100");
+        }
+        
+        router51: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,100");
+        }
+        
+        router12: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,250");
+        }
+        
+        router22: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,250");
+        }
+        
+        router32: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,250");
+        }
+        
+        router42: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,250");
+        }
+        
+        router52: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,250");
+        }
+        
+        router23: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,400");
+        }
+        
+        router33: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,400");
+        }
+        
+        router43: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,400");
+        }
+        
+        router14: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,550");
+        }
+        
+        router24: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,550");
+        }
+        
+        router34: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,550");
+        }
+        
+        router44: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,550");
+        }
+        
+        router54: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,550");
+        }
+        
+        router15: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,700");
+        }
+        
+        router25: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=250,700");
+        }
+        
+        router35: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=400,700");
+        }
+        
+        router45: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=550,700");
+        }
+        
+        router55: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,700");
+        }
+        
+        sender1: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=100,400");
+        }
+
+        receiver1: AODVRouter {
+            parameters:
+                @display("i=device/pocketpc_s;p=700,400");
+        }
+
+    connections allowunconnected:
+}
