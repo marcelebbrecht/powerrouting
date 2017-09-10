@@ -488,6 +488,10 @@ switch($mode) {
 		htmlSimulation("AODV/AODVPO Mixed", "aodvpomixed", "AODVPOMixed");
 		htmlSimulation("AODV Multiple", "aodvmultiple", "AODVMultiple");
 		htmlSimulation("AODVPO Multiple", "aodvpomultiple", "AODVPOMultiple");
+		htmlSimulation("AODV MultiHop", "aodvmultihop", "AODVMultiHop");
+		htmlSimulation("AODVPO MultiHop", "aodvpomultihop", "AODVPOMultiHop");
+		htmlSimulation("AODV Different Charge", "aodvdiffcharge", "AODVDifferentCapacity");
+		htmlSimulation("AODVPO Different Charge", "aodvpodiffcharge", "AODVPODifferentCapacity");
 		htmlSimulation("OLSR", "olsr", "OLSR");
 		htmlSimulation("OLSRPO", "olsrpo", "OLSRPO");
 		htmlSimulation("OLSRPO Trigger Happy", "olsrpotriggerhappy", "OLSRPOTriggerHappy");
@@ -495,6 +499,10 @@ switch($mode) {
 		htmlSimulation("OLSR/OLSRPO Mixed", "olsrpomixed", "OLSRPOMixed");
 		htmlSimulation("OLSR Multiple", "olsrmultiple", "OLSRMultiple");
 		htmlSimulation("OLSRPO Multiple", "olsrpomultiple", "OLSRPOMultiple");
+		htmlSimulation("OLSR MultiHop", "olsrmultihop", "OLSRMultiHop");
+		htmlSimulation("OLSRPO MultiHop", "olsrpomultihop", "OLSRPOMultiHop");
+		htmlSimulation("OLSR Different Charge", "olsrdiffcharge", "OLSRDifferentCapacity");
+		htmlSimulation("OLSRPO Different Charge", "olsrpodiffcharge", "OLSRPODifferentCapacity");
 		htmlStudy("AODVPO", "aodvstudy", "AODVPOParameterStudy");
 		htmlStudy("OLSRPO", "olsrstudy", "OLSRPOParameterStudy");
 		htmlCompare("compare", "Compare");
