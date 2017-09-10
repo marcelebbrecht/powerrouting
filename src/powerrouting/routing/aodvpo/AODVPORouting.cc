@@ -452,6 +452,8 @@ void AODVPORouting::sendRREP(AODVRREP *rrep, const L3Address& destAddr, unsigned
     waitPacket = rrep;
     waitAddress = nextHop;
     waitTimer = timeToLive;
+
+    // changed: create timer for sending reply
     EV_INFO << "Sending Route Reply in " << timePenalty * calculatePenalty() << endl;
     cancelEvent(waitForRREP);
     scheduleAt(simTime() + (timePenalty * calculatePenalty()), waitForRREP);
@@ -617,7 +619,7 @@ AODVRREP *AODVPORouting::createGratuitousRREP(AODVRREQ *rreq, IRoute *originator
 
     grrep->setPacketType(RREP);
 
-    // HIER
+    // changed: submit metric plus penalty
     grrep->setHopCount(originatorRoute->getMetric() + calculatePenalty());
     //grrep->setHopCount(originatorRoute->getMetric());
 
@@ -797,7 +799,7 @@ void AODVPORouting::updateRoutingTable(IRoute *route, const L3Address& nextHop, 
 
     route->setNextHop(nextHop);
 
-    // HIER
+    // changed: submit metric plus penalty
     route->setMetric(hopCount + calculatePenalty());
     //route->setMetric(hopCount);
 
@@ -1081,7 +1083,7 @@ IRoute *AODVPORouting::createRoute(const L3Address& destAddr, const L3Address& n
     newRoute->setSource(this);
     newRoute->setProtocolData(newProtocolData);
 
-    // HIER
+    // changed: submit metric plus penalty
     newRoute->setMetric(hopCount + calculatePenalty());
     //newRoute->setMetric(hopCount);
     newRoute->setNextHop(nextHop);
@@ -1635,7 +1637,7 @@ INetfilter::IHook::Result AODVPORouting::datagramForwardHook(INetworkDatagram *d
             const L3Address& routeAddr = route->getDestinationAsGeneric();
             sendRERRWhenNoRouteToForward(routeAddr);
 
-            // HIER
+            // changed: submit metric plus penalty
             route->setMetric(route->getMetric() + calculatePenalty());
             //route->setMetric(route->getMetric());
         }
