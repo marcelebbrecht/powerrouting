@@ -140,7 +140,7 @@ function waitForFinishScave {
 
 # wait for free slot (num of runnung processes < CPUCOUNT)
 function waitForFreeSlot {
-	sleep 1
+	sleep 0.1
 	while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done	
 	while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done	
 	while [ $(ps aux | grep opp | grep -v grep | wc -l) -ge $CPUCOUNT ]; do sleep 1; done	
@@ -589,6 +589,10 @@ case $1 in
 		runSimulation "aodv.ini" "AODVPOMixed" $2
 		runSimulation "aodv.ini" "AODVMultiple" $2
 		runSimulation "aodv.ini" "AODVPOMultiple" $2
+		runSimulation "aodv.ini" "AODVMultiHop" $2
+		runSimulation "aodv.ini" "AODVPOMultiHop" $2
+		runSimulation "aodv.ini" "AODVDifferentCapacity" $2
+		runSimulation "aodv.ini" "AODVPODifferentCapacity" $2
 		waitForFinish
 		plotSimulation "AODV"
 		plotSimulation "AODVPO"
@@ -597,6 +601,10 @@ case $1 in
 		plotSimulation "AODVPOMixed"
 		plotSimulation "AODVMultiple"
 		plotSimulation "AODVPOMultiple"
+		plotSimulation "AODVMultiHop"
+		plotSimulation "AODVPOMultiHop"
+		plotSimulation "AODVDifferentCapacity"
+		plotSimulation "AODVPODifferentCapacity"
 		waitForFinish
 		PROTOCOLS=("AODV" "AODVPO" "AODVPOTriggerHappy" "AODVPOTriggerSloppy")
 		plotSimulationProtocol "AODV" PROTOCOLS[@]
@@ -610,6 +618,10 @@ case $1 in
 		cleanFiles AODVPOMixed-
 		cleanFiles AODVMultiple-
 		cleanFiles AODVPOMultiple-
+		cleanFiles AODVMultiHop-
+		cleanFiles AODVPOMultiHop-
+		cleanFiles AODVDifferentCapacity-
+		cleanFiles AODVPODifferentCapacity-
 		runPostamble $1
 		deletePid $$
 	;;
@@ -647,6 +659,10 @@ case $1 in
 		runSimulation "olsr.ini" "OLSRPOMixed" $2
 		runSimulation "olsr.ini" "OLSRMultiple" $2
 		runSimulation "olsr.ini" "OLSRPOMultiple" $2
+		runSimulation "olsr.ini" "OLSRMultiHop" $2
+		runSimulation "olsr.ini" "OLSRPOMultiHop" $2
+		runSimulation "olsr.ini" "OLSRDifferentCapacity" $2
+		runSimulation "olsr.ini" "OLSRPODifferentCapacity" $2
 		waitForFinish
 		plotSimulation "OLSR"
 		plotSimulation "OLSRPO"
@@ -655,6 +671,10 @@ case $1 in
 		plotSimulation "OLSRPOMixed"
 		plotSimulation "OLSRMultiple"
 		plotSimulation "OLSRPOMultiple"
+		plotSimulation "OLSRMultiHop"
+		plotSimulation "OLSRPOMultiHop"
+		plotSimulation "OLSRDifferentCapacity"
+		plotSimulation "OLSRPODifferentCapacity"
 		waitForFinish
 		PROTOCOLS=("OLSR" "OLSRPO" "OLSRPOTriggerHappy" "OLSRPOTriggerSloppy")
 		plotSimulationProtocol "OLSR" PROTOCOLS[@]
@@ -668,6 +688,10 @@ case $1 in
 		cleanFiles OLSRPOMixed-
 		cleanFiles OLSRMultiple-
 		cleanFiles OLSRPOMultiple-
+		cleanFiles OLSRMultiHop-
+		cleanFiles OLSRPOMultiHop-
+		cleanFiles OLSRDifferentCapacity-
+		cleanFiles OLSRPODifferentCapacity-
 		runPostamble $1
 		deletePid $$
 	;;
