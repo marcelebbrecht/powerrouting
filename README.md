@@ -81,8 +81,8 @@ https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omn
 Time, RAM, Disk and other requirements
 --------------------------------------
 
-Results and exports need about 35G space without elog and rt files and if it deletes the vec's.
-A full run, an I7 3770 with 7 active threads needs about 4 hours.
+Results and exports need about 25G space without elog and rt files and if it deletes the vec's.
+A full run, an I7 3770 with 7 active threads needs about 4-5 hours.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
@@ -95,11 +95,17 @@ Download, extract and build OMNet++. I use ~/omnetpp as target directory.
 Now, create a new workspace, download, extract, import and build inetmanet-3.x. If you use a different path than default
 'inetmanet-3.x', then please correct it in run.sh.
 
-Now, apply patch for ACK message bug as mentioned under bugs (see at the end of this document).
+Now, clone this project from GitHub and import it as 'powerrouting' into you workspace.
 
-Now, clone this project from GitHub and import it as 'powerrouting' into you workspace and build it.
+Now, apply patch for ACK message bug as mentioned under bugs (see at the end of this document) or use patch-file:
+
+enter your workspace
+cd inetmanet-3.x/src/inet/common/lifecycle
+patch < ../../../../../powerrouting/patch/OperationalBase.cc.patch
 
 Please set project reference from powerrouting to inetmanet-3.x.
+
+Now, build inetmanet and powerrouting.
 
 You need:
 * perl
@@ -135,7 +141,8 @@ Two ways to solve this issue:
 	* Set OSGEARTH_LIBS=no
 	* Set WITH_OSG=no
 	* Set WITH_OSGEARTH=no
-  Now Build OMNeT++ according to manual (make clean; ./configure; make)
+
+Now build OMNeT++ according to manual (make clean; ./configure; make)
 
 Ensure, that you don't have the common INET stuff in your workspace. Now download inetmanet framework
 and import it, according to INSTALL inside. Default feature set is fine, now build project if not done before.

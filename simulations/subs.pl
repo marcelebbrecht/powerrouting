@@ -2194,7 +2194,7 @@ sub plotCapacityAtEndSumStatisticsCompare {
 		},
 	
 		ylabel => {
-			text => "Percent",
+			text => "Joule",
 			font => "Arial, 9",
 		},
 	
