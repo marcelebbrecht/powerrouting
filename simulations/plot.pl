@@ -321,7 +321,7 @@ switch($mode) {
 		}
 		my $position = 0;
 		foreach (@configurations) {
-			plotCapacityAtEndSumConfidenceCompareMultiple($confidence, 0, $longTime, $_, $position, @capacityAtEndSumShort);
+			plotCapacityAtEndSumConfidenceCompareMultiple($confidence, 0, $shortTime, $_, $position, @capacityAtEndSumShort);
 			$position++;
 		}
 	}
