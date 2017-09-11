@@ -81,8 +81,8 @@ https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omn
 Time, RAM, Disk and other requirements
 --------------------------------------
 
-Results and exports need about 15G space without elog and rt files and if it deletes the vec's.
-A full run, an I7 3770 with 7 active threads needs about 2 hours.
+Results and exports need about 35G space without elog and rt files and if it deletes the vec's.
+A full run, an I7 3770 with 7 active threads needs about 4 hours.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
@@ -222,7 +222,9 @@ Please create a runconfig that uses aodv.ini. The different configs are describe
 * mixed networks to show interoperability of AODVPO with normal AODV routers
 * for AODVPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
 * a study simulation, that iterates about sensitivity and trigger
-* a run with random recipients
+* a run with random recipients on AODV and AODVPO
+* a run with multihop setup on AODV and AODVPO
+* a run with different charge state on start on AODV and AODVPO
 
 Feel free to experiment with the following parameters, set through aodv.ini:
 * aodvpo.powerSensitivity - constant to manipulate the penalty of hopCount, higher values leads to higher penalties (min: 0.1, max: 10.0, default: 2.0)
@@ -250,7 +252,9 @@ Please create a runconfig that uses olsr.ini. The different configs are describe
 * mixed networks to show interoperability of OLSRPO with normal OLSR routers
 * for OLSRPO we have three modes: normal opration, one mode with higher (TriggerHappy) and lower (TriggerSloppy) thresholds 
 * a study simulation, that iterates about sensitivity and trigger
-* a run with random recipients
+* a run with random recipients on OLSR and OLSRPO
+* a run with multihop setup on OLSR and OLSRPO
+* a run with different charge state on start on OLSR and OLSRPO
 
 Feel free to experiment with the following parameters, set through olsr.ini:
 * olsrpo.powerSensitivity - constant to manipulate the penalty of willingness, higher values leads to higher penalties (min: 0.0, max: 0.999999, default: 0.0)
