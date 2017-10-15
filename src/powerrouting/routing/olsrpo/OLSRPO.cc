@@ -6,6 +6,11 @@
 
 Define_Module(OLSRPO);
 
+// start modification
+// define signal for measure of routing overhead
+simsignal_t OLSRPO::routingOverheadSignal = registerSignal("routingOverheadBytes");
+// end modification
+
 void OLSRPO::initialize(int stage)
 {
     OLSR::initialize(stage);

@@ -77,6 +77,11 @@ typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
 
 Define_Module(AODVPORouting);
 
+// start modification
+// define signal for measure of routing overhead
+simsignal_t AODVPORouting::routingOverheadSignal = registerSignal("routingOverheadBytes");
+// end modification
+
 void AODVPORouting::initialize(int stage)
 {
     if (stage == inet::INITSTAGE_LOCAL) {
@@ -837,6 +842,14 @@ void AODVPORouting::sendAODVPacket(AODVControlPacket *packet, const L3Address& d
     udpPacket->setSourcePort(aodvUDPPort);
     udpPacket->setDestinationPort(aodvUDPPort);
     udpPacket->setControlInfo(dynamic_cast<cObject *>(networkProtocolControlInfo));
+
+    // start modification
+    // save overhead if control packet type
+    double buffer;
+    buffer = udpPacket->getByteLength();
+    EV_INFO << "Overhead: " << buffer << endl;
+    emit(routingOverheadSignal, buffer);
+    // end modification
 
     if (destAddr.isBroadcast())
         lastBroadcastTime = simTime();

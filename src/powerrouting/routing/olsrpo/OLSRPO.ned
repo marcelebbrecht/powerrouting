@@ -28,7 +28,10 @@ simple OLSRPO extends OLSR
         double powerTriggerMin = 0.05;
         double powerTriggerMax = 1.0;
         double powerTriggerDefault = 0.3;
-        double powerTrigger = default(powerTriggerDefault);
+        double powerTrigger = default(powerTriggerDefault);     
+        // signal for measure routing overhead
+        @signal[routingOverheadBytes] (type = "double"); 
+		@statistic[routingOverheadBytes](title="Routing Overhead in Bytes";record=vector, stats; interpolationmode=none);
         // end modification
         
         @class(OLSRPO);

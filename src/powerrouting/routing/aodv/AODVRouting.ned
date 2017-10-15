@@ -25,6 +25,13 @@ simple AODVRouting
 {
     parameters:
         @display("i=block/network2");
+        
+        // start modification     
+        // signal for measure routing overhead
+        @signal[routingOverheadBytes] (type = "double"); 
+		@statistic[routingOverheadBytes](title="Routing Overhead in Bytes";record=vector, stats; interpolationmode=none); 
+        // end modification
+        
         string routingTableModule = default("^.routingTable");
         string interfaceTableModule = default("^.interfaceTable");
         string networkProtocolModule = default("^.networkLayer.ip");

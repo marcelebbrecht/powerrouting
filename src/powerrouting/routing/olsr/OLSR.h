@@ -319,6 +319,11 @@ typedef std::multimap <simtime_t, OLSR_Timer *> TimerQueue;
 class OLSR : public inet::inetmanet::ManetRoutingBase
 {
   protected:
+    // start modification
+    // signal for measure of routing overhead
+    static simsignal_t routingOverheadSignal;
+    // end modification
+
     /********** Intervals **********/
     ///
     /// \brief Period at which a node must cite every link and every neighbor.

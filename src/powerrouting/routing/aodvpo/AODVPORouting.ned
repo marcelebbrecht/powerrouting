@@ -32,7 +32,10 @@ simple AODVPORouting
         double timePenaltyMin = 0.0;
         double timePenaltyMax = 1.0;
         double timePenaltyDefault = 0.02;
-        double timePenalty = default(timePenaltyDefault);
+        double timePenalty = default(timePenaltyDefault);     
+        // signal for measure routing overhead
+        @signal[routingOverheadBytes] (type = "double"); 
+		@statistic[routingOverheadBytes](title="Routing Overhead in Bytes";record=vector, stats; interpolationmode=none); 
         // end modification
         
         string routingTableModule = default("^.routingTable");

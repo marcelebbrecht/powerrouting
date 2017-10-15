@@ -73,6 +73,11 @@ typedef inet::ieee80211::Ieee80211Frame Ieee80211Frame;
 
 Define_Module(AODVRouting);
 
+// start modification
+// define signal for measure of routing overhead
+simsignal_t AODVRouting::routingOverheadSignal = registerSignal("routingOverheadBytes");
+// end modification
+
 void AODVRouting::initialize(int stage)
 {
     if (stage == inet::INITSTAGE_LOCAL) {
@@ -770,6 +775,14 @@ void AODVRouting::sendAODVPacket(AODVControlPacket *packet, const L3Address& des
     udpPacket->setSourcePort(aodvUDPPort);
     udpPacket->setDestinationPort(aodvUDPPort);
     udpPacket->setControlInfo(dynamic_cast<cObject *>(networkProtocolControlInfo));
+
+    // start modification
+    // save overhead if control packet type
+    double buffer;
+    buffer = udpPacket->getByteLength();
+    EV_INFO << "Overhead: " << buffer << endl;
+    emit(routingOverheadSignal, buffer);
+    // end modification
 
     if (destAddr.isBroadcast())
         lastBroadcastTime = simTime();

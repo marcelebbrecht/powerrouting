@@ -41,6 +41,10 @@ typedef inet::inetmanet::AddressGroupConstIterator AddressGroupConstIterator;
 
 Define_Module(OLSR);
 
+// start modification
+// define signal for measure of routing overhead
+simsignal_t OLSR::routingOverheadSignal = registerSignal("routingOverheadBytes");
+// end modification
 
 std::ostream& operator<<(std::ostream& os, const OLSR_rt_entry& e)
 {
@@ -1815,6 +1819,14 @@ OLSR::send_pkt()
 
             it = msgs_.erase(it);
         }
+
+        // start modification
+        // save overhead if control packet type
+        double buffer;
+        buffer = op->getByteLength();
+        EV_INFO << "Overhead: " << buffer << endl;
+        emit(routingOverheadSignal, buffer);
+        // end modification
 
         sendToIp(op, RT_PORT, destAdd, RT_PORT, IP_DEF_TTL, 0.0, L3Address());
     }

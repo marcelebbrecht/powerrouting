@@ -109,6 +109,11 @@ class AODVPORouting : public cSimpleModule, public ILifecycle, public INetfilter
     simtime_t nextHopWait;
     simtime_t pathDiscoveryTime;
 
+    // start modification
+    // signal for measure of routing overhead
+    static simsignal_t routingOverheadSignal;
+    // end modification
+
     // state
     unsigned int rreqId = 0;    // when sending a new RREQ packet, rreqID incremented by one from the last id used by this node
     unsigned int sequenceNum = 0;    // it helps to prevent loops in the routes (RFC 3561 6.1 p11.)

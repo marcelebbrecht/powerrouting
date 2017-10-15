@@ -27,6 +27,13 @@ simple OLSR extends BaseRouting like IManetRouting
 {
     parameters:
         @class(OLSR);
+        
+        // start modification     
+        // signal for measure routing overhead
+        @signal[routingOverheadBytes] (type = "double"); 
+		@statistic[routingOverheadBytes](title="Routing Overhead in Bytes";record=vector, stats; interpolationmode=none); 
+        // end modification
+        
         string interfaceTableModule;
         string routingTableModule;
         string icmpModule = default("^.networkLayer.icmp");

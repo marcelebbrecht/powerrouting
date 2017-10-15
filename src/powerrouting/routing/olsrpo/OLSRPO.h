@@ -15,6 +15,9 @@ typedef inet::power::IEpEnergyStorage IEpEnergyStorage;
 class OLSRPO : public OLSR
 {
   protected:
+    // start modification
+    // signal for measure of routing overhead
+    static simsignal_t routingOverheadSignal;
     // parameters for energy-optimization
     cModule *host = nullptr;
     IEpEnergyStorage *energyStorage = nullptr;
@@ -35,6 +38,7 @@ class OLSRPO : public OLSR
     double powerTriggerDouble = 0;
     int powerTriggerCalculated = 999999999;
     int powerTriggerLast = 999999999;
+    // end modification
 
   protected:
     // override initialization, RREP creation and forwarding
