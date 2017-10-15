@@ -10,6 +10,9 @@ Future versions
 * Clean and compact BASH code
 * Clean and compact PERL code
 * Better performance function
+* Metric: RetryRate (need own signals)
+* Metric: Throughput (must reach the limit)
+* TCP App Simulations
 * Replace ACKTimeout hack with sane solution (inheritance?)
 * Release and commit to inet/inetmanet
 

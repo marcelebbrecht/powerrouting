@@ -167,3 +167,14 @@ Completed: 2017-09-08
 * Removing VEC files after CSV creation
 * Comparesimulations for multiple recipients added
 * Added CapacityAtEndSum Charts for comparision
+
+
+Version: 0.96
+-------------
+
+Completed: 2017-10-15
+
+* Signal for routing overhead added
+* Simple ICMP ping from sender to receiver added
+* Added PING app for RTT measure
+* Full integration of following metrics: Overhead, End2End delay, RTT

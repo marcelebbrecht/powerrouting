@@ -453,6 +453,203 @@ sub getUdpPacketLossArray {
 	return @udpPacketLossData;	
 }
 
+
+# create rtt array
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getRttArray {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create RTT data
+	my $filename = "results/$protocol-RTT.csv";
+	my $rttDataWidth = $numberOfRuns;
+	my $rttDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @rttData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				push @{$rttData[$configuration]}, $actline[18];
+			}
+		}
+		my $configurationMean = mean(@{$rttData[$configuration]});
+		my $configurationMin = min(@{$rttData[$configuration]});
+		my $configurationMax = max(@{$rttData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$rttData[$configuration]});
+		push @{$rttData[$configuration]}, $configurationMean;
+		push @{$rttData[$configuration]}, $configurationMin;
+		push @{$rttData[$configuration]}, $configurationMax;
+		push @{$rttData[$configuration]}, $stats->lower_clm();
+		push @{$rttData[$configuration]}, $stats->upper_clm();
+		push @{$rttData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	return @rttData;	
+}
+
+
+# create end2End array
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getEnd2EndArray {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create end2End data
+	my $filename = "results/$protocol-End2End.csv";
+	my $end2EndDataWidth = $numberOfRuns;
+	my $end2EndDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @end2EndData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				push @{$end2EndData[$configuration]}, $actline[18];
+			}
+		}
+		my $configurationMean = mean(@{$end2EndData[$configuration]});
+		my $configurationMin = min(@{$end2EndData[$configuration]});
+		my $configurationMax = max(@{$end2EndData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$end2EndData[$configuration]});
+		push @{$end2EndData[$configuration]}, $configurationMean;
+		push @{$end2EndData[$configuration]}, $configurationMin;
+		push @{$end2EndData[$configuration]}, $configurationMax;
+		push @{$end2EndData[$configuration]}, $stats->lower_clm();
+		push @{$end2EndData[$configuration]}, $stats->upper_clm();
+		push @{$end2EndData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	return @end2EndData;	
+}
+
+
+# create Overhead array
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getOverheadArray {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create Overhead data
+	my $overheadFilename = "results/$protocol-Overhead.csv";
+	my $overheadDataWidth = $numberOfRuns;
+	my $overheadDataLength = @configurations;
+	my $bytesSentFilename = "results/$protocol-SentBytes.csv";
+	my $bytesSentDataWidth = $numberOfRuns;
+	my $bytesSentDataLength = @configurations;
+
+	# read file by line and write to new file and array
+	my @overheadData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		my $samerun = "";
+		my $runsum = 0;
+		my $firstvalue = 0;
+		open(FILE, "<", $overheadFilename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				if ( $firstvalue == 0 ) {
+					$firstvalue = 1;
+					$samerun = "$actline[7]";
+					$runsum = 0 + $actline[18];
+				} else {
+					if ( "$actline[7]" eq "$samerun" ) {
+						$runsum += $actline[18];
+					} else {
+						push @{$overheadData[$configuration]}, $runsum;
+						$samerun = "$actline[7]";
+						$runsum = 0 + $actline[18];
+					}
+				}	
+			}
+		}
+		push @{$overheadData[$configuration]}, $runsum;
+		$configuration++;
+	
+		close FILE;
+	}
+
+	# read file by line and write to new file and array
+	my @bytesSentData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $bytesSentFilename);
+		while (my $line = <FILE>) {
+			my $position = 0;
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				push @{$bytesSentData[$configuration]}, $overheadData[$configuration][$position++] / ( $actline[18] + 1) * 100;
+			}
+		}
+		my $configurationMean = mean(@{$bytesSentData[$configuration]});
+		my $configurationMin = min(@{$bytesSentData[$configuration]});
+		my $configurationMax = max(@{$bytesSentData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$bytesSentData[$configuration]});
+		push @{$bytesSentData[$configuration]}, $configurationMean;
+		push @{$bytesSentData[$configuration]}, $configurationMin;
+		push @{$bytesSentData[$configuration]}, $configurationMax;
+		push @{$bytesSentData[$configuration]}, $stats->lower_clm();
+		push @{$bytesSentData[$configuration]}, $stats->upper_clm();
+		push @{$bytesSentData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+
+	return @bytesSentData;	
+}
+
+
 # create udp packet loss array
 # 1: number of runs as integer
 # 2: confidence as integer
@@ -671,6 +868,249 @@ sub getUdpPacketLossStatistics {
 	}
 	
 	return @udpPacketLossDataStatistics;	
+}
+
+# create rtt packet loss statistics
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getRttStatistics {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create RTT data
+	my $filename = "results/$protocol-RTT.csv";
+	my $rttDataWidth = $numberOfRuns;
+	my $rttDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @rttData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+			    push @{$rttData[$configuration]}, $actline[18];
+			}
+		}
+		my $configurationMean = mean(@{$rttData[$configuration]});
+		my $configurationMin = min(@{$rttData[$configuration]});
+		my $configurationMax = max(@{$rttData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$rttData[$configuration]});
+		push @{$rttData[$configuration]}, $configurationMean;
+		push @{$rttData[$configuration]}, $configurationMin;
+		push @{$rttData[$configuration]}, $configurationMax;
+		push @{$rttData[$configuration]}, $stats->lower_clm();
+		push @{$rttData[$configuration]}, $stats->upper_clm();
+		push @{$rttData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	
+	# rerun, write final statistics array
+	my @rttDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$rttDataStatistics[0]}, $_;
+		push @{$rttDataStatistics[1]}, $rttData[$configuration][$numberOfRuns];
+		push @{$rttDataStatistics[2]}, $rttData[$configuration][$numberOfRuns+1];
+		push @{$rttDataStatistics[3]}, $rttData[$configuration][$numberOfRuns+2];
+		push @{$rttDataStatistics[4]}, $rttData[$configuration][$numberOfRuns+3];
+		push @{$rttDataStatistics[5]}, $rttData[$configuration][$numberOfRuns+4];
+		push @{$rttDataStatistics[6]}, $rttData[$configuration][$numberOfRuns+5];
+		$configuration++;
+	}
+	
+	return @rttDataStatistics;	
+}
+
+# create Overhead array
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getOverheadStatistics {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create Overhead data
+	my $overheadFilename = "results/$protocol-Overhead.csv";
+	my $overheadDataWidth = $numberOfRuns;
+	my $overheadDataLength = @configurations;
+	my $bytesSentFilename = "results/$protocol-SentBytes.csv";
+	my $bytesSentDataWidth = $numberOfRuns;
+	my $bytesSentDataLength = @configurations;
+
+	# read file by line and write to new file and array
+	my @overheadData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		my $samerun = "";
+		my $runsum = 0;
+		my $firstvalue = 0;
+		open(FILE, "<", $overheadFilename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				if ( $firstvalue == 0 ) {
+					$firstvalue = 1;
+					$samerun = "$actline[7]";
+					$runsum = 0 + $actline[18];
+				} else {
+					if ( "$actline[7]" eq "$samerun" ) {
+						$runsum += $actline[18];
+					} else {
+						push @{$overheadData[$configuration]}, $runsum;
+						$samerun = "$actline[7]";
+						$runsum = 0 + $actline[18];
+					}
+				}	
+			}
+		}
+		push @{$overheadData[$configuration]}, $runsum;
+		$configuration++;
+	
+		close FILE;
+	}
+
+	# read file by line and write to new file and array
+	my @bytesSentData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $bytesSentFilename);
+		while (my $line = <FILE>) {
+			my $position = 0;
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+				push @{$bytesSentData[$configuration]}, $overheadData[$configuration][$position++] / ( $actline[18] + 1) * 100;
+			}
+		}
+		my $configurationMean = mean(@{$bytesSentData[$configuration]});
+		my $configurationMin = min(@{$bytesSentData[$configuration]});
+		my $configurationMax = max(@{$bytesSentData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$bytesSentData[$configuration]});
+		push @{$bytesSentData[$configuration]}, $configurationMean;
+		push @{$bytesSentData[$configuration]}, $configurationMin;
+		push @{$bytesSentData[$configuration]}, $configurationMax;
+		push @{$bytesSentData[$configuration]}, $stats->lower_clm();
+		push @{$bytesSentData[$configuration]}, $stats->upper_clm();
+		push @{$bytesSentData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+
+
+	
+	# rerun, write final statistics array
+	my @bytesSentDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$bytesSentDataStatistics[0]}, $_;
+		push @{$bytesSentDataStatistics[1]}, $bytesSentData[$configuration][$numberOfRuns];
+		push @{$bytesSentDataStatistics[2]}, $bytesSentData[$configuration][$numberOfRuns+1];
+		push @{$bytesSentDataStatistics[3]}, $bytesSentData[$configuration][$numberOfRuns+2];
+		push @{$bytesSentDataStatistics[4]}, $bytesSentData[$configuration][$numberOfRuns+3];
+		push @{$bytesSentDataStatistics[5]}, $bytesSentData[$configuration][$numberOfRuns+4];
+		push @{$bytesSentDataStatistics[6]}, $bytesSentData[$configuration][$numberOfRuns+5];
+		$configuration++;
+	}
+	
+	return @bytesSentDataStatistics;
+}
+
+
+# create end2end packet loss statistics
+# 1: number of runs as integer
+# 2: confidence as integer
+# 3: protocol as string
+# 4: configurations as array
+# R: array with statistical data
+#	row(n) -> stddev, row(n+1) -> min, row(n+2) -> max, 
+#	row(n+3) -> lower-clm, row(n+4) -> upper-clm, row(n+5) -> error
+sub getEnd2EndStatistics {
+	# get parameters
+	my $numberOfRuns = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my $protocol = $_[0];
+	shift;
+	my @configurations = @_;
+		
+	# create end2End data
+	my $filename = "results/$protocol-End2End.csv";
+	my $end2EndDataWidth = $numberOfRuns;
+	my $end2EndDataLength = @configurations;
+	
+	# read file by line and write to new file and array
+	my @end2EndData = ();
+	my $configuration = 0;
+	foreach (@configurations) {
+		open(FILE, "<", $filename);
+		while (my $line = <FILE>) {
+			my @actline = split("," , $line);
+			if ( "$actline[2]" eq "$_") {
+			    push @{$end2EndData[$configuration]}, $actline[18];
+			}
+		}
+		my $configurationMean = mean(@{$end2EndData[$configuration]});
+		my $configurationMin = min(@{$end2EndData[$configuration]});
+		my $configurationMax = max(@{$end2EndData[$configuration]});	
+		my $stats = new Statistics::PointEstimation;
+		$stats->set_significance($confidence);
+		$stats->add_data(@{$end2EndData[$configuration]});
+		push @{$end2EndData[$configuration]}, $configurationMean;
+		push @{$end2EndData[$configuration]}, $configurationMin;
+		push @{$end2EndData[$configuration]}, $configurationMax;
+		push @{$end2EndData[$configuration]}, $stats->lower_clm();
+		push @{$end2EndData[$configuration]}, $stats->upper_clm();
+		push @{$end2EndData[$configuration]}, $stats->upper_clm() - $configurationMean;
+		$configuration++;
+		close FILE;
+	}
+	
+	# rerun, write final statistics array
+	my @end2EndDataStatistics = ();
+		
+	my $configuration = 0;
+	foreach (@configurations) {
+		push @{$end2EndDataStatistics[0]}, $_;
+		push @{$end2EndDataStatistics[1]}, $end2EndData[$configuration][$numberOfRuns];
+		push @{$end2EndDataStatistics[2]}, $end2EndData[$configuration][$numberOfRuns+1];
+		push @{$end2EndDataStatistics[3]}, $end2EndData[$configuration][$numberOfRuns+2];
+		push @{$end2EndDataStatistics[4]}, $end2EndData[$configuration][$numberOfRuns+3];
+		push @{$end2EndDataStatistics[5]}, $end2EndData[$configuration][$numberOfRuns+4];
+		push @{$end2EndDataStatistics[6]}, $end2EndData[$configuration][$numberOfRuns+5];
+		$configuration++;
+	}
+	
+	return @end2EndDataStatistics;	
 }
 
 # create udp packet loss statistics
@@ -1627,6 +2067,402 @@ sub plotUdpPacketLossConfidence {
 	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
 }
 
+
+
+# create End2End chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotEnd2EndConfidence {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Summary/End2EndConfidence/Full/$configuration-End2EndConfidence.png";
+	} else {
+		$filename = "export/Summary/End2EndConfidence/Short/$configuration-End2EndConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - End2EndConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+
+
+# create RTT chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotRttConfidence {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Summary/RTTConfidence/Full/$configuration-RTTConfidence.png";
+	} else {
+		$filename = "export/Summary/RTTConfidence/Short/$configuration-RTTConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - RTTConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+
+
+# create Overhead chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotOverheadConfidence {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Summary/OverheadConfidence/Full/$configuration-OverheadConfidence.png";
+	} else {
+		$filename = "export/Summary/OverheadConfidence/Short/$configuration-OverheadConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - OverheadConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
 # create UdpPacketLoss chart show confidence
 # 1: confidence as integer
 # 2: long version = 1, short version = 0
@@ -1675,6 +2511,400 @@ sub plotUdpPacketLossConfidenceCompare {
 		terminal => "png",
 		title => {
 			text => "$title - UdpPacketLossConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+
+
+# create Rtt chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotRttConfidenceCompare {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Compare/RTTConfidence/Full/$configuration-RTTConfidence.png";
+	} else {
+		$filename = "export/Compare/RTTConfidence/Short/$configuration-RTTConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - RttConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+
+
+# create End2End chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotEnd2EndConfidenceCompare {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Compare/End2EndConfidence/Full/$configuration-End2EndConfidence.png";
+	} else {
+		$filename = "export/Compare/End2EndConfidence/Short/$configuration-End2EndConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - End2EndConfidence (".$time."s)",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statsArray[$position]}) * 1.25 ],
+		xrange => [0, $length-4.5],
+  
+		xlabel => {
+			text => "Run",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			font => "Arial, 9",
+			offset => "$offset",
+			start => "1",
+			end => "$maxX",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+
+	my @xData = (0);
+	my @yData = (0);
+	my @xmin = (0.5, $length-5);
+	my @xmax = (0.5, $length-5);
+	my @xmean = (0.5, $length-5);
+	my @ymin = ($min, $min);
+	my @ymax = ($max, $max);
+	my @ymean = ($mean, $mean);
+	for ( my $run = 1; $run < $length-5; $run++) {
+	    push @xData, $run;
+		push @yData, $statsArray[$position][$run-1];
+	}
+	
+	my $minDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@ymin],
+		title => "minimum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $maxDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmax],
+		ydata => [@ymax],
+		title => "maximum, $confidence%",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	my $meanDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmean],
+		ydata => [@ymean],
+		title => "mean",
+		style => "steps",
+		font => "Arial, 9",
+		color => "green",
+	);
+	
+	my $stddevDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => \@xData,
+		ydata => \@yData,
+		fill  => {density => 0.8},
+		color => "dark-green",
+		style => "histograms",
+		font => "Arial, 9",
+	);
+
+	$stddevChart->plot2d($stddevDataSet, $minDataSet, $maxDataSet, $meanDataSet);
+}
+
+# create Overhead chart show confidence
+# 1: confidence as integer
+# 2: long version = 1, short version = 0
+# 3: runtime as integer
+# 4: configuration as string
+# 5: position in array as integer
+# 6: results as array
+# R: void
+sub plotOverheadConfidenceCompare {
+	# get parameters
+	my $confidence = $_[0];
+	shift;
+	my $long = $_[0];
+	shift;
+	my $time = $_[0];
+	shift;
+	my $configuration = $_[0];
+	shift;
+	my $position = $_[0];
+	shift;
+	my @statsArray = @_;
+	
+	# collect data
+	my $length = @{$statsArray[$position]};
+	my $mean = $statsArray[$position][$length-6];
+	my $min = $statsArray[$position][$length-3];
+	my $max = $statsArray[$position][$length-2];
+	my $filename;
+	if ( $long == 1 ) {
+	    $filename = "export/Compare/OverheadConfidence/Full/$configuration-OverheadConfidence.png";
+	} else {
+		$filename = "export/Compare/OverheadConfidence/Short/$configuration-OverheadConfidence-Short.png";
+	}
+	my $title = $configuration;
+	my $offset = 10 / ( ($length - 6) * 1.25 );
+	my $maxX = ($length - 6);
+	
+	# plot chart
+	my $stddevChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - OverheadConfidence (".$time."s)",
 			font => "Arial, 9",
 		},
 		
@@ -2145,6 +3375,396 @@ sub plotUdpPacketLossStatistics {
 	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
 }
 
+
+
+# create UdpPacketLoss statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotRttStatistics {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - RttStatistics",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+
+
+# create UdpPacketLoss statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotEnd2EndStatistics {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - End2EndStatistics",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+
+
+# create UdpPacketLoss statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotOverheadStatistics {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '900.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - OverheadStatistics",
+			font => "Arial, 9",
+		},
+		
+		yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
 # create CapacityAtEndSum statistics chart for all runs and one config
 # 1: filename as string
 # 2: title as string
@@ -2273,6 +3893,392 @@ sub plotCapacityAtEndSumStatisticsCompare {
 	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
 }
 
+# create Rtt statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotRttStatisticsCompare {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - RttStatistics",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+# create Overhead statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotOverheadStatisticsCompare {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - OverheadStatistics",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Percent",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
+
+
+# create End2End statistics chart for all runs and one config
+# 1: filename as string
+# 2: title as string
+# 3: confidence as integer
+# 4: results as array
+# R: void
+sub plotEnd2EndStatisticsCompare {
+	# get parameters
+	my $filename = $_[0];
+	shift;
+	my $title = $_[0];
+	shift;
+	my $confidence = $_[0];
+	shift;
+	my @statistics = @_;
+	
+	# get columcount
+	my $maxX = @{$statistics[0]};
+	
+	my $xlabel = "Configuration";
+	my $labelcount = 1;
+	foreach (@{$statistics[0]}) {
+		$xlabel .= " $labelcount:$_ ";
+		$labelcount++;
+	}
+	
+	# plot chart
+	my $statisticalChart = Chart::Gnuplot->new(
+		output => $filename,
+		imagesize => '1200.0, 600.0',
+		timestamp => {
+			fmt => '%Y-%m-%d %H:%I:%S',
+			font => "Arial, 9",
+		},
+		terminal => "png",
+		title => {
+			text => "$title - End2EndStatistics",
+			font => "Arial, 9",
+		},
+		
+		#yrange => [0, max(@{$statistics[3]}) * 1.25 ],
+		xrange => [0, $maxX+1],
+  
+		xlabel => {
+			text => "$xlabel",
+			font => "Arial, 9",
+		},
+	
+		ylabel => {
+			text => "Time (s)",
+			font => "Arial, 9",
+		},
+	
+		xtics => {
+			start => "1",
+			end => "$maxX",
+			font => "Arial, 9",
+		},
+	
+		ytics => {
+			font => "Arial, 9",
+		},
+	
+		gnuplot => $gnuplotPath,
+	);
+	
+	my @xstddev = (1 ... $maxX);
+	my @stddev = @{$statistics[1]};
+	
+	my @xmin = (0, 0.5);
+	for ( my $i = 1.5; $i < $maxX+1; $i++ ) {
+		push @xmin, $i;
+		push @xmin, $i;
+		push @xmin, $i;
+	}
+	
+	my @min = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @min, $statistics[2][$i];
+		push @min, $statistics[2][$i];
+		push @min, 0;
+	}
+	push @min, 0;
+	
+	my @max = (0);
+	for ( my $i = 0; $i < $maxX; $i++ ) {
+		push @max, $statistics[3][$i];
+		push @max, $statistics[3][$i];
+		push @max, 0;
+	}
+	push @max, 0;
+	my @err = @{$statistics[6]};
+
+	
+	
+	my $statisticalDataSet = Chart::Gnuplot::DataSet->new(
+		xdata => [@xstddev],
+		ydata => [[@stddev], [@err]],
+		title => "mean with confidence $confidence%",
+		fill => {
+			pattern => 1,
+		},
+		style => "boxerrorbars",
+		font => "Arial, 9",
+		color => "dark-green",
+	);
+	
+	my $statisticalDataSetMin = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@min],
+		title => "minimum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-red",
+	);
+	
+	my $statisticalDataSetMax = Chart::Gnuplot::DataSet->new(
+		xdata => [@xmin],
+		ydata => [@max],
+		title => "maximum",
+		style => "steps",
+		font => "Arial, 9",
+		color => "dark-blue",
+	);
+	
+	$statisticalChart->plot2d($statisticalDataSet, $statisticalDataSetMin, $statisticalDataSetMax);
+}
+
 # create UdpPacketLoss statistics chart for all runs and one config
 # 1: filename as string
 # 2: title as string
@@ -2322,7 +4328,7 @@ sub plotUdpPacketLossStatisticsCompare {
 		},
 	
 		ylabel => {
-			text => "Joule",
+			text => "Percent",
 			font => "Arial, 9",
 		},
 	
@@ -2951,6 +4957,36 @@ sub htmlStudy {
 	$image =~ s/\/export//g;
 	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
 	
+	print FILE "		<h3>End2End (full time)</h3>\n";		
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-End2End-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-End2End-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
+	print FILE "		<h3>RTT (full time)</h3>\n";		
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-RTT-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-RTT-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
+	print FILE "		<h3>Overhead (full time)</h3>\n";		
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-OverheadCalculated-3D.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\">";
+	my $image = "./export/$imagepath/Full/".$simulation."ParameterStudy-OverheadCalculated-Map.png";
+	$image =~ s/#/%23/g;
+	$image =~ s/\/export//g;
+	print FILE "		<img src=\"$image\" width=\"900\"><br>\n";
+	
 	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-OLSR-UdpPacketLossStatistics.png";
 	print FILE "		<img src=\"$image\"><br>\n";
 
@@ -3018,6 +5054,18 @@ sub htmlCompare {
 	print FILE "		<h3>UDP packet loss (full time)</h3>\n";	
 	my $image = "./$imagepath/UdpPacketLoss/Full/AODV-OLSR-UdpPacketLossStatistics.png";
 	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>End2End Delay (full time)</h3>\n";	
+	my $image = "./$imagepath/End2End/Full/AODV-OLSR-End2EndStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>RTT (full time)</h3>\n";	
+	my $image = "./$imagepath/RTT/Full/AODV-OLSR-RTTStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>Protocol overhead (full time)</h3>\n";	
+	my $image = "./$imagepath/Overhead/Full/AODV-OLSR-OverheadStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
 	
 	print FILE "		<h3>Capacity at end sum (full time)</h3>\n";	
 	my $image = "./".$imagepath."Sending/CapacityAtEndSum/Full/AODV-OLSR-Sending-CapacityAtEndSum.png";
@@ -3044,6 +5092,48 @@ sub htmlCompare {
 	my $line = 0;
 	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
 	foreach my $image (glob("./export/$imagepath/UdpPacketLossConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>End2End confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/End2EndConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>RTT confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/RTTConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>Overhead confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/OverheadConfidence/Full/*.png")) {
 		$image =~ s/#/%23/g;
 		$image =~ s/\/export//g;
 		print FILE "		<img src=\"$image\" width=\"900\">";
@@ -3126,6 +5216,24 @@ sub htmlSummary {
 	print FILE "		<img src=\"$image\">\n";
 	my $image = "./$imagepath/UdpPacketLoss/Full/OLSR-UdpPacketLossStatistics.png";
 	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>RTT (full time)</h3>\n";	
+	my $image = "./$imagepath/RTT/Full/AODV-RTTStatistics.png";
+	print FILE "		<img src=\"$image\">\n";
+	my $image = "./$imagepath/RTT/Full/OLSR-RTTStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>End2End delay (full time)</h3>\n";	
+	my $image = "./$imagepath/End2End/Full/AODV-End2EndStatistics.png";
+	print FILE "		<img src=\"$image\">\n";
+	my $image = "./$imagepath/End2End/Full/OLSR-End2EndStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
+
+	print FILE "		<h3>Overhead (full time)</h3>\n";	
+	my $image = "./$imagepath/Overhead/Full/AODV-OverheadStatistics.png";
+	print FILE "		<img src=\"$image\">\n";
+	my $image = "./$imagepath/Overhead/Full/OLSR-OverheadStatistics.png";
+	print FILE "		<img src=\"$image\"><br>\n";
 	
 	print FILE "		<h3>Capacity at end confidence (left full, right short time)</h3>\n";	
 	foreach my $image (glob("./export/$imagepath/CapacityAtEndConfidence/Full/*.png")) {
@@ -3140,6 +5248,48 @@ sub htmlSummary {
 	my $line = 0;
 	print FILE "		<h3>UDP packet loss confidence (full time)</h3>\n";	
 	foreach my $image (glob("./export/$imagepath/UdpPacketLossConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>RTT confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/RTTConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>End2End delay confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/End2EndConfidence/Full/*.png")) {
+		$image =~ s/#/%23/g;
+		$image =~ s/\/export//g;
+		print FILE "		<img src=\"$image\" width=\"900\">";
+		if ( $line == 1) {
+			print FILE "<br>\n";
+			$line = 0;
+		} else {
+			$line = 1;
+		}		
+	}
+	
+	my $line = 0;
+	print FILE "		<h3>Overhead confidence (full time)</h3>\n";	
+	foreach my $image (glob("./export/$imagepath/OverheadConfidence/Full/*.png")) {
 		$image =~ s/#/%23/g;
 		$image =~ s/\/export//g;
 		print FILE "		<img src=\"$image\" width=\"900\">";

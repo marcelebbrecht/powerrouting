@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.95
+Current version: 0.96
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -287,6 +287,27 @@ be deleted after a full run.
 
 To reduce the space requirements for the CSV files, a dropout factor is added. For further details, please have
 a look at the run file.
+
+
+Overhead
+--------
+
+To measure routing protocol, I added a new signal in both protocols: RoutingOverhead. Everytime a protocol
+specific message is sent, it's length in bytes is added. You get the overhead percentile from statistics.
+
+
+Metrics
+-------
+
+Regarding to RFC2601 we got the following metrics:
+* Protocol overhead
+* LossRate
+* End2End Delay of UDP
+* RTT
+
+Own Metrics:
+* Deviation of battery capacity
+* Performance (see below)
 
 
 Bugs - AckTimeout

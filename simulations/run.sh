@@ -229,18 +229,29 @@ function plotSimulationProtocol {
 	mkdir -p ./export/Summary/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/UdpPacketLoss/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/Performance/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/RTT/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/End2End/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/Overhead/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEndConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEndConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/UdpPacketLossConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/PerformanceConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/RTTConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/End2EndConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Summary/OverheadConfidence/Full > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEnd/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEnd/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/UdpPacketLoss/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/Performance/Full/$1* > /dev/null 2>&1
-	rm ./export/Summary/CapacityAtEndConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/RTT/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/End2End/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/Overhead/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/CapacityAtEndConfidence/Short/$1* > /dev/null 2>&1
 	rm ./export/Summary/UdpPacketLossConfidence/Full/$1* > /dev/null 2>&1
 	rm ./export/Summary/PerformanceConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/RTTConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/End2EndConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Summary/OverheadConfidence/Full/$1* > /dev/null 2>&1
 	echo "    plot: $1 protocol comparision"	
 	declare -a protocolArray=("${!2}")
 	plotProtocol $1 $(getRepeat) protocolArray[@] &
@@ -253,21 +264,37 @@ function compareProtocols {
 	mkdir -p ./export/Compare/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/UdpPacketLoss/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/Performance/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/RTT/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/End2End/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/Overhead/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEndConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEndConfidence/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/UdpPacketLossConfidence/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/PerformanceConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/RTTConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/End2EndConfidence/Full > /dev/null 2>&1
+	mkdir -p ./export/Compare/OverheadConfidence/Full > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEnd/Full/* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEnd/Short/* > /dev/null 2>&1
 	rm ./export/Compare/UdpPacketLoss/Full/* > /dev/null 2>&1
 	rm ./export/Compare/Performance/Full/* > /dev/null 2>&1
+	rm ./export/Compare/RTT/Full/$1* > /dev/null 2>&1
+	rm ./export/Compare/End2End/Full/$1* > /dev/null 2>&1
+	rm ./export/Compare/Overhead/Full/$1* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEndConfidence/Full/* > /dev/null 2>&1
 	rm ./export/Compare/CapacityAtEndConfidence/Short/* > /dev/null 2>&1
 	rm ./export/Compare/UdpPacketLossConfidence/Full/* > /dev/null 2>&1
 	rm ./export/Compare/PerformanceConfidence/Full/* > /dev/null 2>&1
+	rm ./export/Compare/RTTConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Compare/End2EndConfidence/Full/$1* > /dev/null 2>&1
+	rm ./export/Compare/OverheadConfidence/Full/$1* > /dev/null 2>&1
 	echo "    plot: $1 protocol comparision"	
 	declare -a protocolArray=("${!2}")
 	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/AODV-OLSR-UDPStats.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*pingApp[0]) AND name(rtt:histogram:mean))' -O results/AODV-OLSR-RTT.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(endToEndDelay:histogram:mean))' -O results/AODV-OLSR-End2End.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(rcvdPk:sum*packetBytes*))' -O results/AODV-OLSR-SentBytes.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(name(routingOverheadBytes:stats:sum))' -O results/AODV-OLSR-Overhead.csv -F csv results/AODV-*.sca results/AODVPO-*.sca results/AODVPOT*.sca results/OLSRPO-*.sca  results/OLSR-*.sca  results/OLSRPOT*.sca > /dev/null 2>&1
 	$PERL plot.pl compareProtocols $1 $(getRepeat) $CONFIDENCE $SHORTTIME $(getSimTime) ${protocolArray[@]}
 }
 
@@ -446,6 +473,10 @@ function plotOne {
 # 3: CONFIGURATIONS (array)
 function plotProtocol {
 	scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/$1-UDPStats.csv -F csv results/$1-*.sca results/$1PO-*.sca results/$1POT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*sender*pingApp[0]) AND name(rtt:histogram:mean))' -O results/$1-RTT.csv -F csv results/$1-*.sca results/$1PO-*.sca results/$1POT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(endToEndDelay:histogram:mean))' -O results/$1-End2End.csv -F csv results/$1-*.sca results/$1PO-*.sca results/$1POT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(rcvdPk:sum*packetBytes*))' -O results/$1-SentBytes.csv -F csv results/$1-*.sca results/$1PO-*.sca results/$1POT*.sca > /dev/null 2>&1
+	scavetool scalar -p '(name(routingOverheadBytes:stats:sum))' -O results/$1-Overhead.csv -F csv results/$1-*.sca results/$1PO-*.sca results/$1POT*.sca > /dev/null 2>&1
 	declare -a protocols=("${!3}")
 	$PERL plot.pl compareProtocol $1 $2 $CONFIDENCE $SHORTTIME $(getSimTime) ${protocols[@]}
 }
@@ -474,6 +505,10 @@ function plotStudy {
 		N=$(($N+1))
 		scavetool vector -p 'name(*Capacity*) AND NOT ( module(*sender*) OR module (*receiver*) OR module (*router22*)  OR module (*router23*)  OR module (*router24*)  OR module (*router42*)  OR module (*router43*)  OR module (*router44*) )' -O results/$RESULTNAME-CapacityOverTime.csv -F csv results/$RESULTNAME.vec > /dev/null 2>&1 &&
 		scavetool scalar -p '(module(*sender*udpApp[0]) AND name(sentPk:count)) OR (module(*receiver*udpApp[0]) AND name(rcvdPk:count))' -O results/$RESULTNAME-UDPStats.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
+		scavetool scalar -p '(module(*sender*pingApp[0]) AND name(rtt:histogram:mean))' -O results/$RESULTNAME-RTT.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
+		scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(endToEndDelay:histogram:mean))' -O results/$RESULTNAME-End2End.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
+		scavetool scalar -p '(module(*receiver*udpApp[0]) AND name(rcvdPk:sum*packetBytes*))' -O results/$RESULTNAME-SentBytes.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
+		scavetool scalar -p '(name(routingOverheadBytes:stats:sum))' -O results/$RESULTNAME-Overhead.csv -F csv results/$RESULTNAME.sca > /dev/null 2>&1 &&
 		
 		# create better data with perl and plot files
 		$PERL plot.pl studyCapacity $RESULTNAME $DROPOUT $SHORTTIME $(getSimTime) $DECIMALPLACES &&
@@ -525,6 +560,42 @@ function plotStudy {
 	PLOTSTRING="set title \"$TITLE\"; set view map; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"1 - stddev\"; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-CapacityAtEnd-Map.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
 	$GNUPLOT -e "$PLOTSTRING"
 		
+	# print 3d map for RTT
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - Ping RTT"
+	DATAFILE="results/$1POParameterStudy-RTT.dat"
+	PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"1 - RTT (s)\" offset -2 rotate by 90; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-RTT-3D.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+		
+	# print heat map for RTT
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - Ping RTT"
+	DATAFILE="results/$1POParameterStudy-RTT.dat"
+	PLOTSTRING="set title \"$TITLE\"; set view map; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"1 - RTT (s)\"; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-RTT-Map.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+		
+	# print 3d map for End2End
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - UDP End2End"
+	DATAFILE="results/$1POParameterStudy-End2End.dat"
+	PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"1 - End2End Delay (s)\" offset -2 rotate by 90; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-End2End-3D.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+		
+	# print heat map for End2End
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - UDP End2End"
+	DATAFILE="results/$1POParameterStudy-End2End.dat"
+	PLOTSTRING="set title \"$TITLE\"; set view map; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"1 - End2End Delay (s)\"; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-End2End-Map.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+			
+	# print heat map for Overhead
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - Routing Protocol Overhead"
+	DATAFILE="results/$1POParameterStudy-OverheadCalculated.dat"
+	PLOTSTRING="set title \"$TITLE\"; set view map; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"100 - Overhead (percent)\"; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-OverheadCalculated-Map.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+		
+	# print 3d map for Overhead
+	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - Routing Protocol Overhead"
+	DATAFILE="results/$1POParameterStudy-OverheadCalculated.dat"
+	PLOTSTRING="set title \"$TITLE\"; set timestamp \"%Y-%m-%d %H:%I:%S\"; set datafile missing \"\"; set ylabel \"Trigger\"; set xlabel \"Sensitivity\"; set zlabel \"100 - Overhead (percent)\" offset -2 rotate by 90; set term png size 900 400 font \"Arial,9\"; set output \"export/$1POParameterStudy/Full/$1POParameterStudy-OverheadCalculated-3D.png\"; set dgrid3d; set pm3d interpolate $INTERPOLATE,$INTERPOLATE; splot \"$DATAFILE\" using 1:2:3 with pm3d title\"\""
+	$GNUPLOT -e "$PLOTSTRING"
+
 	# print 3d map for udpPacketLoss
 	TITLE="$1POParameterStudy ("$(getSimTime)"s, Interpolation: $INTERPOLATE, $REPETITIONS repetitions) - udpPacketTransmitted"
 	DATAFILE="results/$1POParameterStudy-UDPStats.dat"
@@ -751,9 +822,9 @@ case $1 in
 		writePid $$
 		$0 aodv $2
 		$0 olsr $2
+		$0 compare $2
 		$0 aodvstudy $2
 		$0 olsrstudy $2
-		$0 compare $2
 		deletePid $$
 	;;
 

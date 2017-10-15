@@ -137,10 +137,16 @@ switch($mode) {
 		my $capacityAtEndPlotFile = "export/Summary/CapacityAtEnd/Full/$protcolFamily-CapacityAtEndStatistics.png";
 		my $capacityAtEndPlotFileShort = "export/Summary/CapacityAtEnd/Short/$protcolFamily-CapacityAtEndStatistics-Short.png";
 		my $udpPacketLossFile = "export/Summary/UdpPacketLoss/Full/$protcolFamily-UdpPacketLossStatistics.png";
+		my $rttFile = "export/Summary/RTT/Full/$protcolFamily-RTTStatistics.png";
+		my $end2EndFile = "export/Summary/End2End/Full/$protcolFamily-End2EndStatistics.png";
+		my $overheadFile = "export/Summary/Overhead/Full/$protcolFamily-OverheadStatistics.png";
 		my $performanceLossFile = "export/Summary/Performance/Full/$protcolFamily-PerformanceStatistics.png";
 		my $capacityAtEndPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		my $capacityAtEndPlotTitleShort = "$protcolFamily (".$shortTime."s) ($numberOfRuns repetitions)";
 		my $udpPacketLossPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $rttPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $end2EndPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $overheadPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		my $performancePlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		
 		# read data
@@ -150,6 +156,12 @@ switch($mode) {
 		my @capacityAtEndDataShort = getCapacityAtEndArray($numberOfRuns, 0, $confidence, @configurations);		
 		my @udpStats = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @udpStatsStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rtt = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rttStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @end2End = getEnd2EndArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @end2EndStatistics = getEnd2EndStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @overhead = getOverheadArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @overheadStatistics = getOverheadStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		
 		# calculate confidence
 		my @performanceArrayCarrier = ();
@@ -165,6 +177,9 @@ switch($mode) {
 		plotCapacityAtEndStatistics($capacityAtEndPlotFile, $capacityAtEndPlotTitle, $confidence, @capacityAtEndDataStatistics);
 		plotCapacityAtEndStatistics($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, $confidence, @capacityAtEndDataStatisticsShort);
 		plotUdpPacketLossStatistics($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);
+		plotRttStatistics($rttFile, $rttPlotTitle, $confidence, @rttStatistics);
+		plotEnd2EndStatistics($end2EndFile, $end2EndPlotTitle, $confidence, @end2EndStatistics);
+		plotOverheadStatistics($overheadFile, $overheadPlotTitle, $confidence, @overheadStatistics);
 		plotPerformanceStatistics($performanceLossFile, $performancePlotTitle, $confidence, $xlabelAdd, @performanceStatistics);
 		
 		# plot charts for each configuration
@@ -177,6 +192,21 @@ switch($mode) {
 		my $position = 0;
 		foreach (@configurations) {
 			plotUdpPacketLossConfidence($confidence, 1, $longTime, $_, $position, @udpStats);
+			$position++;
+		}		
+		my $position = 0;
+		foreach (@configurations) {
+			plotRttConfidence($confidence, 1, $longTime, $_, $position, @rtt);
+			$position++;
+		}		
+		my $position = 0;
+		foreach (@configurations) {
+			plotEnd2EndConfidence($confidence, 1, $longTime, $_, $position, @end2End);
+			$position++;
+		}		
+		my $position = 0;
+		foreach (@configurations) {
+			plotOverheadConfidence($confidence, 1, $longTime, $_, $position, @overhead);
 			$position++;
 		}		
 		my $position = 0;
@@ -214,10 +244,16 @@ switch($mode) {
 		my $capacityAtEndPlotFile = "export/Compare/CapacityAtEnd/Full/$protcolFamily-CapacityAtEndStatistics.png";
 		my $capacityAtEndPlotFileShort = "export/Compare/CapacityAtEnd/Short/$protcolFamily-CapacityAtEndStatistics-Short.png";
 		my $udpPacketLossFile = "export/Compare/UdpPacketLoss/Full/$protcolFamily-UdpPacketLossStatistics.png";
+		my $rttFile = "export/Compare/RTT/Full/$protcolFamily-RTTStatistics.png";
+		my $end2EndFile = "export/Compare/End2End/Full/$protcolFamily-End2EndStatistics.png";
+		my $overheadFile = "export/Compare/Overhead/Full/$protcolFamily-OverheadStatistics.png";
 		my $performanceLossFile = "export/Compare/Performance/Full/$protcolFamily-PerformanceStatistics.png";
 		my $capacityAtEndPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		my $capacityAtEndPlotTitleShort = "$protcolFamily (".$shortTime."s) ($numberOfRuns repetitions)";
 		my $udpPacketLossPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $rttPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $end2EndPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
+		my $overheadPlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		my $performancePlotTitle = "$protcolFamily (".$longTime."s) ($numberOfRuns repetitions)";
 		
 		# read data
@@ -227,6 +263,12 @@ switch($mode) {
 		my @capacityAtEndDataShort = getCapacityAtEndArray($numberOfRuns, 0, $confidence, @configurations);		
 		my @udpStats = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @udpStatsStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rttStats = getRttArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rttStatsStatistics = getRttStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @end2EndStats = getEnd2EndArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @end2EndStatsStatistics = getEnd2EndStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @overheadStats = getOverheadArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @overheadStatsStatistics = getOverheadStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		
 		# calculate confidence
 		my @performanceArrayCarrier = ();
@@ -241,7 +283,10 @@ switch($mode) {
 		# plot single charts
 		plotCapacityAtEndStatisticsCompare($capacityAtEndPlotFile, $capacityAtEndPlotTitle, $confidence, @capacityAtEndDataStatistics);
 		plotCapacityAtEndStatisticsCompare($capacityAtEndPlotFileShort, $capacityAtEndPlotTitleShort, $confidence, @capacityAtEndDataStatisticsShort);		
-		plotUdpPacketLossStatisticsCompare($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);
+		plotUdpPacketLossStatisticsCompare($udpPacketLossFile, $udpPacketLossPlotTitle, $confidence, @udpStatsStatistics);	
+		plotRttStatisticsCompare($rttFile, $rttPlotTitle, $confidence, @rttStatsStatistics);	
+		plotEnd2EndStatisticsCompare($end2EndFile, $end2EndPlotTitle, $confidence, @end2EndStatsStatistics);	
+		plotOverheadStatisticsCompare($overheadFile, $overheadPlotTitle, $confidence, @overheadStatsStatistics);
 		plotPerformanceStatistics($performanceLossFile, $performancePlotTitle, $confidence, $xlabelAdd, @performanceStatistics);
 		
 		# plot charts for each configuration
@@ -254,6 +299,21 @@ switch($mode) {
 		my $position = 0;
 		foreach (@configurations) {
 			plotUdpPacketLossConfidenceCompare($confidence, 1, $longTime, $_, $position, @udpStats);
+			$position++;
+		}
+		my $position = 0;
+		foreach (@configurations) {
+			plotRttConfidenceCompare($confidence, 1, $longTime, $_, $position, @rttStats);
+			$position++;
+		}
+		my $position = 0;
+		foreach (@configurations) {
+			plotEnd2EndConfidenceCompare($confidence, 1, $longTime, $_, $position, @end2EndStats);
+			$position++;
+		}
+		my $position = 0;
+		foreach (@configurations) {
+			plotOverheadConfidenceCompare($confidence, 1, $longTime, $_, $position, @overheadStats);
 			$position++;
 		}
 		my $position = 0;
@@ -345,6 +405,21 @@ switch($mode) {
 		my @udpStatsDataX;
 		my @udpStatsDataY;
 		my @udpStatsDataZ;
+		my @rttDataX;
+		my @rttDataY;
+		my @rttDataZ;
+		my @end2EndDataX;
+		my @end2EndDataY;
+		my @end2EndDataZ;
+		my @overheadDataX;
+		my @overheadDataY;
+		my @overheadDataZ;
+		my @overheadCalculatedDataX;
+		my @overheadCalculatedDataY;
+		my @overheadCalculatedDataZ;
+		my @sentBytesDataX;
+		my @sentBytesDataY;
+		my @sentBytesDataZ;
 		my @performanceDataX;
 		my @performanceDataY;
 		my @performanceDataZ;
@@ -376,13 +451,35 @@ switch($mode) {
 				my $capacityAtEndFilename = $filename;
 				my $udpStatsFilename = $filename;
 				$udpStatsFilename =~ s/CapacityAtEnd-Clean/UDPStats/g;
+				my $rttFilename = $filename;
+				$rttFilename =~ s/CapacityAtEnd-Clean/RTT/g;
+				my $end2EndFilename = $filename;
+				$end2EndFilename =~ s/CapacityAtEnd-Clean/End2End/g;
+				my $overheadFilename = $filename;
+				$overheadFilename =~ s/CapacityAtEnd-Clean/Overhead/g;
+				my $sentBytesFilename = $filename;
+				$sentBytesFilename =~ s/CapacityAtEnd-Clean/SentBytes/g;
 			
 				my @capacityAtEndArray = getCsvAsArray($capacityAtEndFilename);
 				my @udpStatsArray = getCsvAsArray($udpStatsFilename);
+				my @rttArray = getCsvAsArray($rttFilename);
+				my @end2EndArray = getCsvAsArray($end2EndFilename);
+				my @overheadArray = getCsvAsArray($overheadFilename);
+				my @sentBytesArray = getCsvAsArray($sentBytesFilename);
 
 				if ( $run == 0 ) {			
 					push (@udpStatsDataX, $sensibility);
-					push (@udpStatsDataY, $trigger);	
+					push (@udpStatsDataY, $trigger);
+					push (@rttDataX, $sensibility);
+					push (@rttDataY, $trigger);	
+					push (@end2EndDataX, $sensibility);
+					push (@end2EndDataY, $trigger);	
+					push (@sentBytesDataX, $sensibility);
+					push (@sentBytesDataY, $trigger);	
+					push (@overheadDataX, $sensibility);
+					push (@overheadDataY, $trigger);	
+					push (@overheadCalculatedDataX, $sensibility);
+					push (@overheadCalculatedDataY, $trigger);	
 					push (@capacityAtEndDataX, $sensibility);
 					push (@capacityAtEndDataY, $trigger);
 					push (@performanceDataX, $sensibility);
@@ -390,6 +487,19 @@ switch($mode) {
 				}
 
 				push (@{$udpStatsDataZ[$newcounter]}, ( $udpStatsArray[2][41] / ++$udpStatsArray[1][41]) * 100);
+
+				push (@{$rttDataZ[$newcounter]}, 1 - $rttArray[1][41]);
+
+				push (@{$end2EndDataZ[$newcounter]}, 1 - $end2EndArray[1][41]);
+
+				push (@{$sentBytesDataZ[$newcounter]}, $sentBytesArray[1][41]);
+
+				my $overheadDataArrayLength = @overheadArray;
+				my $overheadDataSum = 0;
+				for ( my $i = 1; $i < $overheadDataArrayLength; $i++ ) { $overheadDataSum += $overheadArray[$i][41]; }
+				push (@{$overheadDataZ[$newcounter]}, $overheadDataSum);
+
+				push (@{$overheadCalculatedDataZ[$newcounter]}, 100 - ($overheadDataSum / ($sentBytesArray[1][41] + 1) * 100) );
 			
 				push (@{$capacityAtEndDataZ[$newcounter]}, 1 - ( stddev(@{$capacityAtEndArray[1]}) + 0.0000000000000001) );
 			
@@ -429,6 +539,46 @@ switch($mode) {
 				push (@meanValues, $udpStatsDataZ[$run+1][$column]);
 			}
 			push (@{$udpStatsDataZ[0]}, mean(@meanValues));
+		}
+		my $rttDataZLength = @{$rttDataZ[1]};
+		for ( my $column = 0; $column < $rttDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $rttDataZ[$run+1][$column]);
+			}
+			push (@{$rttDataZ[0]}, mean(@meanValues));
+		}
+		my $end2EndDataZLength = @{$end2EndDataZ[1]};
+		for ( my $column = 0; $column < $end2EndDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $end2EndDataZ[$run+1][$column]);
+			}
+			push (@{$end2EndDataZ[0]}, mean(@meanValues));
+		}
+		my $overheadDataZLength = @{$overheadDataZ[1]};
+		for ( my $column = 0; $column < $overheadDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $overheadDataZ[$run+1][$column]);
+			}
+			push (@{$overheadDataZ[0]}, mean(@meanValues));
+		}
+		my $overheadCalculatedDataZLength = @{$overheadCalculatedDataZ[1]};
+		for ( my $column = 0; $column < $overheadCalculatedDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $overheadCalculatedDataZ[$run+1][$column]);
+			}
+			push (@{$overheadCalculatedDataZ[0]}, mean(@meanValues));
+		}
+		my $sentBytesDataZLength = @{$sentBytesDataZ[1]};
+		for ( my $column = 0; $column < $sentBytesDataZLength; $column++ ) {
+			my @meanValues = ();
+			for ( my $run = 0; $run < $runcounter; $run++ ) {
+				push (@meanValues, $sentBytesDataZ[$run+1][$column]);
+			}
+			push (@{$sentBytesDataZ[0]}, mean(@meanValues));
 		}
 		my $capacityAtEndDataZLength = @{$capacityAtEndDataZ[1]};
 		for ( my $column = 0; $column < $capacityAtEndDataZLength; $column++ ) {
@@ -471,6 +621,31 @@ switch($mode) {
 		push (@{$udpStatsData[1]}, @udpStatsDataY);
 		push (@{$udpStatsData[2]}, @{$udpStatsDataZ[0]});
 		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-UDPStats.dat", $decimalplaces, @udpStatsData);		
+		my @rttData = ();
+		push (@{$rttData[0]}, @rttDataX);
+		push (@{$rttData[1]}, @rttDataY);
+		push (@{$rttData[2]}, @{$rttDataZ[0]});
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-RTT.dat", $decimalplaces, @rttData);			
+		my @end2EndData = ();
+		push (@{$end2EndData[0]}, @end2EndDataX);
+		push (@{$end2EndData[1]}, @end2EndDataY);
+		push (@{$end2EndData[2]}, @{$end2EndDataZ[0]});
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-End2End.dat", $decimalplaces, @end2EndData);			
+		my @overheadData = ();
+		push (@{$overheadData[0]}, @overheadDataX);
+		push (@{$overheadData[1]}, @overheadDataY);
+		push (@{$overheadData[2]}, @{$overheadDataZ[0]});
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-Overhead.dat", $decimalplaces, @overheadData);			
+		my @overheadCalculatedData = ();
+		push (@{$overheadCalculatedData[0]}, @overheadCalculatedDataX);
+		push (@{$overheadCalculatedData[1]}, @overheadCalculatedDataY);
+		push (@{$overheadCalculatedData[2]}, @{$overheadCalculatedDataZ[0]});
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-OverheadCalculated.dat", $decimalplaces, @overheadCalculatedData);			
+		my @sentBytesData = ();
+		push (@{$sentBytesData[0]}, @sentBytesDataX);
+		push (@{$sentBytesData[1]}, @sentBytesDataY);
+		push (@{$sentBytesData[2]}, @{$sentBytesDataZ[0]});
+		writeGnuplotDatafile("./results/".$protcolFamily."POParameterStudy-SentBytes.dat", $decimalplaces, @sentBytesData);		
 		my @performanceData = ();
 		push (@{$performanceData[0]}, @performanceDataX);
 		push (@{$performanceData[1]}, @performanceDataY);
