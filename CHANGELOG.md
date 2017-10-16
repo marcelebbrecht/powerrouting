@@ -175,6 +175,7 @@ Version: 0.96
 Completed: 2017-10-15
 
 * Signal for routing overhead added
-* Simple ICMP ping from sender to receiver added
+* Simple ICMP ping from sender to receiver added in standard simulations
 * Added PING app for RTT measure
 * Full integration of following metrics: Overhead, End2End delay, RTT
+* CSV export of statistical data

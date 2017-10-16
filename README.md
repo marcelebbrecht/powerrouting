@@ -289,6 +289,12 @@ To reduce the space requirements for the CSV files, a dropout factor is added. F
 a look at the run file.
 
 
+CSV Export
+----------
+
+Main statistical data is exported to export/files.
+
+
 Overhead
 --------
 
