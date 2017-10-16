@@ -40,7 +40,7 @@ DELETERTS="yes"
 DELETECSV="no"
 
 # delete results files vec (yes,no) after study
-DELETERESULTS="yes"
+DELETERESULTS="no"
 
 # decimal places for comparision
 DECIMALPLACES="5"
@@ -206,6 +206,7 @@ function runSimulation {
 function plotSimulation {
 	REPEAT=$(getRepeat)
 	N=0
+	mkdir -p ./export/files > /dev/null 2>&1
 	mkdir -p ./export/$1/CapacityOverTime/Full > /dev/null 2>&1
 	mkdir -p ./export/$1/CapacityOverTime/Short > /dev/null 2>&1
 	mkdir -p ./export/$1/CapacityAtEnd/Full > /dev/null 2>&1
@@ -225,6 +226,7 @@ function plotSimulation {
 # plot simulation for complete protocol
 # 1: CONFIGNAME (name)
 function plotSimulationProtocol {
+	mkdir -p ./export/files > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEnd/Full > /dev/null 2>&1
 	mkdir -p ./export/Summary/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Summary/UdpPacketLoss/Full > /dev/null 2>&1
@@ -260,6 +262,7 @@ function plotSimulationProtocol {
 # plot simulation for compare protocols
 # 1: CONFIGNAME (name)
 function compareProtocols {
+	mkdir -p ./export/files > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEnd/Full > /dev/null 2>&1
 	mkdir -p ./export/Compare/CapacityAtEnd/Short > /dev/null 2>&1
 	mkdir -p ./export/Compare/UdpPacketLoss/Full > /dev/null 2>&1
@@ -301,6 +304,7 @@ function compareProtocols {
 # plot simulation for compare protocols
 # 1: CONFIGNAME (name)
 function compareSending {
+	mkdir -p ./export/files > /dev/null 2>&1
 	mkdir -p ./export/CompareSending/CapacityAtEndSum/Full > /dev/null 2>&1
 	mkdir -p ./export/CompareSending/CapacityAtEndSum/Short > /dev/null 2>&1
 	mkdir -p ./export/CompareSending/UdpPacketLoss/Full > /dev/null 2>&1
@@ -484,6 +488,7 @@ function plotProtocol {
 # export capacity csv data for given result
 # 1: EXPERIMENTNAME (name)
 function plotStudy {
+	mkdir -p ./export/files > /dev/null 2>&1
 	mkdir -p export/$1POParameterStudy/CapacityOverTime/Full > /dev/null 2>&1
 	mkdir -p export/$1POParameterStudy/CapacityOverTime/Short > /dev/null 2>&1
 	mkdir -p export/$1POParameterStudy/CapacityAtEnd/Full > /dev/null 2>&1
@@ -682,17 +687,17 @@ case $1 in
 		waitForFinish
 		createHTML
 		cleanLogs
-		cleanFiles AODV-
-		cleanFiles AODVPO-
-		cleanFiles AODVPOTriggerHappy-
-		cleanFiles AODVPOTriggerSloppy-
-		cleanFiles AODVPOMixed-
-		cleanFiles AODVMultiple-
-		cleanFiles AODVPOMultiple-
-		cleanFiles AODVMultiHop-
-		cleanFiles AODVPOMultiHop-
-		cleanFiles AODVDifferentCapacity-
-		cleanFiles AODVPODifferentCapacity-
+		#cleanFiles AODV-
+		#cleanFiles AODVPO-
+		#cleanFiles AODVPOTriggerHappy-
+		#cleanFiles AODVPOTriggerSloppy-
+		#cleanFiles AODVPOMixed-
+		#cleanFiles AODVMultiple-
+		#cleanFiles AODVPOMultiple-
+		#cleanFiles AODVMultiHop-
+		#cleanFiles AODVPOMultiHop-
+		#cleanFiles AODVDifferentCapacity-
+		#cleanFiles AODVPODifferentCapacity-
 		runPostamble $1
 		deletePid $$
 	;;
@@ -713,7 +718,7 @@ case $1 in
 		plotStudy AODV $(($RUNNUMS+1))
 		createHTML
 		cleanLogs
-		cleanFiles AODVPOP
+		#cleanFiles AODVPOP
 		runPostamble $1
 		deletePid $$ 
 	;;
@@ -752,17 +757,17 @@ case $1 in
 		waitForFinish
 		createHTML
 		cleanLogs
-		cleanFiles OLSR-
-		cleanFiles OLSRPO-
-		cleanFiles OLSRPOTriggerHappy-
-		cleanFiles OLSRPOTriggerSloppy-
-		cleanFiles OLSRPOMixed-
-		cleanFiles OLSRMultiple-
-		cleanFiles OLSRPOMultiple-
-		cleanFiles OLSRMultiHop-
-		cleanFiles OLSRPOMultiHop-
-		cleanFiles OLSRDifferentCapacity-
-		cleanFiles OLSRPODifferentCapacity-
+		#cleanFiles OLSR-
+		#cleanFiles OLSRPO-
+		#cleanFiles OLSRPOTriggerHappy-
+		#cleanFiles OLSRPOTriggerSloppy-
+		#cleanFiles OLSRPOMixed-
+		#cleanFiles OLSRMultiple-
+		#cleanFiles OLSRPOMultiple-
+		#cleanFiles OLSRMultiHop-
+		#cleanFiles OLSRPOMultiHop-
+		#cleanFiles OLSRDifferentCapacity-
+		#cleanFiles OLSRPODifferentCapacity-
 		runPostamble $1
 		deletePid $$
 	;;
@@ -783,7 +788,7 @@ case $1 in
 		plotStudy OLSR $(($RUNNUMS+1))
 		createHTML
 		cleanLogs
-		cleanFiles OLSRPOP
+		#cleanFiles OLSRPOP
 		runPostamble $1
 		deletePid $$ 
 	;;

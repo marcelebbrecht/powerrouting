@@ -301,7 +301,7 @@ sub getCapacityAtEndArray {
 			}
 			$capacityAtEndData[$configuration][$run] = stddev(@{$results[1]});
 		}
-		
+
 		# calculate statistical data and write end of array
 		my $configurationMean = mean(@{$capacityAtEndData[$configuration]});
 		my $configurationMin = min(@{$capacityAtEndData[$configuration]});
@@ -309,13 +309,30 @@ sub getCapacityAtEndArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$capacityAtEndData[$configuration]});
+
+		my $csvfile = "export/files/$_-capacityAtEndData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"CapacityAtEnd (Stddev)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$capacityAtEndData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$capacityAtEndData[$configuration]}, $configurationMean;
 		push @{$capacityAtEndData[$configuration]}, $configurationMin;
 		push @{$capacityAtEndData[$configuration]}, $configurationMax;
 		push @{$capacityAtEndData[$configuration]}, $stats->lower_clm();
 		push @{$capacityAtEndData[$configuration]}, $stats->upper_clm();
 		push @{$capacityAtEndData[$configuration]}, $stats->upper_clm() - $configurationMean;
-			
+
 		$configuration++;
 	}
 	
@@ -441,6 +458,23 @@ sub getUdpPacketLossArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$udpPacketLossData[$configuration]});
+
+		my $csvfile = "export/files/$_-udpPacketLossData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"UDPPacketLoss (Percent)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$udpPacketLossData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$udpPacketLossData[$configuration]}, $configurationMean;
 		push @{$udpPacketLossData[$configuration]}, $configurationMin;
 		push @{$udpPacketLossData[$configuration]}, $configurationMax;
@@ -485,6 +519,7 @@ sub getRttArray {
 		while (my $line = <FILE>) {
 			my @actline = split("," , $line);
 			if ( "$actline[2]" eq "$_") {
+				$actline[18] =~ s/\r\n//d;
 				push @{$rttData[$configuration]}, $actline[18];
 			}
 		}
@@ -494,6 +529,23 @@ sub getRttArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$rttData[$configuration]});
+
+		my $csvfile = "export/files/$_-rttData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"RTT (Seconds)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$rttData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$rttData[$configuration]}, $configurationMean;
 		push @{$rttData[$configuration]}, $configurationMin;
 		push @{$rttData[$configuration]}, $configurationMax;
@@ -538,6 +590,7 @@ sub getEnd2EndArray {
 		while (my $line = <FILE>) {
 			my @actline = split("," , $line);
 			if ( "$actline[2]" eq "$_") {
+				$actline[18] =~ s/\r\n//d;
 				push @{$end2EndData[$configuration]}, $actline[18];
 			}
 		}
@@ -547,6 +600,23 @@ sub getEnd2EndArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$end2EndData[$configuration]});
+
+		my $csvfile = "export/files/$_-end2EndData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"End2End (Seconds)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$end2EndData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$end2EndData[$configuration]}, $configurationMean;
 		push @{$end2EndData[$configuration]}, $configurationMin;
 		push @{$end2EndData[$configuration]}, $configurationMax;
@@ -636,6 +706,23 @@ sub getOverheadArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$bytesSentData[$configuration]});
+
+		my $csvfile = "export/files/$_-overheadData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"Overhead (Percent)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$bytesSentData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$bytesSentData[$configuration]}, $configurationMean;
 		push @{$bytesSentData[$configuration]}, $configurationMin;
 		push @{$bytesSentData[$configuration]}, $configurationMax;
@@ -709,6 +796,7 @@ sub getUdpPacketLossArrayMultiple {
 				}
 			}
 		}
+		push @{$udpPacketLossData[$configuration]}, (1 - ($recvcount/++$sendcount))*100;
 
 
 		my $configurationMean = mean(@{$udpPacketLossData[$configuration]});
@@ -717,6 +805,23 @@ sub getUdpPacketLossArrayMultiple {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$udpPacketLossData[$configuration]});
+
+		my $csvfile = "export/files/$_-udpPacketLossData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"UDPPacketLoss (Percent)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$udpPacketLossData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$udpPacketLossData[$configuration]}, $configurationMean;
 		push @{$udpPacketLossData[$configuration]}, $configurationMin;
 		push @{$udpPacketLossData[$configuration]}, $configurationMax;
@@ -784,6 +889,23 @@ sub getCapacityAtEndSumArrayMultiple {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$capacityAtEndSumData[$configuration]});
+
+		my $csvfile = "export/files/$_-capacityAtEndData.csv";
+		open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		print $csvfilehandler "\"run\",\"CapacityAtEnd (Stddev)\"\n";
+		my $runcount = 0;
+		foreach my $entry (@{$capacityAtEndSumData[$configuration]}) {
+			print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+			$runcount++;
+		}
+		print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		print $csvfilehandler "\"lower\",\"".$stats->lower_clm()."\"\n";
+		print $csvfilehandler "\"upper\",\"".$stats->upper_clm()."\"\n";
+		print $csvfilehandler "\"error\",\"".($stats->upper_clm() - $configurationMean)."\"\n";
+		close $csvfilehandler;
+
 		push @{$capacityAtEndSumData[$configuration]}, $configurationMean;
 		push @{$capacityAtEndSumData[$configuration]}, $configurationMin;
 		push @{$capacityAtEndSumData[$configuration]}, $configurationMax;
@@ -1323,6 +1445,23 @@ sub getPerformanceArray {
 		my $stats = new Statistics::PointEstimation;
 		$stats->set_significance($confidence);
 		$stats->add_data(@{$performanceArray[$row]});
+
+		#my $csvfile = "export/files/$_-performanceData.csv";
+		#open(my $csvfilehandler, '>', $csvfile) or die "Could not open file '$csvfile' $!";
+		#print $csvfilehandler "\"run\",\"CapacityAtEnd\"\n";
+		#my $runcount = 0;
+		#foreach my $entry (@{$performanceArray[$row]}) {
+		#	print $csvfilehandler "\"$runcount\",\"$entry\"\n";
+		#	$runcount++;
+		#}
+		#print $csvfilehandler "\"mean\",\"$configurationMean\"\n";
+		#print $csvfilehandler "\"min\",\"$configurationMin\"\n";
+		#print $csvfilehandler "\"max\",\"$configurationMax\"\n";
+		#print $csvfilehandler "\"lower\",\"$stats->lower_clm()\"\n";
+		#print $csvfilehandler "\"upper\",\"$stats->upper_clm()\"\n";
+		#print $csvfilehandler "\"error\",\"$stats->upper_clm() - $configurationMean\"\n";
+		#close $csvfilehandler;
+
 		push @{$performanceArray[$row]}, $configurationMean;
 		push @{$performanceArray[$row]}, $configurationMin;
 		push @{$performanceArray[$row]}, $configurationMax;
@@ -4833,6 +4972,7 @@ sub htmlIndex {
 	print FILE "		<a href=\"olsrstudy.html\">Parameter Study: OLSRPO</a><br><br>\n";
 	print FILE "		<a href=\"compare.html\">Comparision: AODV/OLSR</a><br>\n";
 	print FILE "		<a href=\"summary.html\">Summary: AODV/OLSR</a><br><br>\n";
+	print FILE "		<a href=\"./files/\">CSV Files</a><br><br>\n";
 	print FILE "	</body>\n";
 	print FILE "</html>\n";
 	close FILE;
