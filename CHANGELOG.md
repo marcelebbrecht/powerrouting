@@ -179,3 +179,13 @@ Completed: 2017-10-15
 * Added PING app for RTT measure
 * Full integration of following metrics: Overhead, End2End delay, RTT
 * CSV export of statistical data
+
+
+Version: 1.0-rc1
+----------------
+
+Completed: 2017-10-17
+
+* First release candidate
+* Fixed bugs with linebreak on graph creation on RTT and End2End
+* Estimated better OLSR Timeouts

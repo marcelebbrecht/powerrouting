@@ -34,7 +34,7 @@ If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.c
 Version an status
 -----------------
 
-Current version: 0.96
+Current version: 1.0-rc1
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
@@ -81,8 +81,8 @@ https://omnetpp.org/component/jdownloads/send/32-release-older-versions/2308-omn
 Time, RAM, Disk and other requirements
 --------------------------------------
 
-Results and exports need about 25G space without elog and rt files and if it deletes the vec's.
-A full run, an I7 3770 with 7 active threads needs about 4-5 hours.
+Results and exports need about 250G space without elog and rt files and if it deletes the vec's.
+A full run, an I7 3770 with 7 active threads needs about 9-10 hours.
 
 Also, you need a towel. A towel is somewhat usefull. Don't ask any questions, get one!
 
@@ -248,7 +248,9 @@ Simulations with OLSR
 Mainly, the power-based version OLSRPO does the following trick: Every time a HELLO packet is received, the remaining
 battery storage is checked. If it drops a predefined ratio, the router lowers its willingness. After that, the 
 router would look less attractive for other hosts and so, if available, another router will be used. The different
-intervals for HELLO, TC, MID and REFRESH are chosen from RFC (according to https://tools.ietf.org/html/rfc3626).
+intervals for HELLO, TC, MID and REFRESH are chosen from RFC (according to https://tools.ietf.org/html/rfc3626) and set to
+nearly half value for lesser packet loss (1 instead of 2 and 2 instead of 5 seconds) This raises overhead nearly to double
+value.
 
 New willingness = ( 7 * relativeCharge * ( 1 - powerSensitivity ) ) - powerBias, where relativeCharge and powerSensitivity is in 0..0.999999 
 
