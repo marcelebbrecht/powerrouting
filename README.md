@@ -248,9 +248,11 @@ Simulations with OLSR
 Mainly, the power-based version OLSRPO does the following trick: Every time a HELLO packet is received, the remaining
 battery storage is checked. If it drops a predefined ratio, the router lowers its willingness. After that, the 
 router would look less attractive for other hosts and so, if available, another router will be used. The different
-intervals for HELLO, TC, MID and REFRESH are chosen from RFC (according to https://tools.ietf.org/html/rfc3626) and set to
-nearly half value for lesser packet loss (1 instead of 2 and 2 instead of 5 seconds) This raises overhead nearly to double
-value.
+intervals on OLSRPO for HELLO, TC, MID and REFRESH are chosen from RFC (according to https://tools.ietf.org/html/rfc3626).
+To ensure lesser packet loss on OLSR, the HELLO and REFRESH Interval is set 0.5s to get sane loss rate for the price of 
+high overhead. The corellation between length of these intervals and overhead is nearly linear. Changes on the TC and MID
+intervals only leads to higher overhead, but got no positive effect on packet loss. You find some studies in folder 
+olsr-interval-study (naming: HELLO-TC-MID-REFRESH).
 
 New willingness = ( 7 * relativeCharge * ( 1 - powerSensitivity ) ) - powerBias, where relativeCharge and powerSensitivity is in 0..0.999999 
 
