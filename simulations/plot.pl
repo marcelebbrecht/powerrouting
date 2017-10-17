@@ -156,8 +156,8 @@ switch($mode) {
 		my @capacityAtEndDataShort = getCapacityAtEndArray($numberOfRuns, 0, $confidence, @configurations);		
 		my @udpStats = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @udpStatsStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
-		my @rtt = getUdpPacketLossArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
-		my @rttStatistics = getUdpPacketLossStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rtt = getRttArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
+		my @rttStatistics = getRttStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @end2End = getEnd2EndArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @end2EndStatistics = getEnd2EndStatistics($numberOfRuns, $confidence, $protcolFamily, @configurations);
 		my @overhead = getOverheadArray($numberOfRuns, $confidence, $protcolFamily, @configurations);
