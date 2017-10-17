@@ -667,6 +667,7 @@ sub getOverheadArray {
 		while (my $line = <FILE>) {
 			my @actline = split("," , $line);
 			if ( "$actline[2]" eq "$_") {
+				$actline[18] =~ s/\r\n//d;
 				if ( $firstvalue == 0 ) {
 					$firstvalue = 1;
 					$samerun = "$actline[7]";
@@ -1022,6 +1023,7 @@ sub getRttStatistics {
 		open(FILE, "<", $filename);
 		while (my $line = <FILE>) {
 			my @actline = split("," , $line);
+			$actline[18] =~ s/\r\n//d;
 			if ( "$actline[2]" eq "$_") {
 			    push @{$rttData[$configuration]}, $actline[18];
 			}
@@ -1197,6 +1199,7 @@ sub getEnd2EndStatistics {
 		open(FILE, "<", $filename);
 		while (my $line = <FILE>) {
 			my @actline = split("," , $line);
+			$actline[18] =~ s/\r\n//d;
 			if ( "$actline[2]" eq "$_") {
 			    push @{$end2EndData[$configuration]}, $actline[18];
 			}
@@ -1296,6 +1299,7 @@ sub getUdpPacketLossStatisticsMultiple {
 				}
 			}
 		}
+		push @{$udpPacketLossData[$configuration]}, (1 - ($recvcount/++$sendcount))*100;
 
 		my $configurationMean = mean(@{$udpPacketLossData[$configuration]});
 		my $configurationMin = min(@{$udpPacketLossData[$configuration]});
