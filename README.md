@@ -348,6 +348,35 @@ void OperationalBase::handleMessageWhenDown(cMessage *message)
 ```
 
 
+Rates
+-----
+
+By default, simulations run with the following parameters:
+
+```
+# power settings experiment
+**.wlan[*].radio.energyConsumer.transmitterTransmittingPowerConsumption = 100mW
+
+# udp sender one
+**.sender1.udpApp[0].messageLength = 1000B
+**.sender1.udpApp[0].sendInterval = exponential(50ms, 0)
+```
+
+To show the behavior on higher load (and lesser overhead), another setting was tested:
+
+
+```
+# power settings experiment
+**.wlan[*].radio.energyConsumer.transmitterTransmittingPowerConsumption = 25mW
+
+# udp sender one
+**.sender1.udpApp[0].messageLength = 2000B
+**.sender1.udpApp[0].sendInterval = exponential(25ms, 0)
+```
+
+You can find the results in folder higher-rates.
+
+
 Bugs - Power Drops 
 ------------------
 
