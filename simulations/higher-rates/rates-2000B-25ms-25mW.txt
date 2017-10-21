@@ -1,0 +1,12 @@
+# power settings experiment
+**.wlan[*].radio.energyConsumer.transmitterTransmittingPowerConsumption = 25mW
+
+# udp sender one
+**.sender1.numUdpApps = 1
+**.sender1.udpApp[0].typename = "UDPBasicApp"
+**.sender1.udpApp[0].destAddresses = "receiver1(ipv4)"
+**.sender1.udpApp[0].destPort = 5000
+**.sender1.udpApp[0].messageLength = 2000B
+**.sender1.udpApp[0].sendInterval = exponential(25ms, 0)
+**.sender1.udpApp[0].packetName = "UDPData"
+**.sender1.udpApp[0].startTime = 10s
