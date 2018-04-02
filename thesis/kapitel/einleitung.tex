@@ -1,0 +1,40 @@
+% einleitung.tex
+% Kapitel 1: Einleitung und Motivation
+
+\chapter{Einleitung}
+\section{Motivation und Hintergrund}
+
+\begin{quote}
+\glqq Ich denke, dass es einen Weltmarkt für vielleicht fünf Computer gibt.\grqq
+\end{quote}
+\begin{flushright}
+--- \textup{Thomas Watson, 1943}
+\end{flushright}
+
+Ob Herr Watson zum Zeitpunkt seiner Aussage richtig lag, kann ich nicht bewerten. Eins ist allerdings klar: Die Gültigkeitsdauer war begrenzt. Heute sehen wir uns einer großen Anzahl an Systemen gegenüber, die, bedingt durch die rasante Entwicklung des Internets, in hohem Maße miteinander kommunizieren. Obschon sich Dezentralisierung in vielen Bereichen durchgesetzt hat, betreibt die Menschheit heute große Infrastrukturen, die dem verteilten Speichern oder Verarbeiten von Daten dienen. Die Übertragung dieser Daten erfolgt jedoch zu großen Teilen über zentralistische Vernetzung. Natürlich werden dabei Technologien zur Lastverteilung und Ausfallsicherheit eingesetzt, dennoch entstehen, bedingt durch die Topologie, immer wieder Engpässe. Dieses Problem wird, aufgrund stetig steigender Datenvolumina weiter zunehmen.\newline
+
+Meines Erachtens nach liegt die Zukunft, da wir mittlerweile über eine hohe Dichte an kommunikationsfähigen Geräten verfügen, in der Übermittlung durch \textit{\glspl{mesh}}. Da sich in solchen Netzen besondere Anforderungen an die \textit{\glspl{rv}} ergeben \cite{RFC2501}, wurden hierfür eben solche entwickelt, die den Betrieb sicherstellen sollen \cite{Azzedine11} \cite{Kumar13}. Die Aufmerksamkeit soll hier auf ein bestimmtes Thema gerichtet werden: Die Verteilung des Energieverbrauchs. Viele Endgeräte, wie \textit{\glspl{smartphone}} oder \textit{\glspl{wsan}}, die sich für den Einsatz als \textit{\gls{router}} anbieten, besitzen nur einen begrenzten Energievorrat. Bei den von mir untersuchten, gängigen \glspl{rv} ist die Weglänge, also die Anzahl der \textit{\glspl{hop}}, die maßgebende \textit{\gls{met}}, mit der die anzuwendende \textit{\gls{route}} bestimmt wird. Wenn man an moderne \glspl{smartphone} denkt, welche mit einer Akkuladung in der Regel 8 bis 12 Stunden ihren normalen Betrieb verrichten können, dann stellt sich dem Benutzer natürlich die Frage, ob er auch noch Batterieleistung für das Weiterleiten fremder Daten erübrigen möchte, zumal die Nutzung von drahtloser Übertragung einen großen Anteil des Energieverbrauchs dieser Systeme ausmacht \cite{Tawalbeh16}\cite{Caroll10}\cite{Huang12}. Zudem würde eine gute Einschätzung seiner Verbindung durch \textit{\gls{aodv}} oder \textit{\gls{olsr}} dazu führen, dass der Akku noch schneller entladen wird. Es gibt viele Arbeiten, die sich mit der Optimierung des Energieverbrauchs befassen. Hier eine bescheidene Auswahl möglicher Anpassungen:
+
+\begin{itemize}
+\item Die Arbeiten befassen sich mit der allgemeinen Senkung des Verbrauchs durch Anpassung des Sendeverhaltens der \glspl{router} \cite{Booranawong13}\cite{Singh88},
+\item Wegfindung auf Basis der Art der Energieversorgung \cite{Avudainayagam03}
+\item oder anderen, grundlegenderen Änderungen, \zB durch geschickte Cliquenbildung bei redundanten Wegen \cite{Liu09}.\newline
+\end{itemize}
+
+Bei der Recherche zu diesem Thema waren jedoch keine Arbeiten auszumachen, die den Aspekt der \textit{Fairness im Verbrauch} behandeln, also den Ladezustand der Teilnehmer in die \gls{met} einbeziehen. Wäre es nicht viel sinnvoller, wenn dies ebenfalls in die Bewertung der Route einfließt? Ein Teilnehmer mit hohem Ladestand wird bevorzugt als Router verwendet, einer mit weniger nur, wenn es keine Alternative gibt. 
+
+\section{Zielsetzung}
+
+Die Umsetzung der genannten Punkte sollte bei mobilen Endgeräten wie \glspl{smartphone} zu einer höheren Akzeptanz von \textit{\gls{wmn}}, bei stationären Einrichtungen, wie \gls{wsan}, zu einer längeren Betriebszeit bis zum nächsten Batteriewechsel einzelner Stationen führen. Im Rahmen dieser Arbeit wird gezeigt, dass es mit minimalen Anpassungen möglich ist, die Präferenzen bei der Wahl der \gls{route} nach dem Ladezustand auszurichten. Hierbei wird die Kompatibilität zu den nicht angepassten Systemen beibehalten. Um die getätigten Annahmen überprüfen zu können, wurde die \textit{Simulationssoftware Omnet++}\footnote{https://www.omnetpp.org} ausgewählt, da diese zusammen mit den frei verfügbaren Frameworks \textit{INET}\footnote{https://inet.omnetpp.org} und \textit{INETManet}\footnote{https://github.com/aarizaq/inetmanet-3.x} gute Möglichkeiten für die Umsetzung mittels \gls{aodv} und \gls{olsr} bereitstellt und die umfassende Analyse der Ergebnisse ermöglicht. Der gesamte Code, der im Rahmen dieser Arbeit erstellt wurde, steht unter der \gls{gpl} auf GitHub zur Verfügung.\footnote{https://github.com/marcelebbrecht/powerrouting} Zudem steht dort die gesamte Arbeit als PDF und die darin verwendeten Abbildungen und Diagramme im Ordner \textit{thesis} zur Verfügung.
+
+\section{Aufbau dieser Arbeit}
+
+Da sich diese Arbeit im Schwerpunkt mit \glspl{wmn} beschäftigt, werden im folgenden Kapitel die beteiligten Technologien wie das \textit{\gls{ip}}, \textit{\gls{wlan}}, \acrlong{rv}, \glspl{met} und ein paar andere Aspekte erläutert, um damit die Grundlage für das weitere Verständnis zu legen. In Kapitel \ref{chapter:routing} werden die untersuchten \acrlongpl{rv} näher erklärt, wobei sich die Beschreibung auf die in den entsprechenden \textit{\glspl{rfc}} genannten Informationen und ein paar zusätzliche Arbeiten stützt. Anschließend werden die vorgenommenen Anpassungen und deren angedachte Wirkung beschrieben. Ferner wird das Thema \gls{met} eingehender behandelt und der Versuch unternommen, eine eigene Definition zur Bewertung der jeweiligen Konfiguration zu schaffen. Kapitel \ref{chapter:versuch} widmet sich den durchgeführten Versuchen und behandelt die eingesetzte Software, den Aufbau und die Durchführung der Simulationen. Hierbei wird näher auf die Implementierung der betrachteten Verfahren \gls{aodv} und \gls{olsr} in Omnet++ bzw. im INETManet Framework eingegangen. Kapitel \ref{chapter:auswertung} befasst sich umfangreich mit der Auswertung der im Versuch gesammelten Daten und stellt die Wirkung der Anpassungen ausführlich dar. Zudem wird auf die Stärken, aber auch auf die Schwächen eingegangen. Den Schluss bildet ein Resümee sowie ein Ausblick auf weitere Möglichkeiten und Aspekte der Verwendung von \glspl{wmn}.
+
+\section{Anmerkung zu Fachbegriffen}
+
+Die vielfältig verfügbare Literatur ist größtenteils in englisch verfasst, die meisten Fachbegriffe sind nur in englisch definiert und vor allem den meisten potentiellen Lesern auch nur in dieser Sprache geläufig. Diese Arbeit ist in deutsch verfasst, enthält jedoch viele dieser englischen Begriffe, da es meist nicht möglich ist, diese zu übersetzen, ohne das Informationen verloren gehen. Wenn es sich also anbot, dann wurden manche Begriffe übersetzt, vor allem dann, wenn sie so auch in Literatur auftauchten, ansonsten wurde das Original verwendet. Um Klarheit zu schaffen, sind viele Begriffe im Glossar erklärt. Aufgrund der hohen Anzahl an Fachbegriffen und deren Länge werden viele Abkürzungen eingeführt um den Text überschaubar zu halten. Die Akronyme und die Bedeutung einzelner Begriffe werden im Anhang dieser Arbeit aufgelistet und erläutert. Grundsätzlich werden die Fach- oder andere zentrale Begriffe, sofern sie erstmalig erwähnt werden, \textit{kursiv} gesetzt, bei der Verwendung der Akronyme oder häufigen Wiederholungen wurde allerdings zu Gunsten der Optik darauf verzichtet. Das Glossar ist nicht Bestandteil der Leistung dieser Arbeit, es wird daher auf Verweise und Belege verzichtet.
+
+
+
+

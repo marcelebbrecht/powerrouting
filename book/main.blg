@@ -1,0 +1,57 @@
+This is BibTeX, Version 0.99d (TeX Live 2016)
+Capacity: max_strings=35307, hash_size=35307, hash_prime=30011
+The top-level auxiliary file: main.aux
+A level-1 auxiliary file: kapitel/titel.aux
+A level-1 auxiliary file: kapitel/titelseite.aux
+A level-1 auxiliary file: kapitel/vorwort.aux
+A level-1 auxiliary file: kapitel/einleitung.aux
+A level-1 auxiliary file: kapitel/grundlagen.aux
+A level-1 auxiliary file: kapitel/routing.aux
+A level-1 auxiliary file: kapitel/versuch.aux
+A level-1 auxiliary file: kapitel/auswertung.aux
+A level-1 auxiliary file: kapitel/schluss.aux
+A level-1 auxiliary file: kapitel/anhang.aux
+A level-1 auxiliary file: kapitel/glossar.aux
+The style file: alpha.bst
+Database file #1: literatur/bachelor.bib
+You've used 25 entries,
+            2543 wiz_defined-function locations,
+            778 strings with 9460 characters,
+and the built_in function-call counts, 10608 in all, are:
+= -- 1093
+> -- 581
+< -- 19
++ -- 212
+- -- 206
+* -- 820
+:= -- 1810
+add.period$ -- 89
+call.type$ -- 25
+change.case$ -- 171
+chr.to.int$ -- 25
+cite$ -- 25
+duplicate$ -- 388
+empty$ -- 653
+format.name$ -- 233
+if$ -- 2113
+int.to.chr$ -- 1
+int.to.str$ -- 0
+missing$ -- 15
+newline$ -- 139
+num.names$ -- 75
+pop$ -- 127
+preamble$ -- 1
+purify$ -- 197
+quote$ -- 0
+skip$ -- 322
+stack$ -- 0
+substring$ -- 498
+swap$ -- 67
+text.length$ -- 19
+text.prefix$ -- 4
+top$ -- 0
+type$ -- 196
+warning$ -- 0
+while$ -- 97
+width$ -- 30
+write$ -- 357

@@ -1,0 +1,180 @@
+\ifglsentryexists{wlan}{}%
+{%
+\gls@defglossaryentry{wlan}%
+{%
+name={\acronymfont {\glsentryshort {wlan}}},%
+sort={WLAN},%
+type={main},%
+first={WLAN},%
+firstplural={WLANs},%
+text={WLAN},%
+plural={WLANs},%
+description={Drahtlosnetzwerk},%
+descriptionplural={Drahtlosnetzwerk},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Drahtlosnetzwerk},%
+longplural={Drahtlosnetzwerks},%
+short={WLAN},%
+shortplural={WLANs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{wlan}{}%
+{%
+\gls@defglossaryentry{wlan}%
+{%
+name={\acronymfont {\glsentryshort {wlan}}},%
+sort={WLAN},%
+type={main},%
+first={WLAN},%
+firstplural={WLANs},%
+text={WLAN},%
+plural={WLANs},%
+description={Drahtlosnetzwerk},%
+descriptionplural={Drahtlosnetzwerk},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Drahtlosnetzwerk},%
+longplural={Drahtlosnetzwerks},%
+short={WLAN},%
+shortplural={WLANs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{wmn}{}%
+{%
+\gls@defglossaryentry{wmn}%
+{%
+name={\acronymfont {\glsentryshort {wmn}}},%
+sort={WMN},%
+type={main},%
+first={WMN},%
+firstplural={WMNs},%
+text={WMN},%
+plural={WMNs},%
+description={Wireless Mesh Network},%
+descriptionplural={Wireless Mesh Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Wireless Mesh Network},%
+longplural={Wireless Mesh Networks},%
+short={WMN},%
+shortplural={WMNs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{wmn}{}%
+{%
+\gls@defglossaryentry{wmn}%
+{%
+name={\acronymfont {\glsentryshort {wmn}}},%
+sort={WMN},%
+type={main},%
+first={WMN},%
+firstplural={WMNs},%
+text={WMN},%
+plural={WMNs},%
+description={Wireless Mesh Network},%
+descriptionplural={Wireless Mesh Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Wireless Mesh Network},%
+longplural={Wireless Mesh Networks},%
+short={WMN},%
+shortplural={WMNs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{wsan}{}%
+{%
+\gls@defglossaryentry{wsan}%
+{%
+name={\acronymfont {\glsentryshort {wsan}}},%
+sort={WSAN},%
+type={main},%
+first={WSAN},%
+firstplural={WSANs},%
+text={WSAN},%
+plural={WSANs},%
+description={Wireless Sensor and Actor Network},%
+descriptionplural={Wireless Sensor and Actor Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Wireless Sensor and Actor Network},%
+longplural={Wireless Sensor and Actor Networks},%
+short={WSAN},%
+shortplural={WSANs},%
+counter={page},%
+parent={},%
+%
+}%
+}%
+\ifglsentryexists{wsan}{}%
+{%
+\gls@defglossaryentry{wsan}%
+{%
+name={\acronymfont {\glsentryshort {wsan}}},%
+sort={WSAN},%
+type={main},%
+first={WSAN},%
+firstplural={WSANs},%
+text={WSAN},%
+plural={WSANs},%
+description={Wireless Sensor and Actor Network},%
+descriptionplural={Wireless Sensor and Actor Network},%
+symbol={\relax },%
+symbolplural={\relax },%
+user1={},%
+user2={},%
+user3={},%
+user4={},%
+user5={},%
+user6={},%
+long={Wireless Sensor and Actor Network},%
+longplural={Wireless Sensor and Actor Networks},%
+short={WSAN},%
+shortplural={WSANs},%
+counter={page},%
+parent={},%
+%
+}%
+}%

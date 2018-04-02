@@ -1,0 +1,65 @@
+\select@language {english}
+\select@language {english}
+\select@language {german}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {2.1}{\ignorespaces OSI \cite {Zimmermann80} \& TCP/IP Modell \cite {RFC1180}\relax }}{7}
+\contentsline {figure}{\numberline {2.2}{\ignorespaces Ein IBSS im Ad-Hoc-Modus\relax }}{8}
+\contentsline {figure}{\numberline {2.3}{\ignorespaces Ein IP-Paket nach RFC 791 \cite {RFC791}\relax }}{9}
+\contentsline {figure}{\numberline {2.4}{\ignorespaces Ein UDP-Datagramm nach RFC 1122 \cite {RFC1122}\relax }}{10}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {3.1}{\ignorespaces Vorgehen beim Versenden eines IP-Pakets nach RFC 3561 \cite {RFC3561}\relax }}{17}
+\contentsline {figure}{\numberline {3.2}{\ignorespaces Behandlung eines RREQ nach RFC 3561 \cite {RFC3561}\relax }}{19}
+\contentsline {figure}{\numberline {3.3}{\ignorespaces Behandlung eines RREP nach RFC 3561 \cite {RFC3561}\relax }}{21}
+\contentsline {figure}{\numberline {3.4}{\ignorespaces Bestimmung MPR Set nach RFC3626 \cite {RFC3626}\relax }}{26}
+\contentsline {figure}{\numberline {3.5}{\ignorespaces DFW nach RFC3626 \cite {RFC3626}\relax }}{29}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {4.1}{\ignorespaces Auszug NED in OMNeT++\relax }}{32}
+\contentsline {figure}{\numberline {4.2}{\ignorespaces IDE-GUI von OMNeT++\relax }}{33}
+\contentsline {figure}{\numberline {4.3}{\ignorespaces Simulations-GUI von OMNeT++\relax }}{33}
+\contentsline {figure}{\numberline {4.4}{\ignorespaces Auszug INI in OMNeT++\relax }}{34}
+\contentsline {figure}{\numberline {4.5}{\ignorespaces Single-Hop Testnetz\relax }}{35}
+\contentsline {figure}{\numberline {4.6}{\ignorespaces Multi-Hop Testnetz\relax }}{36}
+\contentsline {figure}{\numberline {4.7}{\ignorespaces Energieverbrauch und -vorrat bei AODV nach 180 Sekunden\relax }}{37}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {5.1}{\ignorespaces ParameterStudy AODV nach 180 Sekunden, Abweichung der Kapazit\IeC {\"a}t\relax }}{41}
+\contentsline {figure}{\numberline {5.2}{\ignorespaces ParameterStudy AODV nach 180 Sekunden, PacketLoss\relax }}{42}
+\contentsline {figure}{\numberline {5.3}{\ignorespaces ParameterStudy AODV nach 180 Sekunden, Performance\relax }}{43}
+\contentsline {figure}{\numberline {5.4}{\ignorespaces ParameterStudy AODV nach 180 Sekunden, Routing Overhead\relax }}{43}
+\contentsline {figure}{\numberline {5.5}{\ignorespaces ParameterStudy OLSR nach 180 Sekunden, Abweichung der Kapazit\IeC {\"a}t\relax }}{44}
+\contentsline {figure}{\numberline {5.6}{\ignorespaces ParameterStudy OLSR nach 180 Sekunden, PacketLoss\relax }}{44}
+\contentsline {figure}{\numberline {5.7}{\ignorespaces ParameterStudy OLSR nach 180 Sekunden, Performance\relax }}{45}
+\contentsline {figure}{\numberline {5.8}{\ignorespaces ParameterStudy OLSR nach 180 Sekunden, Routing Overhead\relax }}{45}
+\contentsline {figure}{\numberline {5.9}{\ignorespaces Verlauf Ladezustand bei AODV, 180 Sekunden\relax }}{46}
+\contentsline {figure}{\numberline {5.10}{\ignorespaces Verlauf Ladezustand bei AODV-PO, 180 Sekunden\relax }}{46}
+\contentsline {figure}{\numberline {5.11}{\ignorespaces Niedrigerer Trigger $t=0.2$ bei AODV-PO, 180 Sekunden\relax }}{47}
+\contentsline {figure}{\numberline {5.12}{\ignorespaces H\IeC {\"o}herer Trigger $t=0.4$ bei AODV-PO, 180 Sekunden\relax }}{47}
+\contentsline {figure}{\numberline {5.13}{\ignorespaces AODV und AODV-PO im Mischbetrieb, 180 Sekunden\relax }}{48}
+\contentsline {figure}{\numberline {5.14}{\ignorespaces Netzwerk f\IeC {\"u}r den Mischbetrieb\relax }}{48}
+\contentsline {figure}{\numberline {5.15}{\ignorespaces Vergleich Verlauf Ladezustand bei OLSR und AODV, 180 Sekunden\relax }}{49}
+\contentsline {figure}{\numberline {5.16}{\ignorespaces Vergleich Overhead bei OLSR und AODV, 180 Sekunden\relax }}{50}
+\contentsline {figure}{\numberline {5.17}{\ignorespaces Vergleich PacketLoss bei AODV, 180 Sekunden\relax }}{50}
+\contentsline {figure}{\numberline {5.18}{\ignorespaces Vergleich PacketLoss bei OLSR, 180 Sekunden\relax }}{51}
+\contentsline {figure}{\numberline {5.19}{\ignorespaces Vergleich Verlustrate Multi-Recipient bei OLSR und AODV, 180 Sekunden\relax }}{52}
+\addvspace {10\p@ }
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {A.1}{\ignorespaces Verlauf Ladezustand bei OLSR, 180 Sekunden\relax }}{55}
+\contentsline {figure}{\numberline {A.2}{\ignorespaces Verlauf Ladezustand bei OLSR-PO, 180 Sekunden\relax }}{55}
+\contentsline {figure}{\numberline {A.3}{\ignorespaces Niedrigerer Trigger $t=0.2$ bei OLSR-PO, 180 Sekunden\relax }}{56}
+\contentsline {figure}{\numberline {A.4}{\ignorespaces H\IeC {\"o}herer Trigger $t=0.4$ bei OLSR-PO, 180 Sekunden\relax }}{56}
+\contentsline {figure}{\numberline {A.5}{\ignorespaces OLSR und OLSR-PO im Mischbetrieb, 180 Sekunden\relax }}{56}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {B.1}{\ignorespaces Verlauf Ladezustand bei AODV-PO im MutiHop Netz, 180 Sekunden\relax }}{57}
+\contentsline {figure}{\numberline {B.2}{\ignorespaces Verlauf Ladezustand bei OLSR-PO im MutiHop Netz, 180 Sekunden\relax }}{57}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {C.1}{\ignorespaces Analyse Durchl\IeC {\"a}ufe AODV, 180 Sekunden\relax }}{59}
+\contentsline {figure}{\numberline {C.2}{\ignorespaces Analyse Durchl\IeC {\"a}ufe AODV-PO, 180 Sekunden\relax }}{59}
+\contentsline {figure}{\numberline {C.3}{\ignorespaces Analyse Durchl\IeC {\"a}ufe OLSR, 180 Sekunden\relax }}{60}
+\contentsline {figure}{\numberline {C.4}{\ignorespaces Analyse Durchl\IeC {\"a}ufe OLSR-PO, 180 Sekunden\relax }}{60}
+\addvspace {10\p@ }
+\contentsline {figure}{\numberline {D.1}{\ignorespaces 3D Darstellung Ladezustand ParameterStudy bei AODV, 180 Sekunden\relax }}{61}
+\contentsline {figure}{\numberline {D.2}{\ignorespaces 3D Darstellung PacketLoss ParameterStudy bei AODV, 180 Sekunden\relax }}{61}
+\contentsline {figure}{\numberline {D.3}{\ignorespaces 3D Darstellung Performance ParameterStudy bei AODV, 180 Sekunden\relax }}{62}
+\contentsline {figure}{\numberline {D.4}{\ignorespaces 3D Darstellung Ladezustand ParameterStudy bei OLSR, 180 Sekunden\relax }}{62}
+\contentsline {figure}{\numberline {D.5}{\ignorespaces 3D Darstellung PacketLoss ParameterStudy bei OLSR, 180 Sekunden\relax }}{62}
+\contentsline {figure}{\numberline {D.6}{\ignorespaces 3D Darstellung Performance ParameterStudy bei OLSR, 180 Sekunden\relax }}{63}

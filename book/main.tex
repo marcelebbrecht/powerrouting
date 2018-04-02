@@ -1,0 +1,56 @@
+% main.tex
+% Hauptdokument
+
+\include{header}
+\include{glossar}
+\include{trennung}
+\begin{document}
+\selectlanguage{german}
+\include{kapitel/titel}
+\include{kapitel/titelseite}
+\renewcommand\familydefault{\sfdefault}
+\include{kapitel/vorwort}
+\sffamily
+\blankpage
+\blankpage
+\cleardoublepage
+\blankpage
+\blankpage
+\cleardoublepage
+\pagenumbering{roman}
+\tableofcontents
+\cleardoublepage
+\pagenumbering{arabic}
+% Kapitel
+\include{kapitel/einleitung}
+\include{kapitel/grundlagen}
+\include{kapitel/routing}%texmaker 
+\include{kapitel/versuch}
+\include{kapitel/auswertung}
+\include{kapitel/schluss}
+% Anhang
+\appendix
+\include{kapitel/anhang}
+\include{kapitel/glossar}
+% Abbildungsverzeichnis
+\listoffigures
+%\listoftables
+\addcontentsline{toc}{chapter}{Abbildungsverzeichnis}
+\cleardoublepage
+% Algorithmenverzeichnis
+%\listofalgorithms
+%\addcontentsline{toc}{chapter}{Algorithmenverzeichnis}
+%\cleardoublepage
+% Literaturverzeichnis
+%\bibliographystyle{gerplain}
+\bibliographystyle{alpha}
+\bibliography{literatur/bachelor}
+\addcontentsline{toc}{chapter}{\bibname}
+% Erklaerung
+%\thispagestyle{myheadings}
+%\markboth{}{ERKLÄRUNG}
+%\addcontentsline{toc}{chapter}{Erklärung}
+%\include{kapitel/erklaerung}
+\cleardoublepage
+\end{document}
+

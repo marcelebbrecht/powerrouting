@@ -1,0 +1,112 @@
+% glossar.tex
+% Datendatei für die Glossareinträge
+
+\usepackage[acronym,translate=babel]{glossaries}
+\glstoctrue
+\makeglossaries
+
+\newcommand*{\newdualentry}[7][]{
+  \newglossaryentry{main-#2}{name={#4},
+  text={#3\glsadd{#2}},
+  description={{#5}},
+  long={#4},
+  longplural={#6},
+  plural={#7\glsadd{#2}},
+  firstplural={{#6} ({#7})},
+  #1
+  }
+  \newglossaryentry{#2}{
+  type=\acronymtype,
+  first={#4 (#3)},
+  long={#4},
+  longplural={#6},
+  plural={#7\glsadd{main-#2}},
+  firstplural={{#6} ({#7})},
+  name={#3\glsadd{main-#2}},
+  description={\glslink{main-#2}{#4}}
+  }
+}
+
+
+\newcommand*{\newsingleentry}[5][]{
+  \newglossaryentry{#2}{name={#3},
+  text={#3},
+  description={#4},
+  plural={#5},
+  #1
+  }
+}
+
+%%%%%% ohne Akronym %%%%%%
+
+\newsingleentry{rip}{Routing Information Protocol}{Ein Routing-Protokoll auf Basis des Distanzvektoralgorithmus, das innerhalb eines autonomen Systems (z. B. LAN) eingesetzt wird, um die Routingtabellen von Routern automatisch zu erstellen}{Routing Information Protocols}
+\newsingleentry{ospf}{Open Shortest Path First}{Ein von der IETF entwickeltes Link-State-Routing-Protokoll}{Open Shortest Path First}
+\newsingleentry{bgp}{Border Gateway Protocol}{Das im Internet eingesetzte Routingprotokoll}{Border Gateway Protocols}
+\newsingleentry{igp}{Interior Gateway Protocol}{Routingprotokolle, die grundsätzlich für den Einsatz innerhalb geschlossener Netze, sogenannte Autonome Systeme, gedacht sind}{Interior Gateway Protocols}
+\newsingleentry{egp}{Exterior Gateway Protocol}{Routingprotokolle, die grundsätzlich für Verbindung geschlossener Netze, sogenannte Autonome Systeme, gedacht sind}{Exterior Gateway Protocols}
+\newsingleentry{iot}{Internet of Things}{Bezeichnet die Vision einer globalen Infrastruktur der Informationsgesellschaften, die es ermöglicht physische und virtuelle Gegenstände miteinander zu vernetzen und sie durch Informations- und Kommunikationstechniken zusammenarbeiten zu lassen}{Internets of Things}
+\newsingleentry{smarthome}{SmartHome}{Dient als Oberbegriff für technische Verfahren und Systeme in Wohnräumen und -häusern in deren Mittelpunkt eine Erhöhung von Wohn- und Lebensqualität, Sicherheit und effizienter Energienutzung auf Basis vernetzter und fernsteuerbarer Geräte und Installationen sowie automatisierbarer Abläufe steht}{SmartHomes}
+\newsingleentry{route}{Route}{Der gesamte Weg, den ein Paket durch ein Netzwerk wählt}{Routen}
+\newsingleentry{router}{Router}{Netzwerkteilnehmer, der Pakete für andere Teilnehmer weiterleitet}{Router}
+\newsingleentry{smartphone}{Smartphone}{Ein Smartphone ist ein Mobiltelefon (umgangssprachlich Handy), das erheblich umfangreichere Computer-Funktionalitäten und -konnektivität als ein herkömmliches Mobiltelefon zur Verfügung stellt}{Smartphones}
+\newsingleentry{gpl}{GPL}{Die GNU General Public License (kurz GNU GPL oder GPL) ist die am weitesten verbreitete Softwarelizenz, die einem gewährt die Software auszuführen, zu studieren, zu ändern und zu verbreiten (kopieren)}{GPL}
+\newsingleentry{met}{Metrik}{Im Netzwerkbereich definiert die Metrik ein numerisches Maß für die Güte einer Verbindung bei Verwendung einer bestimmten Route}{Metriken}
+\newsingleentry{wlahm}{Ad-Hoc-Modus}{Ein Modus für ein Funknetzwerk, in dem die Teilnehmer direkt miteinander kommunizieren}{Ad-Hoc-Modi}
+\newsingleentry{wlism}{Infrastruktur-Modus}{Ein Modus für ein Funknetzwerk, in dem die Teilnehmer über einen zentralen Accesspoint kommunizieren}{Infrastruktur-Modi}
+\newsingleentry{maclayer}{Sicherungsschicht}{Die Sicherungsschicht soll die korrekte Übertragung von Frames auf Schicht 2 des OSI Modells zwischen zwei miteinander verbundenen Systemen bewerkstelligen}{Sicherungsschichten}
+\newsingleentry{nwlayer}{Vermittlungsschicht}{Die Vermittlungsschicht sorgt bei leitungsorientierten Diensten für das Schalten von Verbindungen und bei paketorientierten Diensten für die Weitervermittlung von Datenpaketen}{Vermittlungsschichten}
+\newsingleentry{olsrmessage}{OLSR Message}{Die Kontrollinformationen bei OLSR, die als Nutzlast der OLSR Pakete verschickt werden}{OLSR Messages}
+
+%%%%%% BIS HIER HIN GEPRUEFT %%%%%%
+
+%%%%%% mit Akronym %%%%%%
+\newdualentry{iana}{IANA}{Internet Assigned Numbers Authority}{Eine Abteilung der ICANN und für die Zuordnung von Nummern und Namen im Internet, insbesondere von IP-Adressen, zuständig. Sie ist eine der ältesten Institutionen im Internet}{Internet Assigned Numbers Authorities}{IANAs}
+\newdualentry{aodv}{AODV}{Ad-hoc On-demand Distance Vector}{Ein Verfahren zum Weiterleiten von Daten durch ein mobiles Ad-hoc-Netz. Das Protokoll gehört zu den topologiebasierten reaktiven Routingverfahren. Routen zu bestimmten Zielen werden erst bei Bedarf ermittelt. Das Protokoll wird in RFC 3561 beschrieben}{Ad-hoc On-demand Distance Vector}{AODV}
+\newdualentry{accesspoint}{AP}{AccessPoint}{Gemeinsamer Zugangspunkt für die Teilnehmer innerhalb eines BSS im Infrastruktur-Modus}{AccessPoints}{APs}
+\newdualentry{ip}{IP}{Internet-Protocol}{Das Internet Protocol ist ein in Computernetzen weit verbreitetes Netzwerkprotokoll und stellt die Grundlage des Internets dar. Es ist die Implementierung der Internetschicht des TCP/IP-Modells \bzw der Vermittlungsschicht des OSI-Modells. IP ist ein verbindungsloses Protokoll, das bedeutet bei den Kommunikationspartnern wird kein Zustand etabliert}{Internet-Protocols}{IPs}
+\newdualentry{tcpip}{TCP/IP}{TCP/IP Protocol-Stack}{Eine Sammlung diverser Protokolle wie UDP, TCP uvm. für den Einsatz mit dem Internet-Protocol}{TCP/IP Protocol-Stacks}{TCP/IPs}
+\newdualentry{ipv4}{IPv4}{Internet-Protocol V4}{Die derzeit dominante Version des Internet Protocols mit TCP in der Version 4. Es kommen Netzwerkadressen mit einer Länge von 4 mal 8 Bit zum Einsatz}{Internet-Protocols V4}{IPv4s}
+\newdualentry{ipv6}{IPv6}{Internet-Protocol V6}{Eine neue Version des Internet Protocols, die derzeit aufgrund der Knappheit verfügbarer IPv4-Adressen eingeführt wird. Es kommen Adressen mit einer Länge von 8 mal 16 Bit zum Einsatz}{Internet-Protocols V6}{IPv6s}
+\newdualentry{mesh}{MESH}{Vermaschtes Netz}{Ein Netz, das zwei oder mehr Endgeräte zu einem vermaschten Netz verbindet}{Vermaschte Netze}{MESHs}
+\newdualentry{manet}{MANET}{mobiles Ad-Hoc Netzwerk}{MESHs, die sich selbständig aufbauen und konfigurieren, nennt man auch mobile Ad-hoc-Netze oder MANET}{mobile Ad-Hoc Netzwerke}{MANETs}
+\newdualentry{olsr}{OLSR}{Optimized Link State Routing}{Ein Routingprotokoll für mobile Ad-hoc-Netze, das eine an die Anforderungen eines mobilen drahtlosen LANs angepasste Version des Link State Routing darstellt. Das Protokoll wird in dem RFC 3626 beschrieben}{Optimized Link State Routing}{OLSR}
+\newdualentry{rfc}{RFC}{Request for Comments}{Request for Comments - eine Reihe technischer und organisatorischer Dokumente des RFC-Editors zum Internet (ursprünglich Arpanet), die am 7. April 1969 begonnen wurden}{Requests for Comments}{RFCs}
+\newdualentry{rv}{RV}{Routingverfahren}{Ein Verfahren nach dem bestimmt wird, wie eine Nachricht zum Ziel geleitet wird und wie dieser Weg ermittelt wird}{Routingverfahren}{RVs}
+\newdualentry{wlan}{WLAN}{Wireless LAN}{Drahtloses Netzwerk auf Basis von IEEE 802.11}{Wireless LANs}{WLANs}
+\newdualentry{wmn}{WMN}{Wireless Mesh Network}{Vermaschtes, drahtloses Netzwerk auf Basis von WLAN}{Wireless Mesh Networks}{WMNs}
+\newdualentry{bss}{BSS}{Basic Service Set}{Fundamentale Einheit eines Funknetzes bei WLAN. Es definiert eine Gruppe von Teilnehmern, die eine gemeinsame Koordinationsfunktion nutzen}{Basic Service Sets}{BSSs}
+\newdualentry{ibss}{IBSS}{Independent Basic Service Set}{Ein BSS, dass von den Teilnehmern innerhalb eines WLAN Ad-Hoc Netzes aufgespannt wird}{Independent Basic Service Sets}{IBSSs}
+\newdualentry{ess}{ESS}{Extended Service Set}{Ein Verbund mehrerer BSS über ein DS im WLAN Infrastruktur-Modus. Ein ESS kann über ein Portal an andere Netzwerke angeschlossen sein}{Extendes Service Sets}{ESSs}
+\newdualentry{ds}{DS}{Distribution System}{Ein implementationsunabhängiges System, dass mehrere BSS im WLAN Infrastruktur-Modus miteinander verbindet}{Distribuntion Systems}{DSs}
+\newdualentry{wds}{WDS}{Wireless Distribution System}{Ein Distribution System, das die Teilnehmer über IEEE 802.11 verbindet}{Wireless Distribuntion Systems}{WDSs}
+\newdualentry{wsan}{WSAN}{Wireless Sensor and Actor Network}{Ein Netzwerk aus intelligenten Sensoren und Aktoren, die geografisch verteilt und über ein WLAN miteinander verbunden sind}{Wireless Sensor and Actor Networks}{WSANs}
+\newdualentry{sta}{STA}{Station}{Teilnehmer in einem IEEE 802.11 Netzwerk (Clients), die nicht als AccessPoint arbeiten}{Stations}{STAs}
+\newdualentry{hop}{HOP}{Netzwerkabschnitt}{Ein Hop ist ein Netzwerkabschnitt und wird als Zähleinheit benutzt. Die Anzahl an Hops sagt, über wie viele Netzwerk-Abschnitte die Datenpakete übertragen wird. Solche Netzwerk-Abschnitte können durch Router oder andere Knotenpunkte definiert sein}{Netzwerkabschnitte}{HOPs}
+\newdualentry{mp}{MP}{Mesh Point}{Bei IEEE 802.11s ein Teilnehmer, der die Steuerung, Verwaltung und den Betrieb des MESH ermöglicht}{Mesh Points}{MPs}
+\newdualentry{map}{MAP}{Mesh Access Point}{Bei IEEE 802.11s ein Teilnehmer, der die Voraussetzungen eines Mesh Points erfüllt und zusätzlich als Access Point für Stations dient}{Mesh Access Points}{MAPs}
+\newdualentry{hwmp}{HWMP}{Hybrid Wireless Mesh Protocol}{Bei IEEE 802.11s eingesetzes Routingverfahren}{Hybrid Wireless Mesh Protocols}{HWMPs}
+\newdualentry{mpp}{MPP}{Mesh Portal}{Bei IEEE 802.11s ein Teilnehmer, der die Voraussetzungen eines Mesh Points erfüllt und eine Anbindung an externe Netze, z.B. dem Internet bereitstellt, sofern diese nicht über IEEE 802.11 angebunden sind}{Mesh Portals}{MPPs}
+\newdualentry{udp}{UDP}{User Datagram Protocol}{Ein minimales verbindungsloses Netzwerkprotokoll, das zur Transportschicht der Internetprotokollfamilie gehört}{User Datagram Protocols}{UDPs}
+\newdualentry{tcp}{TCP}{Transmission Control Protocol}{Eine Familie von Netzwerkprotokollen. Sie wird wegen ihrer großen Bedeutung für das Internet auch als Internetprotokollfamilie bezeichnet. Die Identifizierung der am Netzwerk teilnehmenden Rechner geschieht über IP-Adressen}{Transmission Control Protocols}{TCPs}
+\newdualentry{icmp}{ICMP}{Internet Control Message Protocol}{Ein Protokoll zur Übertragung von Statusinformationen und Fehlermeldungen zwischen IP-Netzknoten}{Internet Control Message Protocols}{ICMPs}
+\newdualentry{uca}{UCA}{Unicast Address}{Eine IP-Adresse, die einen Teilnehmer bezeichnet}{Unicast Addresses}{UCAs}
+\newdualentry{nwa}{NWA}{Network Address}{Eine IP-Adresse, die ein Subnetz bezeichnet}{Network Addresses}{NWAs}
+\newdualentry{dsdv}{DSDV}{Destination-Sequenced Distance Vector}{Ein einfaches, auf dem Distanzvektoralgorithmus basierendes Routingverfahren}{Destination-Sequenced Distance Vector}{DSDVs}
+\newdualentry{bca}{BCA}{Broadcast Address}{Eine IP-Adresse, die den Broadcast innerhalb eines Subnetzes bezeichnet}{Broadcast Addresses}{BCAs}
+\newdualentry{rreq}{RREQ}{Route Request}{Eine Routenanforderung eines AODV Routers}{Route Requests}{RREQs}
+\newdualentry{rrep}{RREP}{Route Reply}{Eine Antwort auf die Routenanforderung eines AODV Routers}{Route Replies}{RREPs}
+\newdualentry{grrep}{GRREP}{Gratuitous Route Reply}{Eine Antwort auf die Gratuitous Routenanforderung eines AODV Routers}{Gratuitous Route Replies}{GRREPs}
+\newdualentry{rerr}{RERR}{Route Error}{Die Meldung über die Nichtverfügbarkeit einer Route durch einen AODV Router}{Route Errors}{RERRs}
+\newdualentry{rrepack}{RREP-ACK}{Route Reply Acknowledgement}{Die Bestätigung des Empfangs eines RREP durch einen AODV Router}{Route Reply Acknowledgements}{RREP-ACKs}
+\newdualentry{mpr}{MPR}{Multipoint Relay}{Ein Host in einem OLSR Netz, der die Verteilung von Routinginformationen übernimmt. Jeder Teilnehmer bestimmt die Liste seiner MPRs selbst}{Multipoint Relays}{MPRs}
+\newdualentry{midmessage}{MID message}{Multiple interface declaration message}{Informationen über die Adressen verschiedener Schnittstellen eines OLSR Hosts}{Multiple interface declaration messages}{MID messages}
+\newdualentry{hellomessage}{HELLO message}{Hello message}{Informationen über die Interface Adressen eines OLSR Hosts}{Hello messages}{HELLO messages}
+\newdualentry{tcmessage}{TC message}{Topology control message}{Informationen über die erreichbaren Nachbarn eines OLSR Hosts}{Topology control messages}{TC messages}
+\newdualentry{1hnb}{1HNB}{One hop neighbour}{Ein direkter Nachbar eines OLSR Hosts}{One hop neighbours}{1HNBs}
+\newdualentry{2hnb}{2HNB}{Two hop neighbour}{Ein direkter Nachbar des Nachbarn eines OLSR Hosts}{Two hop neighbours}{2HNBs}
+\newdualentry{s2hnb}{S2HNB}{Strict two hop neighbour}{Ein direkter Nachbar des Nachbarn eines OLSR Hosts, ohne den Host selbst}{Strict two hop neighbours}{S2HNBs}
+\newdualentry{dfw}{DFW}{default forwarding algorithm}{Der Standard-Algorithmus für die Weiterleitung von Nachrichten bei OLSR}{default forwarding algorithms}{DFWs}
+
+%%%%%% BIS HIER HIN GEPRUEFT %%%%%%
+
+

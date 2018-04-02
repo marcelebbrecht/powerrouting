@@ -1,0 +1,161 @@
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{KAASYS13}
+
+\bibitem[ALF04]{Avudainayagam03}
+Arun Avudainayagam, Wenjing Lou, and Yuguang Fang.
+\newblock Dear: A device and energy aware routing protocol for heterogeneous ad
+  hoc networks.
+\newblock {\em Journal of Parallel and Distributed Computing}, 63(2):228--236,
+  Februar 2004.
+
+\bibitem[BCGS04]{Basagni04}
+Stefano Basagni, Marco Conti, Silvia Giordano, and Ivan Stojmenovic.
+\newblock {\em IEEE 802.11 AD HOC Networks: Protocols, Performance, and Open
+  Issues}, page 416ff.
+\newblock WileyIEEE Press, Piscataway, NJ, USA, 2004.
+
+\bibitem[BHSW07]{Baumann07}
+Rainer Baumann, Simon Heimlicher, Mario Strasser, and Andreas Weibel.
+\newblock A survey on routing metrics.
+\newblock TIK Report 216, Computer Engineering and Networks Laboratory,
+  ETH-Zentrum, Zürich, Schweiz, Februar 2007.
+
+\bibitem[Bra89]{RFC1122}
+Robert Braden.
+\newblock Requirements for internet hosts - communication layers.
+\newblock STD~3, RFC Editor, Oktober 1989.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1122.txt}.
+
+\bibitem[BSC13]{Banerji13}
+Sourangsu Banerji and Rahul Singha~Chowdhury.
+\newblock On ieee 802.11: Wireless lan technology.
+\newblock {\em International Journal of Mobile Network Communications and
+  Telematics}, 3(4):45--64, August 2013.
+
+\bibitem[BTA{\etalchar{+}}11]{Azzedine11}
+Azzedine Boukerchea, Begumhan Turgut, Nevin Aydin, Mohammad Ahmad, Ladislau
+  Bölöni, and Damla Turgut.
+\newblock Routing protocols in ad hoc networks: A survey.
+\newblock {\em Computer Networks}, 55(13):3032--3080, September 2011.
+
+\bibitem[BTL13]{Booranawong13}
+Apidet Booranawong, Wiklom Teerapabkajorndet, and Chusak Limsakul.
+\newblock Energy consumption and control response evaluations of aodv routing
+  in wsans for building-temperature control.
+\newblock {\em Sensors — Open Access Journal}, 13(7):8303--8330, Juli 2013.
+
+\bibitem[CFML08]{RFC5340}
+R.~Coltun, D.~Ferguson, J.~Moy, and A.~Lindem.
+\newblock Ospf for ipv6.
+\newblock RFC 5340, RFC Editor, Juli 2008.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc5340.txt}.
+
+\bibitem[CH10]{Caroll10}
+Aaron Carroll and Gernot Heiser.
+\newblock An analysis of power consumption in a smartphone.
+\newblock In {\em USENIX '10 Proceedings of the 2010 USENIX conference on
+  USENIX annual technical conference}, page 21ff., New York, NY, USA, Juni
+  2010. ACM.
+
+\bibitem[CJ03]{RFC3626}
+T.~Clausen and P.~Jacquet.
+\newblock Optimized link state routing protocol (olsr).
+\newblock RFC 3626, RFC Editor, Oktober 2003.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc3626.txt}.
+
+\bibitem[CM99]{RFC2501}
+S.~Corson and J.~Macker.
+\newblock Mobile ad hoc networking (manet): Routing protocol performance issues
+  and evaluation considerations.
+\newblock RFC 2501, RFC Editor, Januar 1999.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc2501.txt}.
+
+\bibitem[CWKS97]{Crow97}
+B.P. Crow, I.~Widjaja, J.G. Kim, and P.T. Sakai.
+\newblock Ieee 802.11 wireless local area networks.
+\newblock {\em IEEE Communications Magazine}, 35(9):116--126, September 1997.
+
+\bibitem[Hed88]{RFC1058}
+C.~Hedrick.
+\newblock Routing information protocol.
+\newblock RFC 1058, RFC Editor, Juni 1988.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1058.txt}.
+
+\bibitem[HQG{\etalchar{+}}12]{Huang12}
+Junxian Huang, Feng Qian, Alexandre Gerber, Z.~Morley~Mao, Subhabrata Sen, and
+  Oliver Spatscheck.
+\newblock A close examination of performance and power characteristics of 4g
+  lte networks.
+\newblock In {\em MobiSys '12 Proceedings of the 10th international conference
+  on Mobile systems, applications, and services}, pages 225--238, New York, NY,
+  USA, Juni 2012. ACM.
+
+\bibitem[JNA08]{Johnson08}
+David Johnson, Ntsibane Ntlatlapa, and Corinna Aichele.
+\newblock A simple pragmatic approach to mesh routing using batman.
+\newblock In {\em 2nd IFIP International Symposium on Wireless Communications
+  and Information Technology in Developing Countries}, Pretoria, Südafrika,
+  Oktober 2008. WCITD.
+
+\bibitem[KAASYS13]{Kumar13}
+Nitin Kumar, Parvez Ahmed~Alvi, Ajay Singh~Yadav, and Anupam Swami.
+\newblock A study of routing protocols for ad-hoc network.
+\newblock {\em International Journal of Application or Innovation in
+  Engineering and Management}, 2(6):154--159, Juni 2013.
+
+\bibitem[LZL11]{Liu09}
+Erwu Liu, Qinqing Zhang, and K.K. Leung.
+\newblock Clique-based utility maximization in wireless mesh networks.
+\newblock {\em IEEE Transactions on Wireless Communications}, 10(3):948--957,
+  März 2011.
+
+\bibitem[PBRD00]{AODV6}
+C.~Perkins, E.~Belding-Royer, and S.~Das.
+\newblock Aodv for ipv6.
+\newblock Draft draft-perkins-aodv6-01, IETF, November 2000.
+\newblock \url{https://tools.ietf.org/id/draft-perkins-aodv6-01.txt}.
+
+\bibitem[PBRD03]{RFC3561}
+C.~Perkins, E.~Belding-Royer, and S.~Das.
+\newblock Ad hoc on-demand distance vector (aodv) routing.
+\newblock RFC 3561, RFC Editor, Juli 2003.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc3561.txt}.
+
+\bibitem[Pos81]{RFC791}
+Jon Postel.
+\newblock Internet protocol.
+\newblock STD~5, RFC Editor, September 1981.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc791.txt}.
+
+\bibitem[RL95]{RFC1771}
+Yakov Rekhter and Tony Li.
+\newblock A border gateway protocol 4 (bgp-4).
+\newblock RFC 1771, RFC Editor, März 1995.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1771.txt}.
+
+\bibitem[SK91]{RFC1180}
+Theodore~John Socolofsky and Claudia~Jeanne Kale.
+\newblock Tcp/ip tutorial.
+\newblock RFC 1180, RFC Editor, Januar 1991.
+\newblock \url{http://www.rfc-editor.org/rfc/rfc1180.txt}.
+
+\bibitem[SWR98]{Singh88}
+Suresh Singh, Mike Woo, and C.S. Raghavendra.
+\newblock Power-aware routing in mobile ad hoc networks.
+\newblock In {\em MobiCom '98 Proceedings of the 4th annual ACM/IEEE
+  international conference on Mobile computing and networking}, pages 181--190,
+  New York, NY, USA, Oktober 1998. ACM.
+
+\bibitem[TET16]{Tawalbeh16}
+Mohammad Tawalbeh, Alan Eardley, and Loai Tawalbeh.
+\newblock Studying the energy consumption in mobile devices.
+\newblock {\em Procedia Computer Science}, 94:183--189, August 2016.
+
+\bibitem[Zim80]{Zimmermann80}
+Hubert Zimmermann.
+\newblock Osi reference model - the iso model of architecture for open systems
+  interconnection.
+\newblock {\em IEEE Transactions on Communications}, 28(4):425--432, April
+  1980.
+
+\end{thebibliography}

@@ -1,0 +1,439 @@
+% grundlagen.tex
+% Kapitel 2: Grundlagen
+
+\chapter{Grundlagen}
+\label{chapter:grundlagen}
+
+In diesem Kapitel werden die technologischen Grundlagen beschrieben. Die Darstellungen und Erläuterungen beschränken sich auf die für das Routing in \acrlongpl{wmn} benötigten Teile. 
+
+\section{Wireless Mesh Networks}
+\label{chapter:grundlagen:wmn}
+
+Im Oxford Dictionary\footnote{https://en.oxforddictionaries.com/definition/mesh} wird ein \textit{Mesh} folgendermaßen beschrieben:
+
+\begin{quote}
+\glqq A computer network in which each computer or processor is connected to a number of others, especially so as to form a multidimensional lattice.\grqq
+\end{quote}
+
+Es handelt sich um ein multidimensionales Gitter aus Computern, die miteinander kommunizieren. Werden diesen Verbindungen mittels \textit{Ad-Hoc-Modus} realisiert und existieren eigene Mechanismen für eine dezentrale Verwaltung, nennt man es \textit{\gls{manet}}. Die grundlegenden Eigenschaften solcher Netze sind in RFC 2501 \cite{RFC2501} ausführlich dokumentiert. Die Idee hinter \glspl{manet} lässt sich auf die Forschung im Bereich \textit{Mobile Packet Radio Networking} der 70er und 80er Jahre zurückführen. Die Autoren der RFC sehen sie als Alternative oder Ergänzung für zellenbasierte Netze \cite{RFC2501}. Die Anwendungsmöglichkeiten sind sehr vielfältig und die Autoren der RFC gehen weiter auf ein paar wichtige Eigenschaften ein \cite{RFC2501}:
+
+\begin{enumerate}
+\item \textbf{Dynamische Topologien}: Die Teilnehmer bewegen sich, die Topologie kann sich kurzfristig ändern und Verbindungen müssen nicht zwingend bidirektional sein. Ein geeignetes \gls{rv} muss also mit einer hohen Rate an Veränderungen zurechtkommen.
+\item \textbf{Bandbreitenbeschränkung}: Die Bandbreite ist bei drahtloser Kommunikation spürbar eingeschränkt, es muss effizient damit umgegangen werden.
+\item \textbf{Energiebeschränkung}: Es steht nur eine begrenzte Menge an Energie zur Verfügung, der Verbrauch muss optimiert werden. Zudem stellt sich die Frage nach der \textit{Fairness der Verteilung der Arbeitslast} bei mehreren Teilnehmern, ein Aspekt den diese Arbeit näher beleuchten wird.
+\item \textbf{Sicherheitsbeschränkung}: Funknetze sind vielfältigen Sicherheitsproblemen ausgesetzt. Im \gls{manet} stellt dies eine weitere Herausforderung dar.
+\end{enumerate}
+
+Ferner nennen die Autoren folgende qualitativen Anforderungen, wie \textbf{verteilte Funktion}, \textbf{Schleifenfreiheit}, \textbf{anforderungsbasiertes} oder \textbf{Proaktives Routing}, \textbf{Sicherheit}, sowie die Unterstützung eines \textbf{Schlafmodus}
+und \textbf{unidirektionaler Verbindungen}. Leider gibt es derzeit kein  natives Verfahren für \textit{IEEE 802.11} auf der \textit{Sicherungsschicht}, somit muss die Funktion des \textit{Routings} in der \textit{Netzwerkschicht} übernommen werden.
+
+\section{Schichtenmodelle}
+\label{chapter:network:osi}
+
+Die Grundlage der Kommunikation in modernen Netzen bildet das \textit{OSI Schichtenmodell} von Hubert Zimmermann \cite{Zimmermann80} wie es, nebst der Implementation des \gls{tcpip}, in Abbildung \ref{chapter:grundlagen:osi} zu sehen ist. Die eigentliche Übertragung der Daten zwischen den Teilnehmern findet ausschließlich auf der \textit{Bitübertragungsschicht} in Form von \textit{Frames} statt. Darüber liegt die Sicherungsschicht, welche für den Zugriff auf das Medium verantwortlich ist. Beide OSI Schichten sind im TCP/IP Modell zur \textit{Netzwerkzugriffsschicht} zusammengefasst und werden in der Regel durch eine Technologie, wie in unserem Fall durch IEEE 802.11 zur Verfügung gestellt. Die \textit{Vermittlungsschicht} im OSI-Modell entspricht der \textit{Internetschicht} bei TCP/IP. Sie übernimmt die Adressierung der \textit{IP-Pakete} und Steuerfunktionen. Das \gls{ip} ermöglicht durch seine Adressierung die \textit{Segmentierung} von Netzen und eine Übermittlung von Paketen über die Grenzen von \textit{Subnetzen} hinaus. Die \textit{Transportschicht} wird beim Einsatz von \gls{ip} durch \textit{\gls{tcpip}} realisiert. Es handelt sich hierbei um eine Sammlung verschiedenster Protokolle, die beiden meist eingesetzten sind das \textit{\gls{tcp}} und das \textit{\gls{udp}}. Die Aufgabe dieser Schicht besteht darin, die \textit{Datagramme} den korrekten \textit{Prozessen} auf den Hosts zuzuweisen, was bei \gls{tcp} und \gls{udp} über \textit{Ports} geschieht. Den Abschluss im TCP/IP Modell bildet die \textit{Anwendungsschicht}, welche die verbleibenden Schichten aus dem OSI-Modell vereint. Hier werden dann Protokolle wie \zB HTTP und FTP, aber auch \gls{olsr} und \gls{aodv} realisiert.\newline
+
+
+\begin{figure}
+  \centering
+    \begin{bytefield}[rightcurly=., rightcurlyspace=0pt,leftcurly=., leftcurlyspace=0pt,bitwidth=0.4em]{24}
+      \begin{leftwordgroup}{}
+        \bitbox{24}{\small \textbf{OSI}}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 7}
+        \bitbox{24}{\small Application Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 6}
+        \bitbox{24}{\small Presentation Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 5}
+        \bitbox{24}{\small Session Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 4}
+        \bitbox{24}{\small Transport Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 3}
+        \bitbox{24}{\small Network Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 2}
+        \bitbox{24}{\small Data Link Layer}
+      \end{leftwordgroup} \\
+      \begin{leftwordgroup}{\small Layer 1}
+        \bitbox{24}{\small Physical Layer}
+      \end{leftwordgroup} \\
+    \end{bytefield}
+    \begin{bytefield}[rightcurly=., rightcurlyspace=0pt,leftcurly=., leftcurlyspace=0pt,bitwidth=0.4em]{24}
+      \begin{rightwordgroup}{}
+        \bitbox{24}{\small \textbf{TCP/IP}}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}{\small Layer 4}
+        \wordbox{3}{\small Application Layer}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}{\small Layer 3}
+        \bitbox{24}{\small Transport Layer}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}{\small Layer 2}
+        \bitbox{24}{\small Internet Layer}
+      \end{rightwordgroup} \\
+      \begin{rightwordgroup}{\small Layer 1}
+        \wordbox{2}{\small Network Access Layer}
+      \end{rightwordgroup} \\
+    \end{bytefield}
+  \caption{OSI \cite{Zimmermann80} \& TCP/IP Modell \cite{RFC1180}}
+  \label{chapter:grundlagen:osi}
+\end{figure}
+Die Übertragung findet zwischen den Teilnehmern ausschließlich auf der untersten Schicht statt. Jede der \og Schichten verfügt über eigene \textit{Header}. Möchte eine Anwendung auf Teilnehmer Alice eine Nachricht an die Anwendung bei Teilnehmer Bob schicken, dann muss diese Nachricht alle Schichten beider Teilnehmern passieren. Hierbei fügt jede Schicht auf dem System von Alice bei Weiterreichung an eine tiefere eigene Header hinzu, die nach der Übertragung zu Bob beim Weiterreichen an eine höhere wieder entfernt werden. Ein schöner Vergleich ist eine Zwiebel: Die Daten der eigenen Anwendung bilden den Kern, die Header der einzelnen Schichten die Schalen. Die Zwiebel ist das, was dann übertragen, der Kern das, was von den Anwendungen genutzt wird. Die Schalen sind Abfall, auch \textit{Overhead} genannt.
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=0.40em]{80}
+%      \begin{rightwordgroup}{\tiny Transport}
+%        \bitbox{30}{} & \bitbox{10}{\tiny UDP Header\\(4)} & \bitbox{30}{\tiny UDP Payload\\(1480)} & \bitbox{10}{}
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\tiny Internet}
+%        \bitbox{20}{} & \bitbox{10}{\tiny IP Header\\(20)} & \bitbox{40}{\tiny IP Payload\\(1480)} & \bitbox{10}{}
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\tiny Network-Access}
+%        \bitbox{10}{} & \bitbox{10}{\tiny MAC Header\\(14-18)} & \bitbox{50}{\tiny MAC Payload\\(1500)} & \bitbox{5}{\tiny FCS (4)} & \bitbox{5}{} \\
+%        \bitbox{5}{\tiny PA\\(7)} & \bitbox{5}{\tiny SoF\\(1)} & \bitbox{65}%{\tiny PHY Payload\\(1518-1522)} & \bitbox{5}{\tiny Gap\\(12)}
+%      \end{rightwordgroup} \\
+%    \end{bytefield}
+%  \caption{UDP Datagramm in einem Ethernet-Frame (in Bytes)}
+%\end{figure}
+
+\section{Wireless-LAN}
+\label{chapter:grundlagen:wlan}
+
+\gls{wlan} nach IEEE802.11 implementiert die \textit{Netzwerkzugangsschicht}. Nach der Einführung des Standards wurde dieser sukkzessive um zahlreiche Subtypen erweitert, um den steigenden Anforderungen gerecht zu werden. Eine Übersicht bis 2013 findet sich im Artikel \glqq On IEEE 802.11: Wireless Lan Technology\grqq{} \cite{Banerji13}. Man kann die Topologien in den \textbf{\gls{wlism}} und den \textbf{\gls{wlahm}} unterteilen \cite{Crow97}. Die Einheiten innerhalb eines Funktnetzes werden als \textit{\glspl{bss}} bezeichnet. Beim \textit{\gls{wlism}} werden mehrere Stationen zusammen mit einem \gls{accesspoint} zu einem \gls{bss} zusammengefasst. Sind mehrere \glspl{accesspoint} über ein \gls{ds} miteinander verbunden, bilden diese ein \textit{\gls{ess}}. Hier werden dann die Frames auf der \textit{\gls{maclayer}} zwischen den \glspl{bss} oder aber auch über ein \textit{Portal} mit anderen \textit{Netzwerksegmenten} ausgetauscht. Eine wichtige Eigenschaft des \gls{ds} ist die Unabhängigkeit der Implementierung, so können zur Vermittlung zwischen den \glspl{bss} andere Technologien, wie \textit{Ethernet}, \textit{Token Ring} oder weitere drahtlose Netze eingesetzt werden \cite{Crow97}.\newline
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}[ 
+    >=stealth',node distance=2cm, 
+    node/.style={circle,minimum size=1.5em,draw}] 
+    \node[label=center:\tiny{STA},node] (N1) [] {}; 
+    \node[label=center:\tiny{STA},node] (N2) [right=10em of N1] {}; 
+    \node[label=center:\tiny{STA},node] (N3) [below=5em of N1] {}; 
+    \node[label=center:\tiny{STA},node] (N4) [below=5em of N2] {}; 
+
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N1) -- (N2);
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N1) -- (N3);
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N1) -- (N4);
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N2) -- (N3);
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N2) -- (N4);
+    \draw[>=latex,auto=right,style={<->},thick,dashed] (N3) -- (N4);
+
+    \coordinate (N1C) at ($(N1.center) + (-3.75em,+1.75em)$);
+    \coordinate (N4C) at ($(N4.center) + (+3.75em,-1.75em)$);
+
+    \node [draw=red, fit= (N1C) (N4C),style=dashed] (B1) {};
+    \node [text=red, anchor=south] at ($(B1.south west) - (-1.25em,0)$) {\tiny{IBSS}};
+  \end{tikzpicture} 
+  \caption{Ein IBSS im Ad-Hoc-Modus}
+\end{figure}
+
+\subsection{Ad-Hoc-Modus}
+\label{chapter:grundlagen:wlan:adhoc}
+
+Im \gls{wlahm} existiert nur ein einziges \gls{bss}, das als \textit{\gls{ibss}} bezeichnet wird. Die Teilnehmer kommunizieren nur innerhalb des \gls{ibss}, eine Weiterleitung von Nachrichten der \gls{maclayer} an Teilnehmer außerhalb des \gls{ibss} findet nicht statt \cite{Crow97}\cite{Basagni04}. Um zwischen verschiedenen \glspl{ibss} 
+vermitteln zu können, wird ein \gls{rv} benötigt. Diese Arbeit beschäftigt sich mit Verfahren, die auf der \gls{nwlayer} basieren und \gls{ip} einsetzen. Dennoch gibt es Ansätze dies auch auf der \gls{maclayer} zu realisieren, wie \zB \textit{B.A.T.M.A.N} \cite{Johnson08} oder der experimentelle Standard \textit{IEEE 802.11s}.
+
+%\begin{figure}
+%  \centering
+%  \begin{tikzpicture}[ 
+%    >=stealth',node distance=2cm, 
+%    node/.style={circle,minimum size=2em,draw}] 
+%    \node[label=center:\tiny{STA},node] (N1) [] {}; 
+%    \node[label=center:\tiny{STA},node] (N2) [right=2em of N1] {}; 
+%    \node[label=center:\tiny{STA},node] (N3) [right=2em of N2] {}; 
+%    \node[label=center:\tiny{AP},node] (N4) [below=2em of N2] {}; 
+%
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N1) -- (N4);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N2) -- (N4);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N3) -- (N4);
+%
+%    \coordinate (N1C) at ($(N1.center) + (-1.75em,+1.75em)$);
+%    \coordinate (N3C) at ($(N3.center) + (+1.75em,+1.75em)$);
+%    \coordinate (N4C) at ($(N4.center) + (0,-1.25em)$);
+%
+%    \node [draw=red, fit= (N1C) (N3C) (N4C),style=dashed] (B1) {};
+%    \node [text=red, anchor=south] at ($(B1.south west) - (-1em,0)$) {\tiny{BSS}};
+%
+%    \node[label=center:\tiny{AP},node] (N8) [below=4em of N4] {}; 
+%    \node[label=center:\tiny{STA},node] (N6) [below=2em of N8] {}; 
+%    \node[label=center:\tiny{STA},node] (N5) [left=2em of N6] {}; 
+%    \node[label=center:\tiny{STA},node] (N7) [right=2em of N6] {}; 
+%
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N5) -- (N8);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N6) -- (N8);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N7) -- (N8);
+%
+%    \coordinate (N5C) at ($(N5.center) + (-1.75em,-1.75em)$);
+%    \coordinate (N7C) at ($(N7.center) + (+1.75em,-1.75em)$);
+%    \coordinate (N8C) at ($(N8.center) + (0,+1.25em)$);
+%
+%    \node [draw=red, fit= (N5C) (N7C) (N8C),style=dashed] (B2) {};
+%    \node [text=red, anchor=south] at ($(B2.south west) - (-1em,0)$) {\tiny{BSS}};
+%
+%    \node[label=below:\tiny{Portal},node] (P1) [below right= 1.7em and 6.75em of N4] {}; 
+%    \node[label=below:\tiny{Outside},node] (O1) [right= 2.5em of P1] {}; 
+%
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N4) -- (N8);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N4) -- (P1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (N8) -- (P1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (O1) -- (P1);
+%
+%    \coordinate (N4NW) at ($(N4.center) + (-1.75em,+1.25em)$);
+%    \coordinate (N8SW) at ($(N8.center) + (-1.75em,-1.25em)$);
+%    \coordinate (P1E) at ($(P1.center) + (+1.25em,0)$);
+%
+%    \node [draw=blue, fit= (N4NW) (N8SW) (P1E),style=dashed] (B3) {};
+%    \node [text=blue, anchor=south] at ($(B3.south east) - (+1em,0)$) {\tiny{DS}};
+%
+%
+%    \coordinate (N1C2) at ($(N1.center) + (-2.75em,+2.75em)$);
+%    \coordinate (N3C2) at ($(N3.center) + (+2.75em,+2.75em)$);
+%    \coordinate (N5C2) at ($(N5.center) + (-2.75em,-3.25em)$);
+%    \coordinate (N7C2) at ($(N7.center) + (+2.75em,-3.25em)$);
+%    \node [draw=green, fit= (N1C2) (N3C2) (N5C2) (N7C2),style=dashed] (B4) {};
+%    \node [text=green, anchor=south] at ($(B4.south east) - (+1em,0)$) {\tiny{ESS}};
+%
+%  \end{tikzpicture} 
+%  \caption{Ein ESS im Infrastruktur-Modus}
+%\end{figure}
+
+%\subsection{IEEE 802.11s}
+%\label{chapter:grundlagen:wlan:11s}
+%
+%Bei dem genannten Standard handelt es sich um ein \gls{mesh}, dass auf der \gls{maclayer} realisiert wird. Hierbei werden verfügbaren Teilnehmertypen, bei IEEE 802.11 in der Regel \glspl{sta} und \glspl{accesspoint}, erweitert:
+%\begin{itemize}
+%\item Jeder Teilnehmer, der die Steuerung, Verwaltung und den Betrieb des \gls{mesh} ermöglicht, somit das Routing mitorganisiert und Nachrichten von und für andere Teilnehmer weiterleitet, ist ein \textit{\gls{mp}}.
+%\item Wenn ein \gls{mp} darüber hinaus \glspl{sta} die Möglichkeit zur Verbindung bietet, dann spricht man von einem \textit{\gls{map}}. Diese ersetzen die Rolle von \glspl{accesspoint}.
+%\item Sofern ein \gls{mp} eine, nicht auf IEEE 802.11 basierende Verbindung zu externen Netzen, wie \zB dem Internet, für die anderen Teilnehmer des \gls{mesh} anbietet, spricht man von einem \textit{\gls{mpp}}.
+%\end{itemize}
+%Die Menge der \glspl{mp}, \glspl{map} und \glspl{mpp} bildet ein \textit{\gls{wds}}, innerhalb dessen die Frames transportiert werden. Das hierbei eingesetze \acrlong{rv} \textit{\gls{hwmp}} basiert zum Teil auf \gls{aodv} um die Mobilität der Teilnehmer handhaben zu können \cite{Camp08}\cite{Banerji13}.
+
+%\begin{figure}
+%  \centering
+%  \begin{tikzpicture}[ 
+%    >=stealth',node distance=2cm, 
+%    node/.style={circle,minimum size=2.0em,draw}] 
+%
+%    \node[label=above:\tiny{Outside},node] (W1) [] {}; 
+%    \node[label=center:\tiny{MPP},node] (MPP1) [right=8em of W1] {}; 
+%    \node[label=center:\tiny{MAP},node] (MAP1) [right=2em of MPP1] {}; 
+%    \node[label=center:\tiny{MAP},node] (MAP2) [below=2em of MPP1] {}; 
+%    \node[label=center:\tiny{MP},node] (MP1) [below=2em of MAP1] {};  
+%    \node[label=center:\tiny{STA},node] (STA1) [above=2em of MAP1] {}; 
+%    \node[label=center:\tiny{STA},node] (STA2) [right=2em of MAP1] {}; 
+%   \node[label=center:\tiny{STA},node] (STA3) [above=2em of STA2] {}; 
+%    \node[label=center:\tiny{STA},node] (STA4) [left=2em of MAP2] {}; 
+%    \node[label=center:\tiny{STA},node] (STA5) [below=2em of MAP2] {}; 
+%    \node[label=center:\tiny{STA},node] (STA6) [left=2em of STA5] {}; 
+%
+%
+%    \draw[>=latex,auto=right,style={<->},thick] (W1) -- (MPP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (MPP1) -- (MAP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (MPP1) -- (MAP2);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (MP1) -- (MAP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (MP1) -- (MAP2);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA1) -- (MAP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA2) -- (MAP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA3) -- (MAP1);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA4) -- (MAP2);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA5) -- (MAP2);
+%    \draw[>=latex,auto=right,style={<->},thick,dashed] (STA6) -- (MAP2);
+%
+%    \coordinate (MPP1C) at ($(MPP1.center) + (-1.75em,+1.75em)$);
+%    \coordinate (MP1C) at ($(MP1.center) + (+1.75em,-1.75em)$);
+%
+%    \node [draw=red, fit= (MPP1C) (MP1C),style=dashed] (B1) {};
+%    \node [text=red, anchor=south] at ($(B1.south east) - (+1em,0)$) {\tiny{WDS}};
+%
+%  \end{tikzpicture} 
+%  \caption{Ein WDS auf Basis von IEEE 802.11s}
+%\end{figure}
+
+\section{Das IPv4 Protokoll}
+\label{chapter:grundlagen:ip}
+
+
+\begin{figure}
+  \centering
+    \begin{bytefield}[bitwidth=0.75em]{32}
+      \bitheader{0-31} \\
+      \begin{rightwordgroup}{\small IP\\Header}
+        \bitbox{4}{\small Version} & \bitbox{4}{\small IHL} & \bitbox{8}{\small Type of Service} & \bitbox{16}{\small Total Length} \\
+        \bitbox{16}{\small Identification} & \bitbox{3}{\small Flags} & \bitbox{13}{\small Fragment Offset} \\
+        \bitbox{8}{\small Time to Live} & \bitbox{8}{\small Protocol} & \bitbox{16}{\small Header Checksum} \\
+        \bitbox{32}{\small Source Address} \\
+        \bitbox{32}{\small Destination Address} \\
+        \bitbox{24}{\small Options} & \bitbox{8}{\small Padding}
+      \end{rightwordgroup} \\
+      \wordbox[lrt]{1}{\small Payload} \\
+      \skippedwords \\
+      \wordbox[lrb]{1}{} \\
+    \end{bytefield}
+  \caption{Ein IP-Paket nach RFC 791 \cite{RFC791}}
+  \label{chapter:grundlagen:ippacket}
+\end{figure}
+
+Die im weiteren Verlauf dieser Arbeit behandelten \acrlong{rv} werden auf der \gls{nwlayer} mittels \gls{ip} realisiert. Diese verwenden in erster Linie \textit{Unicast-} und \textit{Broadcastverkehr}. Es wird zwar auch \textit{Multicastverkehr} von \gls{olsr} und \gls{aodv} unterstützt, dies ist jedoch für diese Arbeit nicht relevant. Ferner sind beide Verfahren für den Betrieb mit \textit{\gls{ipv4}} als auch \textit{\gls{ipv6}} \cite{AODV6}\cite{RFC3626} geeignet, dennoch beschränkt sich die weitere Betrachtung auf \gls{ipv4}. Gemäß RFC 791 \cite{RFC791} handelt es sich bei IP um ein verbindungsloses Protokoll und stellt die erste vom Übertragungsmedium unabhängige Schicht der Internetprotokollfamilie dar. Mittels \textit{IP-Adressen} und \textit{Netzwerkmasken}, welche bei \gls{ipv4} je aus 32 Bit bestehen, wird die Adressierung von Nachrichten und die Segmentierung von Netzabschnitten sichergestellt. Diese Aufteilung in \textit{Subnetze} liefert die Möglichkeit größere Strukturen hierachisch aufzubauen, macht aber Routing erforderlich, sollen \textit{IP-Pakete} zwischen einzelnen \textit{Segmenten} ausgetauscht werden. Innerhalb eines Subnetzes gibt es, neben den für die Teilnehmer verfügbaren Adressen (\textit{\glspl{uca}}), immer eine Adresse, die das Subnetz an sich bezeichnet (\textit{\glspl{nwa}}) und eine weitere, die als Zieladresse für Broadcasts genutzt wird (\textit{\glspl{bca}}), damit die Teilnehmer diese identifizieren können. Der Aufbau kann der Abbildung \ref{chapter:grundlagen:ippacket} entnommen werden. Die genutzten \glspl{rv} setzen in unserem Fall nur \textit{Unicast} und \textit{Broadcast}, die genauen Funktionen sind in RFC791, RFC1812 und RFC826 beschrieben. Bei Broadcast sei erwähnt, dass zwischen \textbf{Limited Broadcast} und \textbf{Directed Broadcast} unterschieden wird. Letzterer wird von Routern weitergeleitet, sofern die TTL größer 1 ist.
+
+
+%Die Hauptlast der zu übertragenden Daten innerhalb eines TCP/IP Netzes wird mittels \textit{Unicast} übertragen. Diese IP-Pakete sind an \glspl{uca} in der Quell- und Zielangabe zu erkennen und sind immer an genau einen Empfänger gerichtet. Sollte ein Teilnehmer ein Unicast erhalten der nicht an ihn gerichtet ist, verwirft er die Nachricht, wenn er sie nicht an den eigentlichen Empfänger weiterleiten kann. Sofern der Teilnehmer die Nachricht weiterleiten kann und die TTL größer als 1 ist, vermindert er diese um 1 und leitet das Paket entsprechend seiner Routinginformationen weiter. Gültige \glspl{uca} sind die zweite und die vorletze Adresse innerhalb eines Subnetzes \cite{RFC791}.
+
+%\begin{itemize}
+%\item \textbf{Netzwerkadresse (\gls{nwa})}: 10.10.10.0
+%\item \textbf{Netzwerkmaske}: 255.255.255.0
+%\item \textbf{Lokale Broadcast-Adresse (\gls{bca})}: 10.10.10.255
+%\item \textbf{Gültige Unicast-Adressen (\glspl{uca})}: 10.10.10.1 bis 10.10.10.254
+%\end{itemize}
+
+%\subsection{Broadcast}
+%\label{chapter:grundlagen:traffic:broad}
+%
+%\glspl{bca} werden von allen Teilnehmern, die sich als Ziel erachten, angenommen und verarbeitet \cite{RFC1812}. Wenn ein Teilnehmer eine Nachricht an ein gesamtes Subnetz schicken möchte, dann stehen hierfür nach RFC 826 \cite{RFC826} zwei verschiedene Ziele zur Verfügung:
+
+%\begin{itemize}
+%\item \textbf{Limited Broadcast}: Diese sind immer an die Adresse 255.255.255.255 gerichtet und bezeichnet alle Teilnehmer des eigenen Subnetzes. Limited Broadcasts werden von Routern nicht weitergeleitet.
+%\item \textbf{Directed Broadcast}: In diesem Fall wird die Nachricht an die \gls{bca} eines bestimmten Netzwerks geschickt. Im urprünglichen Standard war vorgesehen, dass diese dann auch von Routern, sofern dieselben Bedingungen wir bei Unicast erfüllt sind, weitergeleitet werden. Jedoch wurde dies in RFC 2644 %\cite{RFC2644} widerrufen, um der Gefahr von Denial of Service Angriffen zu begegnen.
+%\end{itemize}
+
+\section{Der TCP/IP Protokollstapel}
+\label{chapter:grundlagen:tcpip}
+
+\gls{tcpip} besteht aus einer Sammlung verschiedenster Protokolle, jedes für einen spezifischen Einsatzzweck mit individuellen Vor- und Nachteilen: \gls{tcp} \zB ist ein verbindungsorientiertes Protokoll, besitzt einen zusätzlichen Kontrollmechanismus für die Sicherstellung der Übertragung von Informationen, erfordert aber dafür eine Bestätigung des Empfangs, was zu zusätzlichem Overhead, Verzögerungen und mitunter zu einem Einbruch der Übertragungsraten führen kann. \gls{udp} hingegen, das verbindungslos arbeitet, stellt zwar die Übertragung nicht durch eigene Mechanismen sicher, kann aber aufgrund des des akzeptierten Paketverlustes höhere Raten und kürzere Verzögerungen erreichen. %Die \acrlong{rv} \gls{olsr} und \gls{aodv} grundsätzlich \gls{udp} für die Übermittlung ihrer Nachrichten nutzen, wird nur dieser Bestandteil von TCP/IP, wie er in RFC 1122 \cite{RFC1122} beschrieben ist, weiter behandelt. Ein \textit{UDP Datagramm} ist wie folgt aufgebaut \cite{RFC1122}:
+
+%\begin{itemize}
+%\item \textbf{Source Port}: Der Quellport des Datagramms zwischen 0 und 65535.
+%\item \textbf{Destination Port}: Der Zielport des Datagramms zwischen 0 und %65535.
+%\item \textbf{Total Length}: Die Gesamtlänge des UDP-Datagramms in Bytes.
+%\item \textbf{Checksum}: Die Prüfsumme des Datagramms, optional.
+%\item \textbf{Data}: Die Nutzlast des Pakets mit Länge gemäß Total Length %abzüglich der Länge des UDP-Header.
+%\end{itemize}
+
+%Quell- und Zielport sind auf einem Teilnehmer immer einem entsprechenden %Prozess zugeordnet, dem die Daten aus dem Paket zur Verfügung gestellt werden. %Auch hier bietet die \gls{iana} eine Übersicht über die allgemein gültigen %Portnummern an.\footnote{https://www.iana.org/assignments/service-names-port-%numbers/service-names-port-numbers.xhtml} Die RFC 6335 \cite{rfc6335} %beschreibt die Praxis der Vergabe und es gilt grundsätzlich folgende %Einteilung:
+%
+%\begin{itemize}
+%\item \textbf{System Ports} von 0 bis 1023 sollen in der Regel nur für %Systemprozesse verwendet werden und können auf vielen Betriebssystemen nur mit %höheren Rechten belegt werden.
+%\item \textbf{User Ports} von 1024 bis 49151 können auf den meisten Systemen %von normalen Nutzern ohne besondere Rechte verwendet werden.
+%\item \textbf{Dynamic or Private Ports} von 49152 bis 65535 werden in der %Regel für ausgehende Verbindungen genutzt. Im Gegensatz zu den System und User %Ports erfolgt hier auch keine feste Zuweisung durch die \gls{iana}.
+%\end{itemize}
+%Eine umfassende Übersicht der verfügbaren Protokolle mit weitergehenden Informationen kann bei der \textit{\gls{iana}} eingesehen werden.\footnote{https://www.iana.org/assignments/protocol-numbers/protocol-numbers.xhtml} 
+\section{IP-Routing}
+\label{chapter:grundlagen:routing}
+
+Wie im Abschnitt \ref{chapter:grundlagen:wmn} erwähnt, sollte ein geeignetes \acrlong{rv} auf der \gls{nwlayer} angesiedelt sein. Im Grunde bezeichnet \textit{Router} \textipa{[\textprimstress ra\textupsilon t\textschwa]} einen Teilnehmer, der Pakete für andere Teilnehmer weiterleiten kann, sofern es über eine TTL größer als 1 verfügt und ihm eine mögliche \textit{Route} bekannt ist. Hierzu nutzt er, falls vorhanden, die in seiner \textit{Routingtabelle} vorliegenden Informationen über einen möglichen Weg zum Ziel. Das kann wieder ein Router sein oder das eigentliche Ziel, man spricht dann vom \textit{nextHop}. Der Router verringert beim Weiterleiten des IP-Paketes die TTL um 1. Somit wird vermieden, dass es endlos zirkuliert. Bei der Art des Routings kann man grundsätzlich in 2 Klassen unterscheiden: statisch und dynamisch.
+
+
+\begin{figure}
+  \centering
+    \begin{bytefield}[bitwidth=0.75em]{32}
+      \bitheader{0,15,16,31} \\
+      \begin{rightwordgroup}{\small UDP\\Header}
+        \bitbox{16}{\small Source Port} & \bitbox{16}{\small Destination Port} \\
+        \bitbox{16}{\small Total Length} & \bitbox{16}{\small Checksum}
+      \end{rightwordgroup} \\
+      \wordbox[lrt]{1}{\small Payload} \\
+      \skippedwords \\
+      \wordbox[lrb]{1}{} \\
+    \end{bytefield}
+  \caption{Ein UDP-Datagramm nach RFC 1122 \cite{RFC1122}}
+\end{figure}
+
+%\subsection{Die Routingtabelle}
+%\label{chapter:grundlagen:routingtable}
+%
+%In Abbildung \ref{chapter:grundlagen:routingtable-list} ist die Routingtabelle %eines Fedora-Linux-Systems dargestellt. Die wichtigsten Spalten enthalten %folgende Informationen:
+%
+%\begin{itemize}
+%\item \textbf{Ziel}: Das mögliche Ziel der Route. Das Ziel 0.0.0.0 in %Kombination mit der angegeben Netzwerkmaske 0.0.0.0 nennt man auch %\textit{Standardroute}, den Router \textit{Standardgateway}. Sie wird gewählt, wenn keine spezifischere Route zur Verfügung steht.
+%\item \textbf{Router}: Der nächste Host für das angegebene Ziel (nextHop).
+%\item \textbf{Genmask}: Die Netzwerkmaske der Route, sie begrenzt das %erreichbare Subnetz.
+%\item \textbf{Metric}: Die Metrik der Route, sie definiert die Güte der Verbindung. Darauf wird in einem eigenen Abschnitt weiter eingegangen.
+%\item \textbf{Iface}: Die Schnittstelle, über dass der Router das Paket weiterleiten wird.
+%\end{itemize}
+
+%Wenn der Router also ein Paket mit der Zieladresse 10.43.80.55 weiterleiten will, dann wird er es gemäß dem vierten Eintrag über die Schnittstelle ppp0 an den Router mit der Adresse 10.42.100.160 senden, soll ein Paket an 8.8.8.8 geschickt werden, dann wird er den ersten Eintrag verwenden und es an 192.168.10.1 weiterleiten. Existiert keine Route zum gewünschten Ziel, dann wir das Paket verworfen. Bei der Art des Routings kann man grundsätzlich in 2 Klassen unterscheiden: statisch und dynamisch.
+
+\subsection{Statisches Routing}
+\label{chapter:grundlagen:routing-static}
+
+Beim \textit{statischen Routing} werden die Einträge in der Routingtabelle auf jedem beteiligten Router manuell gepflegt. In sehr kleinen Netzwerken in denen es keine, oder nur sehr wenig Veränderungen gibt kann dies sinnvoll sein. Der Standardfall für eine solche Anwendung sind Heimnetze, in denen in der Regel nur die Standardroute über den heimischen Router existiert.
+
+%\begin{figure}
+%\begin{lstlisting}[basicstyle=\tiny]
+%Ziel            Router          Genmask         Flags Metric Ref    Use Iface
+%0.0.0.0         192.168.10.1    0.0.0.0         UG    100    0        0 enp5s0
+%10.42.0.0       10.42.100.160   255.255.0.0     UG    50     0        0 ppp0
+%10.42.100.160   0.0.0.0         255.255.255.255 UH    50     0        0 ppp0
+%10.43.0.0       10.42.100.160   255.255.0.0     UG    50     0        0 ppp0
+%92.50.66.98     192.168.10.1    255.255.255.255 UGH   100    0        0 enp5s0
+%192.168.10.0    0.0.0.0         255.255.255.0   U     100    0        0 enp5s0
+%192.168.124.0   0.0.0.0         255.255.255.0   U     0      0        0 virbr0
+%\end{lstlisting}
+%\caption{Routingtabelle Fedora-Linux 26}
+%\label{chapter:grundlagen:routingtable-list}
+%\end{figure}
+
+\subsection{Dynamisches Routing}
+\label{chapter:grundlagen:routing-dynamic:pro}
+
+\textit{Dynamisches Routing} kommt immer dann zum Einsatz, wenn die manuelle Pflege der Routinginformationen nicht praktikabel erscheint. Dies kann im Aufwand begründet sein, aber auch, wie im Fall von \gls{manet} ein immanenter Bestandteil der Netzwerktopologie darstellen. Das Funktionsprinzip ist, unanhängig von der Klasse, meistens identisch: Auf den Routern läuft ein Prozess, der über verschiedene Mechanismen versucht, die Prozesse anderer Router zu finden, um mit diesen Informationen über die vorliegenden Routen auszutauschen. Bei den dynamischen Routingverfahren unterscheidet man in mehrere Klassen, eine umfassende Darstellung der Funktionsweise aller genannten Klassen und verschiedenster Implementationen wird in der Arbeit \glqq{}Routing protocols in ad hoc networks: A survey\grqq \cite{Azzedine11} vorgenommen, im Folgenden wird nur auf die Klassen der untersuchten Protokolle eingegangen.
+
+\subsubsection{Anforderungsbasiertes, reaktives Routing (Source-initiated)}
+
+In diese Klasse sind Verfahren einzuordnen, die nur dann eine Route ermitteln, wenn sie wirklich gebraucht wird. Dies kann bei erstmaliger Verwendung oder dem Ausfall einer Route zu einer hohen Latenz führen, da der gesamte Pfad erst ermittelt werden muss. Wenn die Menge der neu benötigten Routen überschaubar ist, bietet dieses Verfahren durch, im Vergleich zu proaktiven, \textit{geringeren Protokolloverhead} und damit verbundenen Stromverbrauch Vorteile. Dieser Klasse ist auch das im weiteren Verlauf untersuchte \gls{aodv} zuzuordnen \cite{RFC3561}. Ein beliebtes Anwendungsfeld für solche Verfahren sind  Netze, in denen der Verkehr in der Regel eine sehr begrenzte Anzahl an Zielen hat, \zB bei Streaminganwendungen oder bei \acrlongpl{wsan} \cite{Booranawong13}.
+
+\subsubsection{Proaktives Routing (Table-driven)}
+
+Hierbei handelt es sich um \acrlong{rv}, die versuchen alle verfügbaren zu ermitteln und zu pflegen. Nach einer Vorlaufzeit sind jedem Router in einem solchen Netz die Routen zu beliebigen Zielen bekannt und Pakete können ohne Verzögerung weitergeleitet werden. Dies senkt spürbar die Latenz bei der erstmaligen Verwendung neuer oder ersetzter Router, geschieht allerdings auf Kosten des \textit{höheren Overheads} und \textit{benötigter Energie}. Selbst wenn keinerlei Daten in einem solchen Netz übertragen werden, wird dennoch Strom und Bandbreite verbraucht. Zudem kann es in größeren Netzen einen nicht unerheblichen \textit{Bedarf an Speicher und Rechenzeit} beanspruchen. \gls{olsr} ist dieser Klasse zuzuordnen \cite{RFC3626} und findet auch, \zB im Rahmen des Freifunk-Projektes\footnote{https://wiki.freifunk.net} breite Anwendung.
+
+\subsubsection{Distanzvektorprotokolle}
+
+Eine weitere, wenn auch schwächere Unterscheidung kann man in \textit{Distanzvektor}, \textit{Linkstatus} und \textit{Pfadvektor} basierte Protokolle vornehmen. Erstere zeichnen sich dadurch aus, dass sie in der Regel nur die Informationen verwenden, die sie von ihren direkten Nachbarn mitgeteilt bekommen. Sie haben in der Regel keine Übersicht über die gesamte Topologie. Zur Berechnung der Kosten einer Route kommt ein Distanzvektoralgorithmus zum Einsatz. Ein prominenter, wenn auch etwas älterer Vertreter dieser Klasse ist das \textit{\gls{rip}}, ein \textit{\gls{igp}} \cite{RFC1058} oder \acrlong{aodv} \cite{RFC3561}. Bei älteren Vertretern dieser Klasse kann es allerdings zur \textit{Bildung von Routingschleifen} kommen.
+
+\subsubsection{Pfadvektorprotokolle}
+
+Es handelt sich hierbei um eine angepasste Version der Distanzvektorprotokolle. Hier wird der \textit{Pfad}, den ein Kontrollpaket durch ein Netzwerk genommen hat, mitgeführt. Kommt ein System, dass ein Paket empfängt, in diesem Pfad bereits vor, muss es sich um eine \textit{Schleife} handeln und das Paket wird verworfen. Ein Vertreter dieser Klasse ist das, im Internet hauptsächlich verwendete, \textit{\gls{bgp}} \cite{RFC1771}, ein \sog \textit{\gls{egp}}.
+
+\subsubsection{Linkstatusprotokolle}
+
+Protokolle in dieser Klasse unterscheiden sich grundsätzlich in ihrem Vorgehen. Es werden umfangreiche Informationen über die gesamte Topologie gesammelt, um daraus den bestmöglichen Weg zu berechnen. Je nach Protokoll findet der \textit{Austausch mit anderen Systemen} nur in einem \textit{nahen Umfeld} oder im \textit{gesamten Netz} statt. Vertreter dieser Klasse sind \textit{\gls{ospf}} \cite{RFC5340} sowie das \acrlong{olsr} Protokoll.
+
+\subsection{Metriken}
+\label{chapter:grundlagen:metriken}
+
+Um die Güte der Verbindung zu bewerten und letzten Endes eine Routingentscheidung treffen zu können, werden \textit{\glspl{met}} verwendet. Dies wird vor allem immer dann interessant, wenn es mehrere mögliche Wege zu einem Ziel gibt. Die einfachste vorstellbare Metrik kann man am Beispiel des \gls{rip} zeigen: Der \textit{HopCount}. Er gibt an, wie viele weitere Router bis zum Ziel zu passieren sind. Dies erscheint auf den ersten Blick als die sinnvollste Lösung, aber allein die Verfügbarkeit zahlreicher \acrlongpl{rv} mit anderen Bewertungskriterien zeigt, dass es immer auf den Einsatzzweck und die äußeren Umstände bei der Bewertung einer Verbindung ankommt. Allerdings lässt sich eine Einteilung in drei Berechnungsverfahren treffen \cite{Baumann07}:
+
+\begin{itemize}
+\item \textbf{Additive Berechnung}: Hier wird der Wert pro Hop addiert. Dies erscheint \zB bei der Verwendung des HopCounts als sinnvoll: Je geringer der Wert, desto besser die Verbindung. Für einen Pfad $p_{i,j}=(n_{i+1},n_{i+2},...,n_{j-1},n_j)$ vom Knoten $n_i$ zum Knoten $n_j$ berechnet sich die Metrik $d(p_{i,j})$ wie folgt:
+\begin{eqnarray*} 
+d(p_{i,j})=d(p_{i,i+1}) + d(p_{i+1,i+2}) + d(p_{i+2,i+3})\\
+ + ... + d(p_{j-2,j-1}) + d(p_{j-1,j})
+\end{eqnarray*} 
+\item \textbf{Multiplikative Berechnung}: Hier wird der Wert pro Hop multipliziert. Dies erscheint \zB bei der Verwendung des PacketLoss als sinnvoll. Berechnet man die Metrik aus der Differenz von PacketLoss und 1, dann ergibt der höchste Wert die beste Verbindung. Für einen Pfad $p_{i,j}=(n_{i+1},n_{i+2},...,n_{j-1},n_j)$ vom Knoten $n_i$ zum Knoten $n_j$ berechnet sich die Metrik $d(p_{i,j})$ wie folgt:
+\begin{eqnarray*} 
+d(p_{i,j})=d(p_{i,i+1}) \cdot d(p_{i+1,i+2}) \cdot d(p_{i+2,i+3})\\
+ \cdot ... \cdot d(p_{j-2,j-1}) \cdot d(p_{j-1,j})
+\end{eqnarray*} 
+\item \textbf{Konkave Berechnung}: Hier wird der geringste Wert aller Hops gewählt. Dies wäre eine geeignete Methode, wenn die verfügbare Bandbreite als Bewertungskriterium verwendet werden soll, da hier der geringste Wert ausschlaggebend ist. Der höchste Wert ergibt wieder die beste Verbindung. Für einen Pfad $p_{i,j}=(n_{i+1},n_{i+2},...,n_{j-1},n_j)$ vom Knoten $n_i$ zum Knoten $n_j$ berechnet sich die Metrik $d(p_{i,j})$ wie folgt:
+\begin{eqnarray*} 
+d(p_{i,j})= \min((d(p_{i,i+1}),d(p_{i+1,i+2}),d(p_{i+2,i+3})\\
+ ,...,d(p_{j-2,j-1}),d(p_{j-1,j})))
+\end{eqnarray*} 
+\end{itemize}
+
+\subsection{Bewertung von MANET Protokollen}
+\label{chapter:grundlagen:meshmetriken}
+
+Die folgende Liste quantitativer Metriken kann zur Bewertung von Verfahren herangezogen werden \cite{RFC2501}:
+
+\begin{itemize}
+\item \textbf{Ende zu Ende Durchsatz und Latenz}: Hierdurch bekommt man eine Rückmeldung darüber, wie schnell und mit welcher Bandbreite Daten durch das Netz geleitet werden können.
+\item \textbf{Zeitaufwand für das Erstellen neuer Routen}: Hierbei handelt es sich, vor allem beim Vergleichen von reaktiven Verfahren, um einen interessanten Faktor, da dieser einen allgemeinen Nachteil darstellt.
+\item \textbf{Anteil abgelaufener Übermittlungen}: Einige Protokolle, wie TCP, erfordern eine zeitnahe Übermittlung der Pakete. Werden gewisse Zeitfenster überschritten, kann es zu eklatanten Leistungseinbußen kommen.
+\item \textbf{Effizienz des Verfahrens}: Müssen sich Kontrollinformationen und übertragene Daten die Verbindung teilen, kann es zu Leistungseinbußen und Fehlfunktionen kommen. Daher sollte das Verhältnis zwischen übertragenen Daten und benötigten Kontrollinformationen berücksichtigt werden.
+\end{itemize}
+
+Im Rahmen dieser Arbeit wird die oben genannte Liste um den Punkt \textit{Lastverteilung} ergänzt, wobei der Fokus auf der \textit{Verteilung des Energieverbrauchs} liegen wird.

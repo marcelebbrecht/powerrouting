@@ -1,0 +1,73 @@
+\select@language {english}
+\select@language {english}
+\select@language {german}
+\contentsline {chapter}{\numberline {1}Einleitung}{1}
+\contentsline {section}{\numberline {1.1}Motivation und Hintergrund}{1}
+\contentsline {section}{\numberline {1.2}Zielsetzung}{2}
+\contentsline {section}{\numberline {1.3}Aufbau dieser Arbeit}{3}
+\contentsline {section}{\numberline {1.4}Anmerkung zu Fachbegriffen}{3}
+\contentsline {chapter}{\numberline {2}Grundlagen}{5}
+\contentsline {section}{\numberline {2.1}Wireless Mesh Networks}{5}
+\contentsline {section}{\numberline {2.2}Schichtenmodelle}{6}
+\contentsline {section}{\numberline {2.3}Wireless-LAN}{7}
+\contentsline {subsection}{\numberline {2.3.1}Ad-Hoc-Modus}{7}
+\contentsline {section}{\numberline {2.4}Das IPv4 Protokoll}{8}
+\contentsline {section}{\numberline {2.5}Der TCP/IP Protokollstapel}{9}
+\contentsline {section}{\numberline {2.6}IP-Routing}{9}
+\contentsline {subsection}{\numberline {2.6.1}Statisches Routing}{10}
+\contentsline {subsection}{\numberline {2.6.2}Dynamisches Routing}{10}
+\contentsline {subsubsection}{Anforderungsbasiertes, reaktives Routing (Source-initiated)}{10}
+\contentsline {subsubsection}{Proaktives Routing (Table-driven)}{11}
+\contentsline {subsubsection}{Distanzvektorprotokolle}{11}
+\contentsline {subsubsection}{Pfadvektorprotokolle}{11}
+\contentsline {subsubsection}{Linkstatusprotokolle}{11}
+\contentsline {subsection}{\numberline {2.6.3}Metriken}{12}
+\contentsline {subsection}{\numberline {2.6.4}Bewertung von MANET Protokollen}{12}
+\contentsline {chapter}{\numberline {3}AODV und OLSR}{15}
+\contentsline {section}{\numberline {3.1}AODV}{15}
+\contentsline {subsection}{\numberline {3.1.1}Grundlegende Funktionsweise}{15}
+\contentsline {subsection}{\numberline {3.1.2}Sequenznummern}{16}
+\contentsline {subsection}{\numberline {3.1.3}Route Request (RREQ)}{16}
+\contentsline {subsection}{\numberline {3.1.4}Route Reply (RREP)}{18}
+\contentsline {subsection}{\numberline {3.1.5}Routingtabelle}{19}
+\contentsline {subsection}{\numberline {3.1.6}Route Error (RERR)}{20}
+\contentsline {subsection}{\numberline {3.1.7}Zusammenfassung AODV}{22}
+\contentsline {section}{\numberline {3.2}OLSR}{23}
+\contentsline {subsection}{\numberline {3.2.1}Grundlegende Funktionsweise}{23}
+\contentsline {subsection}{\numberline {3.2.2}OLSR Paket}{23}
+\contentsline {subsection}{\numberline {3.2.3}Multiple Interface Declaration (MID)}{24}
+\contentsline {subsection}{\numberline {3.2.4}Hello (HELLO)}{25}
+\contentsline {subsection}{\numberline {3.2.5}Topology Control (TC)}{25}
+\contentsline {subsection}{\numberline {3.2.6}Willingness}{27}
+\contentsline {subsection}{\numberline {3.2.7}Multipoint Relay (MPR)}{27}
+\contentsline {subsection}{\numberline {3.2.8}Default Forwarding Algorithm}{28}
+\contentsline {subsection}{\numberline {3.2.9}Ablauf, Metrik, Routen}{28}
+\contentsline {subsection}{\numberline {3.2.10}Zusammenfassung OLSR}{29}
+\contentsline {section}{\numberline {3.3}Zusammenfassung OLSR und AODV}{30}
+\contentsline {chapter}{\numberline {4}Versuchsbeschreibung}{31}
+\contentsline {section}{\numberline {4.1}Versuchsaufbau}{31}
+\contentsline {subsection}{\numberline {4.1.1}Eingesetze Technik}{31}
+\contentsline {subsection}{\numberline {4.1.2}Simulationsbeschreibung}{36}
+\contentsline {subsection}{\numberline {4.1.3}Neue Metrik}{36}
+\contentsline {subsection}{\numberline {4.1.4}Anpassung AODV-PO (PowerOrientation)}{37}
+\contentsline {subsection}{\numberline {4.1.5}Anpassung OLSR-PO (PowerOrientation)}{38}
+\contentsline {chapter}{\numberline {5}Auswertung}{41}
+\contentsline {section}{\numberline {5.1}Eingesetze Technik}{41}
+\contentsline {section}{\numberline {5.2}Die Auswertung}{42}
+\contentsline {subsection}{\numberline {5.2.1}Parameter Study}{42}
+\contentsline {subsubsection}{Parameter Study - AODV}{42}
+\contentsline {subsubsection}{Parameter Study - OLSR}{43}
+\contentsline {subsection}{\numberline {5.2.2}Auswertung AODV-PO}{44}
+\contentsline {subsection}{\numberline {5.2.3}Auswertung OLSR-PO}{49}
+\contentsline {subsection}{\numberline {5.2.4}Vergleich Protokolle}{49}
+\contentsline {subsection}{\numberline {5.2.5}Weitere Erkenntnisse}{51}
+\contentsline {chapter}{\numberline {6}Fazit}{53}
+\contentsline {chapter}{\numberline {A}Auswertungen OLSR}{55}
+\contentsline {chapter}{\numberline {B}Multi Hop}{57}
+\contentsline {chapter}{\numberline {C}Wiederholungen}{59}
+\contentsline {chapter}{\numberline {D}3D Diagramme}{61}
+\contentsline {chapter}{Akronyme}{65}
+\contentsline {chapter}{Glossar}{67}
+\contentsline {chapter}{Abbildungsverzeichnis}{72}
+\contentsline {chapter}{Literaturverzeichnis}{75}
+\contentsline {chapter}{Erkl\IeC {\"a}rung}{75}

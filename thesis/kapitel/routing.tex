@@ -1,0 +1,635 @@
+% routing.tex
+% Kapitel 3: Routing
+
+\chapter{AODV und OLSR}
+\label{chapter:routing}
+
+Für die Untersuchung im Rahmen dieser Arbeit wurden die \og Protokolle aus folgenden Gründen ausgewählt:
+
+\begin{itemize}	
+\item Beide wurden für den Einsatz in vermaschten Netzen entwickelt.
+\item Weder \gls{aodv}, noch \gls{olsr} berücksichtigen den Energieverbrauch oder den Ladezustand der Systeme, auf denen sie eingesetzt werden.
+\item Sie unterscheiden sich in ihrer Funktionsweise: \gls{aodv} ist eine \textit{reaktives} \textit{Distanzvektor-Verfahren}, \gls{olsr} hingegen arbeitet \textit{proaktiv} und setzt auf den \textit{Linkstatus}.
+\item Beide Protokolle sind über das Framework INETManet für OMNET++ verfügbar und hinreichend implementiert.
+\end{itemize}
+
+\section{AODV}
+\label{chapter:routing:aodv}
+
+Bei \acrlong{aodv} gemäß RFC3561 \cite{RFC3561} handelt es sich um eine Weiterentwicklung des \textit{\gls{dsdv}} Verfahrens mit dem Ziel, die Menge an \textit{Broadcast-Nachrichten}, die für den Betrieb in das Netz geschickt werden, zu reduzieren \cite{Azzedine11}. 
+
+\subsection{Grundlegende Funktionsweise}
+\label{chapter:routing:aodv:funktion}
+
+Da es sich bei \gls{aodv} um ein \textit{anforderungsbasiertes Verfahren} handelt, führt ein Host erst Aktionen aus, wenn er ein IP-Paket versenden muss. Dies führt zu einem vergleichsweise geringen Overhead, wodurch es besonders für große Netze mit vielen Knoten interessant ist. Dem Problem der \textit{Schleifenbildung}, welches bei dieser Klasse von Protokollen auftritt, wird durch den Einsatz von \textit{Sequenznummern} entgegengewirkt. Für die Kommunikation zwischen den Hosts kommen \textit{\gls{udp}-Pakete} auf \textit{Port 654} zum Einsatz. Es gelten folgende Begriffe:
+
+\begin{itemize}
+\item \textbf{Host}: Ein \textit{Teilnehmer} im Netz, der als Router fungiert.
+\item \textbf{Originator}: Der \textit{Urheber} eines \gls{rreq}.
+\item \textbf{Absender}: Der \textit{Absender} eines IP Pakets, es muss nicht der Originator sein.
+\item \textbf{Route}: Eine Route besteht immer aus einer \textit{Destination}, einer \textit{Metrik} und dem \textit{NextHop}.
+\item \textbf{Routingtabelle}: Hier sammelt ein Host \textit{alle Routen}, die er kennt. 
+\item \textbf{Destination}: Das \textit{Ziel} einer Route.
+\item \textbf{NextHop}: Der \textit{nächste Host} über den die Destination erreicht werden kann.
+\item \textbf{HopCount}: Die \textit{Anzahl an Hosts} bis zur Destination.
+\item \textbf{Metrik}: Die \textit{Güte} der Verbindung, bei \gls{aodv} wird der HopCount dafür genutzt.
+\end{itemize}
+
+\subsection{Sequenznummern}
+\label{chapter:routing:aodv:seqn}
+
+Ein Host verfügt immer über eine eigene und zudem speichert er für jede Verbindung eine \textit{Sequenznummer}, womit er der Schleifenbildung entgegenwirkt. Grundsätzlich kann man sagen, dass Updates von Routinginformationen immer nur dann ausgeführt werden, wenn die vorliegenden Informationen mit höheren Sequenznummern versehen sind.
+
+\subsection{Route Request (RREQ)}
+\label{chapter:routing:aodv:funktion:rreq}
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \bitbox{8}{\small Type} & \bitbox{1}{\small J} & \bitbox{1}{\small R} & \bitbox{1}{\small G} & \bitbox{1}{\small D} & \bitbox{1}{\small U} & \bitbox{11}{\small Reserved} & \bitbox{8}{\small HopCount} \\
+%      \bitbox{32}{\small RREQ ID} \\
+%      \bitbox{32}{\small Destination IP Address} \\
+%      \bitbox{32}{\small Destination Sequence Number} \\
+%      \bitbox{32}{\small Originator IP Address} \\
+%      \bitbox{32}{\small Originator Sequence Number}
+%    \end{bytefield}
+%  \caption{Ein RREQ nach RFC 3561 \cite{RFC3561}}
+%\end{figure}
+
+Sofern ein Host ein IP-Paket zustellen muss, dann benötigt er dafür eine Route. Liegt diese nicht vor, dann wird ein \gls{rreq} erzeugt und versendet. Dieser ist wie Folgt aufgebaut:
+
+\begin{itemize}
+\item \textbf{Type}: Bei RREQ gleich 1.
+\item \textbf{Flags}:  Bit 0 (Join) und 1 (Repair) sind für Multicast reserviert, Bit 2 (Gratuitous) markiert, ob es sich um einen \textit{Gratuitous \gls{rreq}} handelt, Bit 3 (Destination only) gibt an, ob nur das \textit{eigentliche Ziel} auf den \gls{rreq} antworten darf und Bit 4 (Unknown) zeigt, ob die Sequenznummer des Ziels \textit{unbekannt} ist.
+\item \textbf{Reserved}: Ungenutzt und immer 0.
+\item \textbf{HopCount}: \textit{Abstand in Hops} vom Originator zum Host, der den Request bearbeitet.
+\item \textbf{RREQ ID}: Die \textit{eindeutige Kennung} des \gls{rreq} in Kombination mit dem Originator.
+\item \textbf{Destination IP Address}: Die \textit{Adresse}, für die eine Route gesucht wird.
+\item \textbf{Destination Sequence Number}: Die \textit{letzte bekannte Sequenznummer}, die der Originator für das Ziel erhalten hat.
+\item \textbf{Originator IP Address}: Die \textit{Adresse des Originators}, des Erzeugers des \gls{rreq}.
+\item \textbf{Originator Sequence Number}: Die \textit{aktuelle Sequenznummer} des Originators.
+\end{itemize}
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[auto]
+    % Place nodes
+      \node [start] (packetToSend) [] {\linespread{1}\selectfont \tiny Route benötigt\par};
+      \node [decision] (inRt) [below=1.5em of packetToSend] {\linespread{1}\selectfont \tiny Route in \textit{RT} vorhanden\par};
+      \node [block] (sendPacket) [left=2em of inRt] {\linespread{1}\selectfont \tiny IP-Paket an nextHop senden\par};
+      \node [stop] (stop) [left=2em of sendPacket] {\tiny{Ende}};
+      \node [block] (genRreq) [right=2.2em of inRt] {\linespread{1}\selectfont \tiny RREQ $Q_i$ mit ID $i$, \textit{ttl}$(Q_i)=$ \textit{TTLS}, \textit{hopCount}$(Q_i)=1$ erzeugen, \textit{retry}$(Q_i) =1$ setzen\par};
+      \node [block] (saveRreq) [below=2.5em of genRreq] {\linespread{1}\selectfont \tiny Alle Informationen zu $Q_i$ mit Sendezeit $t(Q_i)$ in \textit{ORT} speichern\par};
+      \node [block] (setTimer) [left=2em of saveRreq] {\linespread{1}\selectfont \tiny Timer $T(Q_i)$ starten, $Q_i$ versenden und warten\par};
+      \node [decision] (rreqRec) [below=1.5em of setTimer] {\linespread{1}\selectfont \tiny RREP $R_i$ vor $T(Q_i).timeout$ erhalten\par};
+      \node [block] (procRrep) [left=1.7em of rreqRec] {\linespread{1}\selectfont \tiny Behandlung $R_i$ starten\par};
+      \node [decision] (retryMax) [below=1.5em of rreqRec] {\linespread{1}\selectfont \tiny \textit{retry}$(Q_i)$ $\leq$ \textit{RETRYM}\par};
+      \node [decision] (ttlMax) [below=1.5em of retryMax] {\linespread{1}\selectfont \tiny \textit{ttl}$(Q_i)$ $\leq$ \textit{TTLM}\par};
+      \node [block] (genRreqNext) [right=2.2em of ttlMax] {\linespread{1}\selectfont \tiny RREQ $Q_i$ mit neuer ID $i$, \textit{ttl}$(Q_i)$ $\rightarrow$ \textit{ttl}$(Q_i)+$\textit{TTLI} erzeugen, \textit{retry}$(Q_i)$ $\rightarrow$ \textit{retry}$(Q_i)+1$\par};
+      \node [block] (genRreqNextSameTtl) [right=2.2em of retryMax] {\linespread{1}\selectfont \tiny RREQ $Q_i$ mit neuer ID $i$ erzeugen, \textit{retry}$(Q_i)$ $\rightarrow$ \textit{retry}$(Q_i)+1$\par};
+      \node [block] (removeOrt) [right=2em of genRreqNextSameTtl] {\linespread{1}\selectfont \tiny Alten $Q_i$ aus \textit{ORT} entfernen\par};
+
+      \node [block] (error) [left=2em of retryMax] {\linespread{1}\selectfont \tiny Fehlermeldung erzeugen, $Q_i$ aus \textit{ORT} entfernen, Senden des Pakets abbrechen\par};
+      
+      \path [line] (packetToSend) -- (inRt);
+      \path [line] (inRt) -- node{\tiny Ja} (sendPacket);
+      \path [line] (inRt) -- node{\tiny Nein} (genRreq);
+      \path [line] (sendPacket) -- (stop);
+      \path [line] (genRreq) -- (saveRreq);
+      \path [line] (saveRreq) -- (setTimer);
+      \path [line] (setTimer) -- (rreqRec);
+      \path [line] (rreqRec) -- node{\tiny Ja} (procRrep);
+      \path [line] (rreqRec) -- node{\tiny Nein} (retryMax);
+      \path [line] (retryMax) -- node{\tiny Ja} (ttlMax);
+      \path [line] (ttlMax) -- node{\tiny Ja} (genRreqNext);
+      \path [line] (ttlMax) -- node{\tiny Nein} (genRreqNextSameTtl);
+      \path [line] (procRrep) -- (sendPacket);
+      \path [line] (genRreqNext) -| (removeOrt);
+      \path [line] (genRreqNextSameTtl) -- (removeOrt);
+      \path [line] (removeOrt) |- (saveRreq);
+      \path [line] (retryMax) -- node{\tiny Nein} (error);
+      \path [line] (error) -| (stop);
+    \end{tikzpicture}
+  \caption{Vorgehen beim Versenden eines IP-Pakets nach RFC 3561 \cite{RFC3561}}
+  \label{image:olsr:findroute}
+\end{figure}
+
+Der allgemeine Ablauf für die Anforderung von Routen ist in Abbildung \ref{image:olsr:findroute} dargestellt, es gelten folgende Definitionen:
+
+\begin{itemize}
+\item \textbf{\textit{RT}} entspricht der lokalen \textit{Routingtabelle} des Hosts.
+\item \textbf{\textit{i}} ist eine \textit{eindeutige Kennung} der Anfrage.
+\item \textbf{\textit{TTLS}} ist der \textit{Startwert} für die TTL von \glspl{rreq}, meist wird sie sehr niedrig gewählt.
+\item \textbf{\textit{TTLI}} ist der Wert um den die TTL \textit{schrittweise} erhöht wird.
+\item \textbf{\textit{TTLM}} ist der \textit{Maximalwert} auf den die TTL erhöht werden darf.
+\item \textbf{\textit{RETRYM}} ist der \textit{Maximalwert} für die Anzahl der \textit{Versuche}, die für die Ermittlung einer Route unternommen werden darf.
+\item \textbf{\textit{ORT}} ist eine \textit{Liste} mit den \glspl{rreq}, die der Host selbst erzeugt hat (\textit{Own Requests Table}).
+\end{itemize}
+
+Im Grunde versucht der Host innerhalb einer gewissen Zeitspanne ein \gls{rrep} für die gesuchte Route zu bekommen. Klappt das nicht, wird eine \textit{festgelegte Anzahl} weiterer Versuche unternommen und dabei die TTL \textit{schrittweise} gesteigert. Dies führt zu einer \textit{Ringsuche} und verhindert unnötiges Fluten des Netzes. Zudem gibt es weitere Werte, wie eine Beschränkung der Anzahl an \glspl{rreq}, die ein Host pro Sekunde versenden darf, \textit{Route lifetimes} die die Dauer und \textit{Route validities} die den Status der Gültigkeit von Routen angeben, die jedoch nicht weiter betrachtet werden.
+
+\subsection{Route Reply (RREP)}
+\label{chapter:routing:aodv:funktion:rrep}
+
+Jeder Host, der einen \gls{rreq} empfängt verfährt damit, wie in Abbildung \ref{image:olsr:handlerreq} dargestellt. Auch hierzu gelten folgende Definitionen:
+
+\begin{itemize}
+\item \textbf{\textit{SRT}} ist eine \textit{Liste} mit den \glspl{rreq}, die der Host bearbeitet hat (\textit{Seen Requests Table}).
+\item \textbf{\textit{PDT}} ist der \textit{zeitliche Abstand}, der zwischen der Bearbeitung von \glspl{rreq} vom selben Originator für die selbe Destination liegen muss (\textit{Path Discovery Time}).
+\end{itemize}
+
+Kann der Host die Anfrage positiv beantworten, sendet er ein \gls{rrep}, das wie Folgt aufgebaut ist:
+
+\begin{itemize}
+\item \textbf{Type}: Bei RREP gleich 2.
+\item \textbf{Flags}: Bit 0 (Repair) ist für \textit{Multicast} reserviert, Bit 1 (Ackowledgement) markiert, dass der \textit{Empfang bestätigt} werden muss.
+\item \textbf{Reserved}: Ungenutzt und immer 0.
+\item \textbf{PrefixSize}: Wenn ungleich 0, gibt es die \textit{Größe des Subnetzes} an, dass über den nextHop erreicht werden kann.
+\item \textbf{HopCount}: Der \textit{Abstand in Hops} vom Originator zur Destination IP.
+\item \textbf{Destination IP Address}: Die \textit{Route}, für die die Antwort geschickt wird.
+\item \textbf{Destination Sequence Number}: Die \textit{Sequenznummer} für die Route.
+\item \textbf{Originator IP Address}: Die \textit{Adresse des Originators}, des Erzeugers des \gls{rreq}.
+\end{itemize}
+
+Im Unterschied zu den \glspl{rreq} wird die Antwort darauf per \textit{Unicast} verschickt. Landet dieses \gls{rrep} direkt beim Originator, dann werden die Informationen daraus entnommen. Empfängt ein anderer Host diese Antwort, dann handelt es sich um eine \textit{Intermediate Node}. Die Behandlung unterscheidet sich zudem, abseits des in Abbildung \ref{image:olsr:handlerrep} dargestellten Ablaufs in der Art, wie mit dem Aktualisieren und Anlegen von Routen im Zusammenhang mit den Sequenznummern umgegangen wird. Details hierzu können den entsprechenden Abschnitten in der RFC entnommen werden.
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[auto]
+    % Place nodes
+      \node [start] (rreqRec) [] {\linespread{1}\selectfont \tiny RREQ $Q_i$ erhalten\par};
+      \node [decision] (inTable) [below=2em of packetToSend] {\linespread{1}\selectfont \tiny $Q_i \in ORT$\par};  
+      \node [block] (ownRreq) [left=2em of inTable] {\linespread{1}\selectfont \tiny Eigener RREQ, Bearbeitung abbrechen, $Q_i$ verwerfen\par};
+      \node [stop] (stop) [left=2em of ownRreq] {\tiny{Ende}};
+      \node [block] (createBackwardSender) [right=2em of inTable] {\linespread{1}\selectfont \tiny Route zum Absender von $Q_i$ anlegen oder aktualisieren\par};         
+      \node [decision] (inTime) [below=1.5em of inTable] {\linespread{1}\selectfont \tiny $Q_i \in SRT$ und Eintrag jünger als \textit{PDT}\par};  
+      \node [block] (createBackwardOriginator) [right=1.5em of inTime] {\linespread{1}\selectfont \tiny Route zum Originator über Absender von $Q_i$ anlegen oder aktualisieren\par};  
+      \node [block] (earlyRreq) [left=1.5em of inTime] {\linespread{1}\selectfont \tiny PDT unterschritten, Bearbeitung abbrechen, $Q_i$ verwerfen\par};
+      \node [decision] (routeKnown) [below=1.5em of inTime] {\linespread{1}\selectfont \tiny Gesuchte Route aus $Q_i$ in \textit{RT} vorhanden\par};  
+      \node [block] (updateSrt) [right=1.6em of routeKnown] {\linespread{1}\selectfont \tiny Alle Informationen zu $Q_i$ mit Empfangszeit $t(Q_i)$ in \textit{SRT} speichern oder aktualisieren\par};
+      \node [block] (sendRrep) [left=1.5em of routeKnown] {\linespread{1}\selectfont \tiny RREP $R_i$ aus \textit{RT} erzeugen, per Unicast an Absender von $Q_i$ schicken, $Q_i$ verwerfen\par};
+      \node [decision] (ttlOkay) [below=1.5em of routeKnown] {\linespread{1}\selectfont \tiny \textit{ttl}$(Q_i) > 1$\par};  
+      \node [block] (ttlHigh) [left=1.9em of ttlOkay] {\linespread{1}\selectfont \tiny Weiterleitung von $Q_i$ per Broadcast, dabei \textit{hopCount}$(Q_i) \rightarrow $ \textit{hopCount}$(Q_i)+1$ und \textit{ttl}$(Q_i) \rightarrow $ \textit{ttl}$(Q_i)-1$ \par};
+      \node [block] (ttlLow) [below=1.5em of ttlOkay] {\linespread{1}\selectfont \tiny Keine Weiterleitung, Bearbeitung abbrechen, $Q_i$ verwerfen\par};
+      
+      \path [line] (rreqRec) -- (inTable);
+      \path [line] (inTable) -- node{\tiny Ja} (ownRreq);
+      \path [line] (ownRreq) -- (stop);
+      \path [line] (inTable) -- node{\tiny Nein} (createBackwardSender);
+      \path [line] (createBackwardSender) -- (createBackwardOriginator);
+      \path [line] (createBackwardOriginator) -- (inTime);
+      \path [line] (inTime) -- node{\tiny Ja} (earlyRreq);
+      \path [line] (earlyRreq) -| (stop);
+      \path [line] (inTime) -- node{\tiny Nein} (updateSrt);
+      \path [line] (updateSrt) -- (routeKnown);
+      \path [line] (routeKnown) -- node{\tiny Ja} (sendRrep);
+      \path [line] (routeKnown) -- node{\tiny Nein} (ttlOkay);
+      \path [line] (sendRrep) -| (stop);
+      \path [line] (ttlOkay) -- node{\tiny Nein} (ttlLow);
+      \path [line] (ttlOkay) -- node{\tiny Ja} (ttlHigh);
+      \path [line] (ttlHigh) -| (stop);
+      \path [line] (ttlLow) -| (stop);
+      
+    \end{tikzpicture}
+  \caption{Behandlung eines RREQ nach RFC 3561 \cite{RFC3561}}
+  \label{image:olsr:handlerreq}
+\end{figure}
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \bitbox{8}{\small Type} & \bitbox{1}{\small R} & \bitbox{1}{\small A} & %\bitbox{9}{\small Reserved} & \bitbox{5}{\small PrefixSize} & \bitbox{8}{\small HopCount} \\
+%      \bitbox{32}{\small Destination IP Address} \\
+%      \bitbox{32}{\small Destination Sequence Number} \\
+%      \bitbox{32}{\small Originator IP Address} \\
+%      \bitbox{32}{\small Lifetime}
+%    \end{bytefield}
+%  \caption{Ein RREP nach RFC 3561 \cite{RFC3561}}
+%\end{figure}
+
+\subsection{Routingtabelle}
+\label{chapter:routing:aodv:funktion:rt}
+
+Die Routingtabelle, die durch \gls{aodv} gepflegt wird, ist folgendermaßen aufgebaut:
+
+\begin{itemize}
+\item \textbf{Destination IP}: \textit{Ziel} der Route.
+\item \textbf{Destination Sequence Number}: Die aktuelle \textit{Sequenznummer} der Route.
+\item \textbf{Destination Sequence Number Validity}: Gibt die \textit{Gültigkeit} der Sequenznummer an.
+\item \textbf{Otherstate Flag}: Gibt den \textit{Zustand} der Route an, mögliche Werte sind \textit{valid}, \textit{invalid}, \textit{repairable} und \textit{being repaired}.
+\item \textbf{Interface}: Die \textit{Schnittstelle} über die das Ziel erreicht werden kann.
+\item \textbf{HopCount}: Die \textit{Anzahl} der Zwischenknoten bis zum Ziel.
+\item \textbf{NextHop}: Die IP Adresse des \textit{nächsten Hosts}, über den das Ziel erreicht werden kann.
+\item \textbf{Precursors}: Eine \textit{Liste} von Hosts, für die Verkehr über diese Route geleitet wurde.
+\item \textbf{Lifetime}: Die \textit{Gültigkeitsdauer} der Route. Wird bei jeder Benutzung aktualisiert, bleibt die Route bis zum Ablauf ungenutzt, wird sie als \textit{invalid} markiert.
+\end{itemize}
+
+Die \textit{Precursors-Liste} spielt im Zusammenhang mit \textit{\glspl{rerr}} eine entscheidende Rolle. Eine \textit{Intermediate Node} fügt jedes mal, wenn sie ein \gls{rreq} empfängt, den Absender der Liste des Eintrags für den nextHop zur entsprechenden Destination IP und diesen nextHop zur Liste des Eintrags für den Absender hinzu. Somit sind ihm zu jedem Eintrag immer genau die Hosts bekannt, die eine Route nutzen. Beim Weiterleiten von \glspl{rrep} wird analog verfahren.
+
+\subsection{Route Error (RERR)}
+\label{chapter:routing:aodv:funktion:rerr}
+
+Ein Router wird einen \gls{rerr} versenden, wenn er \textit{während der Übertragung} über eine aktive Route einen \textit{Ausfall} der Verbindung feststellt, wenn er ein Paket zur \textit{Weiterleitung} für ein Ziel erhält, für das er \textit{keine Route} kennt, oder er einen \gls{rerr} von einem \textit{Nachbarn} für eine aktive Route erhält. Auf die Betrachtung von Reparaturfunktionen wird bewusst verzichtet. In jedem der Fälle wird der Router zuerst alle \textit{betroffen Routen} als ungültig markieren und die Auswirkungen auf andere Ziele in seiner Routingtabelle berechnen. Anschließend wird er, sofern Einträge in den entsprechenden Precursors-Listen vorhanden sind, die \textit{betroffen Router} ebenfalls mittels eigener \glspl{rerr} benachrichtigen. Um die Anzahl benötigter Nachrichten zu minimieren, können, wie dem Aufbau zu entnehmen ist, in einer Nachricht mehrere unerreichbare Ziele angegeben werden:
+
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[auto]
+      \node [start] (rrepRec) [] {\linespread{1}\selectfont \tiny RREP $R_i$ erhalten\par};
+      \node [block] (createBackwardSender) [below=1.5em of rrepRec] {\linespread{1}\selectfont \tiny Route zum Absender von $R_i$ anlegen oder aktualisieren\par};                   
+      \node [block] (incrementHopCount) [right=2em of createBackwardSender] {\linespread{1}\selectfont \tiny \textit{hopCount}$(R_i) \rightarrow $ \textit{hopCount}$(R_i)+1$\par};     
+      \node [block] (createBackwardDestination) [below=1.5em of incrementHopCount] {\linespread{1}\selectfont \tiny Route zur Destination IP des $R_i$ über den Absender mit \textit{hopCount} $=$ \textit{hopCount}$(R_i)$ anlegen oder aktualisieren\par};   
+      \node [decision] (isOrigin) [left=2em of createBackwardDestination] {\linespread{1}\selectfont \tiny Ist der Empfänger der Originator\par}; 
+      \node [stop] (stop) [below=1.5em of isOrigin] {\tiny{Ende}};      
+      \node [block] (resendRREP) [left=2em of isOrigin] {\linespread{1}\selectfont \tiny Weiterleiten von $R_i$ an den \textit{nextHop} in Richtung Originator IP\par};   
+
+      \path [line] (rrepRec) -- (createBackwardSender);
+      \path [line] (createBackwardSender) -- (incrementHopCount);
+      \path [line] (incrementHopCount) -- (createBackwardDestination);
+      \path [line] (createBackwardDestination) -- (isOrigin);
+      \path [line] (isOrigin) -- node{\tiny Nein} (resendRREP);
+      \path [line] (isOrigin) -- node{\tiny Ja} (stop);
+      \path [line] (resendRREP) |- (stop);
+      
+    \end{tikzpicture}
+  \caption{Behandlung eines RREP nach RFC 3561 \cite{RFC3561}}
+  \label{image:olsr:handlerrep}
+\end{figure}
+
+\begin{itemize}
+\item \textbf{Type}: Bei RRER gleich 3.
+\item \textbf{Flags}: Bit 0 (NoDelete) gibt an, dass die Route nach Deaktivierung nicht gelöscht werden darf.
+\item \textbf{Reserved}: Ungenutzt und immer 0.
+\item \textbf{DestinationCount}: Gibt die \textit{Anzahl} unerreichbarer Ziele an, die im \gls{rerr} enthalten sind größer 0. 
+\item \textbf{Unreachable Destination IP Address}: Das erste \textit{nicht erreichbares Ziel}, es können weitere folgen.
+\item \textbf{Unreachable Destination Sequence Number}: Die \textit{Sequenznummer} des Ziels.
+\item \textbf{Additional Unreachable Destination IP Address}: Ein weiteres nicht erreichbares Ziel (darf mehrfach vorkommen).
+\item \textbf{Additional Unreachable Destination Sequence Number}: Die Sequenznummer des Ziels.
+\end{itemize}
+
+\glspl{rerr} können in Anbetracht der Anzahl der Precursors sowohl per \textit{Unicast} (einer), als auch per \textit{Broadcast} verschickt werden (mehrere). Es ist jedoch auch möglich ausschließlich per Unicast zu versenden, wenn ein Broadcast unangemessen erscheint oder technisch nicht möglich ist. Routen, die als inaktiv markiert sind, werden \textit{nicht sofort} aus den Tabellen \textit{entfernt}. Sie bleiben, da sie \ggf repariert werden können, einen \textit{gewissen Zeitraum} in der Tabelle. Dieser wird jedes mal verlängert, wenn ein Paket für eine inaktive Route empfangen wird.
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \bitbox{8}{\small Type} & \bitbox{1}{\small N} & \bitbox{15}{\small %Reserved} & \bitbox{8}{\small DestinationCount} \\
+%      \bitbox{32}{\small Unreachable Destination IP Address} \\
+%      \bitbox{32}{\small Unreachable Destination Sequence Number} \\
+%      \bitbox{32}{\small Additional Unreachable Destination IP Address} \\
+%      \bitbox{32}{\small Additional Unreachable Destination Sequence Number} \%\
+%    \end{bytefield}
+%  \caption{Ein RERR nach RFC 3561 \cite{RFC3561}}
+%\end{figure}
+
+\newpage 
+\subsection{Zusammenfassung AODV}
+\label{chapter:routing:aodv:summary}
+
+Es handelt sich bei \gls{aodv} um ein vergleichsweise \textit{simples} und \textit{sparsames} Verfahren. Durch seine reaktiven Eigenschaften kommt es mit einem Miminum an Kontrollnachrichten aus und spart somit Strom und Bandbreite. Wenn bestimmte Routen nur sehr selten, aber dennoch regelmäßig benutzt werden, kann es durch ein Ablaufen der \textit{Lifetime} zu neuen Routenanforderungen kommen. Dennoch bleibt der Overhead deutlich unter dem von reaktiven Verfahren, wie \zB \gls{olsr}. Zudem kann die Lifetime durch Einstellungen beeinflusst werden, damit hier eine Optimierung möglich ist. Allerdings besitzt es dadurch auch eine gewisse Trägheit, die \zB bei hoher \textit{Mobilität} zu hohen \textit{Verzögerungen} führen können. Ein beliebtes Anwendungsfeld für solche Verfahren sind Netze, in denen der Verkehr in der Regel eine sehr begrenzte Anzahl an Zielen hat, \zB bei \textit{Streaminganwendungen} oder bei \textit{\acrlongpl{wsan}} \cite{Booranawong13}. In diesen Fällen kann man sehr \textit{große Netze} aufbauen, da die Last durch die Kontrollnachrichten nicht durch die Anzahl der Teilnehmer, sondern der ausgeführten Anforderungen nach neuen Routen bedingt ist.\newline
+
+Zur Bewertung der \textit{Güte der Verbindung} wird ausschließlich der \textit{HopCount} genutzt. Daher muss eine Anpassung des Verfahrens, die den \textit{Ladezustand} der Teilnehmer bei der Routenfindung berücksichtigt, den \textit{HopCount} manipulieren. Dies hätte den Vorteil, dass Router, die die angepasste Version nutzen und Geräte, die mit normalem \gls{aodv} arbeiten, \textit{kompatibel} wären. Wie genau diese Anpassung aussehen kann, wird in den Kapiteln \ref{chapter:versuch} und \ref{chapter:auswertung} beschrieben.
+
+\newpage 
+
+\section{OLSR}
+\label{chapter:routing:olsr}
+
+Bei \acrlong{olsr} gemäß RFC3626 \cite{RFC3626} handelt es sich um eine Weiterentwicklung der klassischen Link-State Verfahren mit einigen speziell auf die Anforderungen von drahtlosen Netzen ausgerichteten Optimierungen. Als zentraler Entwicklungsschritt sind hier \textit{\glspl{mpr}} anzusehen, die jeder Teilnehmer für sich bestimmt und die die Organisation innerhalb des Netzes übernehmen \cite{Azzedine11}. Somit wird die Belastung der Infrastruktur durch Kontrollinformationen deutlich verringert. Die folgende Beschreibung basiert auf der RFC, daher werden keine weiteren Angaben zu Quellen gemacht.
+
+\subsection{Grundlegende Funktionsweise}
+\label{chapter:routing:olsr:funktion}
+
+Da es sich bei \gls{olsr} um ein \textit{proaktives Verfahren} handelt, führt ein Host immer Aktionen aus, unabhängig davon, ob er ein IP-Paket versenden muss oder nicht. Dies stellt sicher, dass jeder Teilnehmer nach einem gewissen Zeitraum eine hinreichend aktuelle Übersicht über das Netz bekommt. Ausfälle oder Änderungen werden im Rahmen regelmäßiger Nachrichten im Netz propagiert. Der zeitliche Abstand dieser Nachrichten steht in konstantem Verhältnis zum verursachten \textit{Overhead}: Je schneller das Netz auf Änderungen reagieren soll, desto höher die Belastung. Grundsätzlich gibt es folgende Intervalle, die Standardwerte sind der RFC entnommen:
+
+\begin{itemize}
+\item \textbf{HELLO\_INTERVAL}: 2 Sekunden
+\item \textbf{REFRESH\_INTERVAL}: 2 Sekunden
+\item \textbf{TC\_INTERVAL}: 5 Sekunden
+\item \textbf{MID\_INTERVAL}: TC\_INTERVAL
+\item \textbf{HNA\_INTERVAL}: TC\_INTERVAL
+\end{itemize}
+
+Die entsprechenden \textit{Holding Times} sollten nach RFC das Dreifache betragen, damit erst nach dreimaligem Ausbleiben eine Reaktion eintritt. Auf die einzelnen Nachrichten wird im weiteren Verlauf genauer eingegangen. Für die Kommunikation zwischen den Hosts kommen \textit{\gls{udp}-Pakete} auf \textit{Port 698} zum Einsatz. Im Gegensatz zu \gls{aodv} gibt es jedoch nur eine Art von Paket, das dann als Nutzlast die \textit{\glspl{olsrmessage}} enthält. Es können mehrere Messages innerhalb eines Pakets verschickt werden. % damit auch hier wieder Bandbreite in Form der Header aller darüber liegenden Schichten eingespart wird.
+
+\subsection{OLSR Paket}
+\label{chapter:routing:olsr:paket}
+
+Ein OLSR Paket ist folgendermaßen aufgebaut, wobei \textit{Message Header} und \textit{Message Data} paarweise wiederholt werden können (siehe Abbildung \ref{chapter:routing:olsr:paket:image}):
+
+\begin{itemize}
+\item \textbf{Packet Length}: Die \textit{Länge} des Pakets in Bytes.
+\item \textbf{Packet Sequence Number}: Die individuelle \textit{Sequenznummer} des Pakets.
+\item \textbf{Message Type}: Die \textit{Art} des Paketes, je nach enthaltener \gls{olsrmessage}.
+\item \textbf{VTime}: Die \textit{Gültigkeitsdauer} der enthaltenen \gls{olsrmessage}, solange keine weitere gültige Nachricht erhalten wird.
+\item \textbf{Packet Length}: Die \textit{Gesamtlänge} des Paketes, von \textit{Message Type} bis zum Ende des Feldes \textit{Message}.
+\item \textbf{Originator Address}: Die \textit{IP Adresse} des Urhebers der \gls{olsrmessage}.
+\item \textbf{Time To Live}: Die \textit{TTL} der Nachricht, also die Anzahl noch erlaubter Weiterleitungen.
+\item \textbf{Hop Count}: Die \textit{HopCount} der Nachricht, also die Anzahl bereits getätigter Weiterleitungen.
+\item \textbf{Message Sequence Number}: Die individuelle \textit{Sequenznummer} der \gls{olsrmessage}.
+\item \textbf{Message}: Die \textit{eigentliche Information}, die transportiert wird in variabler Größe.
+\end{itemize}
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \begin{rightwordgroup}{\small Packet\\Header}
+%        \bitbox{16}{\small Packet Length} & \bitbox{16}{\small Packet Sequence %Number} 
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\small Message\\Header}
+%        \bitbox{8}{\small Message Type} & \bitbox{8}{\small VTime} & %\bitbox{16}{\small Message Size} \\
+%        \bitbox{32}{\small Originator Address} \\
+%        \bitbox{8}{\small Time To Live} & \bitbox{8}{\small Hop Count} & %\bitbox{16}{\small Message Sequence Number}
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\small Message\\Data}
+%        \wordbox[lrt]{1}{\small Message} \\
+%        \skippedwords \\
+%        \wordbox[lrb]{1}{}
+%      \end{rightwordgroup} \\
+%    \end{bytefield}
+%  \caption{Ein OLSR Paket mit einer Message nach RFC 3626 \cite{RFC3626}}
+%  \label{chapter:routing:olsr:paket:image}
+%\end{figure}
+
+Es gibt je nach Erweiterung und Variante des Protokolls zahlreiche Arten von \glspl{olsrmessage}, die von allen Teilnehmern weitergeleitet werden können (der entsprechende Algorithmus stellt alle Funktionen für das Weiterleiten unbekannter Arten von Nachrichten bereit). Für die Minimalfunktion müssen von einem Teilnehmer jedoch folgende Nachrichten verarbeitet werden:
+
+\begin{itemize}
+\item \textbf{MID}: Informationen über verfügbare Schnittstellen
+\item \textbf{HELLO}: Kontaktaufnahme durch Knoten
+\item \textbf{TC}: Informationen über die Topologie
+\end{itemize}
+
+%Da für die grundlegende Betrachtung des Protokolls nur die ersten beiden relevant sind, wird sich die weitere Darstellung darauf beschränken.
+
+\subsection{Multiple Interface Declaration (MID)}
+\label{chapter:routing:olsr:mid}
+
+\gls{olsr} unterstützt den Einsatz auf mehreren Schnittstellen. Somit kann ein Host mehrere Adressen besitzen, die \textit{Interface Addresses}. Jeder Host wählt daraus eine Adresse als seine \textit{Main Address} aus, die als Kennung im Netz dient. Sofern nur eine Schnittstelle und somit eine Adresse vorhanden ist, ist die Beziehung trivial. Wenn jedoch mehrere existieren, dann wird eine davon zufällig gewählt. Die Information über die vorhandenen Adressen werden dann mittels \textit{\glspl{midmessage}} verteilt. Als \textit{TTL} sollte 255 gewählt werden (Maximum), um das gesamte Netz zu durchdringen. In der Nachricht sind alle Adressen, außer der \textit{Main Address} enthalten. Die Zuweisung erfolgt über die \textit{Originator Address} aus dem Header des OLSR Pakets. Die \glspl{midmessage} werden periodisch von Hosts mit mehr als einem OLSR Interface verschickt, wobei sich der maximale zeitliche Abstand nach dem \textit{MID\_INTERVAL} richtet. Ein Host, der eine \gls{midmessage} verarbeitet, fügt sofern der Absender zu den symmetrischen \glspl{1hnb} gehört, die in der Nachricht enthaltenen OLSR Adressen in seine Datenbank ein. Die Weiterleitung erfolgt per \textit{\gls{dfw}}.
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \bitbox{32}{\small OLSR Interface Address} \\
+%      \bitbox{32}{\small OLSR Interface Address} \\
+%      \wordbox[rtl]{1}{\small ...}
+%    \end{bytefield}
+%  \caption{Eine MID Message nach RFC 3626 \cite{RFC3626}}
+%\end{figure}
+
+\subsection{Hello (HELLO)}
+\label{chapter:routing:olsr:hello}
+
+Die \textit{\glspl{hellomessage}} werden für das Erkennen von Links (\textit{link sensing}) und \textit{\glspl{1hnb}} (\textit{neighbourhood detection}) sowie die \textit{Bekanntmachung} der selbst gewählten \textit{\glspl{mpr}} eingesetzt. In dieser werden Informationen über die eigenen \glspl{1hnb} per \textit{Broadcast} an diese mit \textit{TTL 1} gesendet, damit keine Weiterleitung stattfindet. Eine \gls{hellomessage}, die als Nutzlast im \gls{olsr} Paket gesendet wird, kann mehrere Einträge, immer beginnend mit \textit{Link Code}, enthalten und ist folgendermaßen aufgebaut:
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \begin{rightwordgroup}{\small Header}
+%        \bitbox{16}{\small Reserved} & \bitbox{8}{\small HTime} & \bitbox{8}{\small Willingness}
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\small First\\Message}
+%        \bitbox{8}{\small Link Code} & \bitbox{8}{\small Reserved} & \bitbox{16}{\small Link Message Size} \\
+%        \bitbox{32}{\small Neighbour Interface Address} \\
+%        \bitbox{32}{\small Neighbour Interface Address} \\
+%        \bitbox{32}{\small ...}
+%      \end{rightwordgroup} \\
+%      \begin{rightwordgroup}{\small Next\\Message}
+%        \bitbox{8}{\small Link Code} & \bitbox{8}{\small Reserved} & \bitbox{16}{\small Link Message Size} \\
+%        \bitbox{32}{\small Neighbour Interface Address} \\
+%        \bitbox{32}{\small Neighbour Interface Address} \\
+%        \bitbox{32}{\small ...}
+%      \end{rightwordgroup} \\
+%      \wordbox[rtl]{1}{\small ...}
+%    \end{bytefield}
+%  \caption{Eine HELLO Message nach RFC 3626 \cite{RFC3626}}
+%\end{figure}
+
+\begin{itemize}
+\item \textbf{Reserved}: Reservierter Bereich, besteht aus Nullen.
+\item \textbf{HTime}: Das \textit{Intervall}, in dem \glspl{hellomessage} gesendet werden, daraus kann erkannt werden wann die nächste \gls{hellomessage} erfolgen muss.
+\item \textbf{Willingness}: Die \textit{Breitschaft} des Absenders Daten weiterzuleiten.
+\item \textbf{Link Code}: Die \textit{Beschreibung der Verbindung} zum \gls{1hnb} besteht aus \textit{Link Type} und \textit{Neighbour Type}. Für den Code stehen \textit{Unbekannt (UNSPEC\_LINK)}, \textit{Asymmetrisch (ASYM\_LINK)}, \textit{Symmetrisch (SYM\_LINK)} und \textit{Unterbrochen (LOST\_LINK)}, für den Type \textit{Symmetrisch (SYM\_NEIGH)}, \textit{\gls{mpr} (MPR\_NEIGH)} und \textit{Kein Nachbar (NOT\_NEIGH)}, was angibt, dass der \gls{1hnb} bisher weder ein \gls{mpr}, noch ein symmetrischer \gls{1hnb} ist, zur Verfügung.
+\item \textbf{Reserved}: Weiterer reservierter Bereich, besteht aus Nullen.
+\item \textbf{Link Message Size}: Die \textit{Größe} der Nachricht in Bytes, gemessen von \textit{Link Code} bis zum nächsten \textit{Link Code}.
+\item \textbf{Neighbour Interface Address}: Es folgen \textit{alle bekannten Adressen} des \gls{1hnb}.
+\end{itemize}
+
+Die \glspl{hellomessage} werden periodisch von Hosts verschickt, wobei sich der maximale zeitliche Abstand nach dem \textit{HELLO\_INTERVAL} richtet. Ein Host, der eine \gls{hellomessage} verarbeitet, fügt die Adressen aus der Nachricht zusammen mit der Adresse der eigenen Schnittstelle über die empfangen wurde in seine Datenbank ein oder aktualisiert bereits vorhandene Einträge. Die Weiterleitung von \glspl{hellomessage} ist verboten.
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[auto]
+    % Place nodes
+      \node [start] (berechneMPR) [] {\linespread{1}\selectfont \tiny Berechne MPRSet\par};      
+      \node [block] (initm) [right=2em of berechneMPR] {\linespread{1}\selectfont \tiny Initialisiere $M$\par};      
+      \node [decision] (ifsavail) [below=1.5em of initm] {\linespread{1}\selectfont \tiny Zu bearbeitendes Interface $i$ vorhanden\par};
+      \node [block] (initmi) [right=2em of ifsavail] {\linespread{1}\selectfont \tiny Initialisiere $M_i$\par};
+      \node [block] (addnone) [right=2em of initmi] {\linespread{1}\selectfont \tiny Füge alle Hosts aus $N_1$ mit Willingness = 'WILL\_ALWAYS' $M_i$ hinzu\par};
+      \node [block] (calcdy) [below=3em of addnone] {\linespread{1}\selectfont \tiny Berechne $D(y)$ als Grad für alle Hosts aus N\par};
+      \node [block] (addntwo) [left=2em of calcdy] {\linespread{1}\selectfont \tiny Füge alle Hosts aus $N_1$ hinzu, die als einziger einen Host $h_2$ aus $N_2$ erreichen können und entferne $h_2$ aus $N_2$\par};
+      
+      \node [decision] (gotntwo) [below=1.5em of addntwo] {\linespread{1}\selectfont \tiny $N_2$ enthält noch Hosts\par};
+      \node [block] (reach) [below=2em of gotntwo] {\linespread{1}\selectfont \tiny Berechne als Erreichbarkeit für jeden Host aus $N_1$, wie viele Knoten er erreichen kann, die nicht durch einen Host aus $M_i$ erreichbar sind\par};
+      
+      \node [block] (addwill) [right=2em of reach] {\linespread{1}\selectfont \tiny Füge einen Host mit der höchsten Willingness $M_i$ hinzu - Falls mehrere Hosts die höchste Willingess haben, wird der Host mit höherer Erreichbarkeit gewählt, bei gleicher Erreichbarkeit zählt der höhere Grad - Entferne seine erreichbaren Hosts aus $N_2$\par};
+      \node [stop] (stop) [left=2em of ifsavail] {\tiny{Ende}};
+      \node [block] (addm) [left=2.5em of gotntwo] {\linespread{1}\selectfont \tiny Füge Hosts aus $M_i$ zu $M$ hinzu\par};
+      
+      \path [line] (berechneMPR) -- (initm);
+      \path [line] (initm) -- (ifsavail);
+      \path [line] (ifsavail) -- node{\tiny Ja} (initmi);
+      \path [line] (ifsavail) -- node{\tiny Nein} (stop);
+      \path [line] (initmi) -- (addnone);
+      \path [line] (addnone) -- (calcdy);
+      \path [line] (calcdy) -- (addntwo);
+      \path [line] (addntwo) -- (gotntwo);
+      \path [line] (gotntwo) -- node{\tiny Ja} (reach);
+      \path [line] (gotntwo) -- node{\tiny Nein} (addm);
+      \path [line] (reach) -- (addwill);
+      \path [line] (addwill) |- (gotntwo);
+      \path [line] (addm) -- (ifsavail);
+      
+    \end{tikzpicture}
+  \caption{Bestimmung MPR Set nach RFC3626 \cite{RFC3626}}
+  \label{chapter:routing:olsr:mpr:image}
+\end{figure}
+
+\subsection{Topology Control (TC)}
+\label{chapter:routing:olsr:tc}
+
+Durch die bisher bekannten \glspl{hellomessage} besitzen alle Knoten im Netz die Informationen über die Adressen ihrer \glspl{1hnb}, durch die \glspl{midmessage} können sie die verfügbaren Netze hinter den \textit{Main Addresses} ermitteln. Damit daraus brauchbare Routinginformationen generiert werden können, müssen weitere Informationen im Netz verteilt werden. Dies ist die Aufgabe der \textit{\glspl{tcmessage}}. Hiermit gibt ein Hosts dem gesamten Netz seine \textit{Advertised Neighbours} bekannt (die Nachricht wird als Broadcast mit TTL 255 verschickt): 
+
+\begin{itemize}
+\item \textbf{ANSN}: Die \textit{Advertised Neighbour Sequence Number} dient als Indikator für die Aktualität der Informationen. Jedes mal, wenn sich etwas an den Verbindungen eines Hosts ändert wird diese inkrementiert. Auf Basis dieser Nummer können andere Teilnehmer entscheiden, ob Sie die Nachricht verarbeiten.
+\item \textbf{Reserved}: Ein reservierter Bereich.
+\item \textbf{Advertised Neighbour Main Address}: Die \textit{Hauptadressen} seiner \textit{Advertised Neighbours}. Hierbei handelt es sich mindestens um seine \glspl{mpr}.
+\end{itemize}
+
+%\begin{figure}
+%  \centering
+%    \begin{bytefield}[bitwidth=1.0em]{32}
+%      \bitheader{0-31} \\
+%      \bitbox{16}{\small ANSN} & \bitbox{16}{\small Reserved} \\
+%      \bitbox{32}{\small Advertised Neighbour Address} \\
+%      \bitbox{32}{\small Advertised Neighbour Address} \\
+%      \wordbox[rtl]{1}{\small ...}
+%    \end{bytefield}
+%  \caption{Eine TC Message nach RFC 3626 \cite{RFC3626}}
+%\end{figure}
+
+Die \glspl{tcmessage} werden periodisch von Hosts verschickt, wobei sich der maximale zeitliche Abstand nach dem \textit{TC\_INTERVAL} richtet. Ein Host, der eine \gls{tcmessage} verarbeitet, fügt, sofern der Absender zu den symmetrischen \glspl{1hnb} gehört, die in der Nachricht enthaltenen OLSR Adressen zusammen mit der Absenderadresse in seine Datenbank ein oder aktualisiert bereits vorhandene Einträge. Die Weiterleitung erfolgt per \gls{dfw}.
+
+\subsection{Willingness}
+\label{chapter:routing:olsr:willingness}
+
+Die Willingness kann Werte zwischen 0 und 7 annehmen. Je höher der Wert, desto höher die Bereitschaft, wobei bei 0 gar kein Verkehr, bei 7 jedoch nach Möglichkeit immer weitergeleitet werden soll. Es gelten folgende Bezeichnungen:
+
+\begin{itemize}
+\item \textbf{WILL\_NEVER}: 0
+\item \textbf{WILL\_LOW}: 1
+\item \textbf{WILL\_DEFAULT}: 3
+\item \textbf{WILL\_HIGH}: 6
+\item \textbf{WILL\_ALWAYS}: 7
+\end{itemize}
+
+\subsection{Multipoint Relay (MPR)}
+\label{chapter:routing:olsr:mpr}
+
+Wie bereits erwähnt, erstellt jeder Host eine eigene Liste von \glspl{mpr} aus seinen \glspl{1hnb} zu denen er eine symmetrische Verbindung besitzt. Im Normalfall sind in dieser alle enthalten die ausreichen, um alle \textit{\glspl{s2hnb}} zu erreichen. Grundsätzlich werden Nachrichten eines OLSR Hosts ausschließlich von seinen \glspl{mpr} weitergeleitet, um die Belastung des Netzes durch Kontrollinformationen gering zu halten. Die Erstellung erfolgt pro Schnittstelle, wie in Abbildung \ref{chapter:routing:olsr:mpr:image} dargestellt, hierbei entsprich $M$ dem MPR-Set. Der Host teilt einem Nachbarn, ob er als \gls{mpr} ausgewählt wurde, über das \textit{Link Type} Feld der \glspl{hellomessage} mit. Es gelten folgende Definitionen:
+
+\begin{itemize}
+\item \textbf{\textit{I}}: Die zu behandelnde Schnittstelle.
+\item \textbf{Neighbour of an Interface (NoI)}: Ein \textit{\gls{1hnb}}, zu dem der Host auf der Schnittstelle \textit{I} einen Link zu einer beliebigen Schnittstelle auf diesem hat.
+\item \textbf{2-hop neighbours reachable from an interface (2HNBRI)}: Ein \textit{\gls{2hnb}}, zu dem die NoIs eine Verbindung haben.
+\item \textbf{MPR set of an interface (MPRSI)}: Eine Teilmenge der NoIs mit einer \textit{Willingness} höher \textit{WILL\_NEVER}. Sie enthält genau die Menge an Hosts, über die alle \glspl{s2hnb} erreicht werden können.
+\item \textbf{\textit{N}}: Menge aller \glspl{1hnb}, die über \textit{I} erreichbar sind.
+\item \textbf{\textit{N2}}: Menge aller \glspl{2hnb}, die über \textit{I} erreichbar sind, ohne die, die nur über Hosts aus \textit{N} mit einer Willingness \textit{WILL\_NEVER} erreicht werden können, sich selbst und alle symmetrischen \glspl{1hnb}.
+\item \textbf{\textit{D(y)}}: Der Grad eines \gls{1hnb} $y$. Die Anzahl der symmetrischen Nachbarn ohne Elemente aus $N$ und sich selbst.
+\end{itemize}
+
+%\begin{algorithm}[p]
+%\caption{Berechnung des MPR-Set nach RFC 3626 \cite{RFC3626}}
+%\label{chapter:routing:olsr:mpr:alg}
+%\begin{algorithmic}
+%    \SetKwInOut{Input}{Eingabe}
+%    \SetKwInOut{Output}{Ausgabe}
+%	\Input{Sets Hosts $N_1, N_2$, Set Schnittstellen $I$}
+%	\Output{Set Hosts $M$}
+%
+%
+%	\underline{function BerechneMprSet} ($I$,$N_1$,$N_2$):
+%
+%	Initialisiere $M$	\\
+%	\For {Schnittstelle $i$ aus $I$} {
+%		Initialisiere $M_i$	\\
+%		Füge alle Hosts aus $N_1$ mit Willingness = 'WILL\_ALWAYS' $M_i$ hinzu \\
+%		Berechne $D(y)$ als Grad für alle Hosts aus N \\
+%		Füge alle Hosts aus $N_1$ hinzu, die als einziger einen Host $h_2$ aus $N_2$ erreichen können und entferne $h_2$ aus $N_2$ \\
+%		\While { $N_2$ enthält noch Hosts } {
+%			Berechne als Erreichbarkeit für jeden Host aus $N_1$, wie viele Knoten er erreichen kann, die nicht durch einen Host aus $M_i$ erreichbar sind \\
+%			Füge einen Host mit der höchsten Willingness $M_i$ hinzu - Falls mehrere Hosts die höchste Willingess haben, wird der Host mit höherer Erreichbarkeit gewählt, bei gleicher Erreichbarkeit zählt der höhere Grad - Entferne seine erreichbaren Hosts aus $N_2$ \\
+%		}
+%		Füge Hosts aus $M_i$ in $M$ ein
+%	}
+%	return $M$
+
+
+		
+%    
+%	\Input{Sets of hosts $N_1, N_2$, Set of interfaces $I$}
+%	\Output{\textit{Set of hosts $M$}}
+%	
+%	\underline{function CalculateMPR} ($N_1$,$N_2$):
+%	Create $M$;	\\
+%	\For {$i \in I$} {
+%		Create $M_i$; \\
+%		\For {$h_1 \in N_1$} {
+%			$h_1$.addDegree(\textit{D(h_1)});
+%		}
+%		\For {$h_1 \in N_1$} {
+%			\If {h.getWillingness == WILL\_ALWAYS} {
+%				\textit{$M_i$.add($h_1$)}; \\
+%				\For {$h_n$ $\in$ $h_1$.getNa1()} {
+%					$N_2$.remove(\textit{$h_n$});
+%				}
+%			}
+%			\For {$h_2$ $ \in $ $N_2$} {
+%				\If {$h_2$ only reachable via $h_1$} {
+%					\textit{$M_i$.add($h_1$)}; \\
+%					\For {$h_n$ $\in$ $h_1$.getNa1()} {
+%						$N_2$.remove(\textit{$h_n$});
+%					}
+%				}
+%			}
+%		}
+%		\If {$N_2$ not empty} {
+%			\For {$h_1 \in N_1$} {
+%			}
+%		}
+%			
+%		
+%		$M$.addElementsFrom($M_i$); \\
+%	}
+%	return $M$; \\
+%
+%\end{algorithmic}
+%\end{algorithm}
+
+Zudem führt er eine weitere Liste, in der alle Hosts enthalten sind, die ihn als \gls{mpr} verwenden. Diese Information wird wie beschrieben aus den \glspl{hellomessage} seiner Nachbarn generiert.
+
+\subsection{Default Forwarding Algorithm}
+\label{chapter:routing:olsr:forward}
+
+\glspl{midmessage} und \glspl{tcmessage} werden mittels des \textit{\gls{dfw}} weitergeleitet. Eine Beschreibung des Ablaufs ist der Abbildung \ref{chapter:routing:olsr:dfw:image} zu entnehmen. Grundsätzlich werden alle Nachrichten, sofern die TTL größer 1 ist von einem Host weitergeleitet, die von Hosts, die ihn als \gls{mpr} gewählt haben und aus seiner symmetrischen \gls{1hnb} stammen, gesendet wurden.
+
+\begin{figure}
+  \centering
+    \begin{tikzpicture}[auto]
+    % Place nodes
+      \node [start] (dfw) [] {\linespread{1}\selectfont \tiny Nachricht weiterleiten\par};     
+      \node [decision] (isonehnb) [right=2em of dfw] {\linespread{1}\selectfont \tiny Absender aus \gls{1hnb}\par};    
+      \node [decision] (known) [right=2em of isonehnb] {\linespread{1}\selectfont \tiny Absender und Sequenznummer bekannt\par};     
+      \node [decision] (first) [below=1.5em of known] {\linespread{1}\selectfont \tiny Erste Wiederholung\par};     
+      \node [decision] (considered) [below=1.5em of first] {\linespread{1}\selectfont \tiny Absender in MPRSelector-Liste, TTL > 1\par};   
+      \node [block] (forward) [left=1.4em of considered] {\linespread{1}\selectfont \tiny TTL um 1 veringern, HopCount um 1 erhöhen, Broadcast\par};  
+      \node [block] (update) [right=2em of first] {\linespread{1}\selectfont \tiny Eintrag im DuplicateSet anlegen oder aktualisieren\par};         
+      \node [block] (drop) [left=2em of first] {\linespread{1}\selectfont \tiny Paket verwerfen\par};   
+      \node [stop] (stop) [below=1.5em of drop] {\tiny{Ende}};  
+      
+      \path [line] (dfw) -- (isonehnb);
+      \path [line] (drop) -- (stop);
+      \path [line] (isonehnb) -- node{\tiny Ja} (known);
+      \path [line] (isonehnb) -- node{\tiny Nein} (drop);
+      \path [line] (known) -- node{\tiny Ja} (first);
+      \path [line] (known) -- node{\tiny Nein} (update);
+      \path [line] (first) -- node{\tiny Ja} (update);
+      \path [line] (first) -- node{\tiny Nein} (drop);
+      \path [line] (update) -- (considered);
+      \path [line] (considered) -- node{\tiny Ja} (forward);
+      \path [line] (considered) -- node{\tiny Nein} (drop);
+      \path [line] (forward) -- (stop);
+    \end{tikzpicture}
+  \caption{DFW nach RFC3626 \cite{RFC3626}}
+  \label{chapter:routing:olsr:dfw:image}
+\end{figure}
+
+\subsection{Ablauf, Metrik, Routen}
+\label{chapter:routing:olsr:working}
+
+Alle Router senden kontinuierlich wie bereits dargestellt Ihre Nachrichten aus. Durch die \glspl{hellomessage} wissen alle direkten Nachbarn von ihrer jeweiligen Existenz. Durch die \glspl{midmessage} und \glspl{tcmessage} werden im Netz per Broadcast alle weiteren notwendigen Informationen verteilt, die für das Erstellen der Routingtabelle notwendig sind, wobei nur die jeweiligen \glspl{mpr} eines Hosts Nachrichten weiterleiten. Anschließend werden die Routen zu einem Ziel über einen \textit{shortest path} Algorithmus berechnet, als maßgebende \textit{Metrik} ist der jeweilige \textit{HopCount} anzusehen.
+
+\subsection{Zusammenfassung OLSR}
+\label{chapter:routing:olsr:summary}
+
+Es handelt sich bei \gls{olsr} um ein vergleichsweise \textit{einfaches} Verfahren. Durch seine proaktiven Eigenschaften kommt es zu einer höheren Anzahl an Kontrollnachrichten und beansprucht somit mehr Strom und Bandbreite. Jedoch kann hierdurch nach einer gewissen Vorlaufzeit ein Minimum an Reaktionszeit bei der Wahl neuer Routen erreicht werden. Allerdings besitzt auch \gls{olsr} dadurch eine gewisse Trägheit, da sich neue Informationen erst im Netz verbreiten müssen. Ein mögliches Anwendungsfeld für dieses Verfahren sind Netze, in denen der Verkehr eine hohe Zahl oder ständig wechselnde Ziele hat. OLSR eignet sich am besten für dichte Netze mit vielen Systemen. Je größer jedoch das Netz und die Anzahl der Teilnehmer wird, desto höher wird auch die Belastung durch Kontrollnachrichten und die benötigte Zeit für die Ausbreitung der Routen-Informationen, was unter Umständen problematisch sein kann.\newline
+
+Zur Bewertung der \textit{Güte der Verbindung} wird ausschließlich der \textit{HopCount}, für die Wahl der \glspl{mpr} jedoch auch die \textit{Willingsness} berücksichtigt. Daher kann eine Anpassung des Verfahrens, die den \textit{Ladezustand} der Teilnehmer bei der Routenfindung berücksichtigt, die \textit{Willingness} von Hosts manipulieren. Dies hat den Vorteil, dass Router die die angepasste Version nutzen und Geräte, die mit normalem \gls{olsr} arbeiten, \textit{kompatibel} wären. Auf die Veränderung des \textit{HopCount} kann verzichtet werden, damit keine falschen Metriken erzeugt werden.
+
+\section{Zusammenfassung OLSR und AODV}
+\label{chapter:routing:verleich}
+
+Wie bereits beschrieben eignet sich \gls{olsr} sehr gut für dichte Netze, die auf eine geringe Verzögerung angewiesen sind und in denen häufig neue Routen benötigt werden. \gls{aodv} hingegen ist vor allem dann vorteilhaft, wenn weniger Routen benötigt werden und die Verzögerung bei deren Anforderung eine untergeordnete Rolle spielt. Ein weiterer Unterschied liegt in der Zeit bis ein Netz betriebsbereit ist: Während bei \gls{aodv} die benötigten Routen zielgerichtet und damit mit hoher Priorität ermittelt werden, müssen sich Routinginformation bei \gls{olsr} erst durch periodische Nachrichten verbreiten, was gerade bei größeren Netzen eine gewisse Zeit in Anspruch nimmt. Da bei \gls{olsr} periodisch Kontrollnachrichten verschickt werden, benötigt es, sofern keine Daten weitergeleitet werden, in der Regel mehr Strom als \gls{aodv}, da hier kein Kontrollverkehr anfällt.
