@@ -1,0 +1,56 @@
+\ProvidesPackageRCS $Header: beamerthemeE2.sty,v 1.0 2014/05/16 13:06 endtrichtm Exp $
+
+
+\typeout{------ TUDortmund style for beamer package v0.2 ------}
+\typeout{presentation style for Chair of Mathematics III (Turek)}
+\typeout{written 2005--2008 by Christian Becker, Sven H.M. Buijssen & Dominik Goeddeke}
+\typeout{Fakultaet fuer Mathematik, Technische Universitaet Dortmund}
+\typeout{ }
+
+\mode<presentation>
+
+\useoutertheme[subsection=false]{navbarbottom_E2}
+
+\definecolor{mycol}{rgb}{1,1,1}
+
+\useinnertheme[shadow=true]{rounded}
+%\usecolortheme{orchid}
+%\usecolortheme{whale}
+\usecolortheme{E2}
+
+\setbeamercolor{frametitle}{fg=black}
+\setbeamercolor{frametitle}{bg=mycol}
+
+\setbeamercolor{navbar}{bg=mycol}
+
+\setbeamercolor{item}{fg=grad3}
+\setbeamercolor{subitem}{fg=grad3}
+\setbeamercolor{subsubitem}{fg=grad3}
+
+\setbeamercolor{navbar}{fg=black}
+\setbeamercolor{titlelike}{fg=black,bg=grad2}
+
+\setbeamercolor{block title}{fg=black}
+\setbeamercolor{block title}{bg=mycol}
+% background of blocks
+\setbeamercolor{block body}{parent=normal text,use=block title,bg=block title.bg!30!bg}
+
+\setbeamerfont{block title}{size={}}
+
+% Options for navigation symbols
+%\setbeamertemplate{navigation symbols}{}    % Suppress them
+\setbeamertemplate{navigation symbols}{
+  \insertbackfindforwardnavigationsymbol
+  \hspace{0.5em}
+  \insertslidenavigationsymbol
+%  \insertframenavigationsymbol
+%  \insertsubsectionnavigationsymbol
+%  \insertsectionnavigationsymbol
+%  \insertdocnavigationsymbol
+  \hspace*{\textwidth}\hspace*{0.2cm}
+}
+
+\setbeamercovered{transparent}
+
+\mode
+<all>

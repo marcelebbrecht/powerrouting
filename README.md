@@ -31,13 +31,22 @@ My name is Marcel Ebbrecht and I study computer science at the TU Dortmund in Ge
 If you have any questions, feel free to contact me: marcel.ebbrecht@googlemail.com 
 
 
-Version an status
------------------
+Version and status
+------------------
 
-Current version: 1.0-rc1
+Current version: 1.0
 
 For more details, please have a look at CHANGELOG.md. I'm still working on this stuff,
 so there is no contribution allowed at the moment. 
+
+
+Thesis, book and presentation
+-----------------------------
+
+You may find these stuff in the appropriate folders in the project thesis, book and
+presentation. All latex sources are included. You may use it for scientific purpose
+under license terms according to gpl. Any commercial usage requires a permission from
+the author (contact: marcel.ebbrecht@googlemail.com).
 
 
 License
